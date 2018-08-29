@@ -1,0 +1,12 @@
+creds/*
+!creds/.gitkeep
+data/*
+!data/.gitkeep
+composer.lock
+vendor/
+.env
+data.php
+apple/*.csv
+twitter/*.csv
+twitter/*.json
+triton/*.json
