@@ -23,9 +23,6 @@ Our executive team was interested in getting regular analytics updates, and as a
 
 ## Wishlist
 
-This project is a work in progress.
-
-- Adding checks so that any services that don't have credentials are skipped
 - Add options for other email/storage systems (currently only supports S3 and Amazon SES)
   - This one is contingent on demand
 

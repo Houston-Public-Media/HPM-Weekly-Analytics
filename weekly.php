@@ -719,12 +719,28 @@
 	$fb_base = 'https://graph.facebook.com/v3.1/';
 
 	// Where the magic happens
-	require BASE . DS . 'google' . DS . 'google.php';
-	require BASE . DS . 'facebook' . DS . 'facebook.php';
-	require BASE . DS . 'facebook' . DS . 'instagram.php';
+	if ( file_exists( GA_CLIENT ) ) :
+		require BASE . DS . 'google' . DS . 'google.php';
+	endif;
+	
+	if ( !empty( $page_access ) ) :
+		require BASE . DS . 'facebook' . DS . 'facebook.php';
+	endif;
+	
+	if ( !empty( $access ) ) :
+		require BASE . DS . 'facebook' . DS . 'instagram.php';
+	endif;
+
 	require BASE . DS . 'twitter' . DS . 'twitter.php';
-	require BASE . DS . 'triton' . DS . 'triton.php';
-	require BASE . DS . 'google' . DS . 'youtube.php';
+	
+	if ( !empty( WCM_USER ) ) :
+		require BASE . DS . 'triton' . DS . 'triton.php';
+	endif;
+	
+	if ( file_exists( YT_ACCESS ) ) :
+		require BASE . DS . 'google' . DS . 'youtube.php';
+	endif;
+	
 	require BASE . DS . 'apple' . DS . 'apple.php';
 
 	// Flipping the sheet array so Google Analytics stats are first
@@ -788,7 +804,7 @@
 	$writer =  new Xlsx( $spreadsheet );
 	$writer->save( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
 
-	if ( $gdoc ) :
+	if ( $gdoc && file_exists( GDRIVE_CREDS ) ) :
 		// Upload file contents to Google Sheet
 		require BASE . DS . 'google'. DS .'gsheet.php';
 	endif;
@@ -821,7 +837,9 @@
 	file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
 
 	// Upload the file to S3, alert everyone via email, clear the Cloudfront cache
-	require BASE . DS . 'amazon.php';
+	if ( !empty( $aws_key ) ) :
+		require BASE . DS . 'amazon.php';
+	endif;
 
 	// All done!
 	echo $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . 'Report process completed successfully!' . $RESET_ALL . PHP_EOL;

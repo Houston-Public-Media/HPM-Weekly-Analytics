@@ -33,7 +33,8 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 - Don't forget to change the title in `index.html`
 - Also be sure to change the URLs in `main.js` and `App.vue` to point to your graphing data JSON files
-- This app used Vue.js, Chart.js, jQuery, and Bootstrap
+- Once you run `npm run build`, the compiled files will save into the `/dist/` folder. The `index.html` file it generates assumes that it will live in a domain root.
+- This app uses Vue.js, Chart.js, jQuery, and Bootstrap
 
 ## Questions
 
