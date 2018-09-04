@@ -69,8 +69,8 @@
 		'version' => 'latest'
 	]);
 
-	$week_file = $base . $ds . 'data' . $ds . date( 'Y-m-d', $startu ) . '.json';
-	$reports_file = $base . $ds . 'data' . $ds . 'reports.json';
+	$week_file = BASE . DS . 'data' . DS . date( 'Y-m-d', $startu ) . '.json';
+	$reports_file = BASE . DS . 'data' . DS . 'reports.json';
 
 	// Upload the data file for the week to Amazon S3
 	try {
