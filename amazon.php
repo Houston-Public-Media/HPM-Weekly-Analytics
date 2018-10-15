@@ -91,24 +91,26 @@
 		die;
 	}
 
-	// Upload the reports file to Amazon S3
-	try {
-		$ss3 = $s3->putObject([
-			'Bucket' => $s3_bucket,
-			'Key' => 'assets/analytics/reports.json',
-			'SourceFile' => $reports_file,
-			'ACL' => 'public-read',
-			'ContentType' => 'application/json'
-		]);
-	} catch (S3Exception $e) {
-		header("HTTP/1.1 500 Server Error");
-		echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getMessage() . $RESET_ALL . PHP_EOL;
-		die;
-	} catch (AwsException $e) {
-		header("HTTP/1.1 500 Server Error");
-		echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . $RESET_ALL . PHP_EOL;
-		die;
-	}
+	if ( $rerun == false ) :
+		// Upload the reports file to Amazon S3
+		try {
+			$ss3 = $s3->putObject([
+				'Bucket' => $s3_bucket,
+				'Key' => 'assets/analytics/reports.json',
+				'SourceFile' => $reports_file,
+				'ACL' => 'public-read',
+				'ContentType' => 'application/json'
+			]);
+		} catch (S3Exception $e) {
+			header("HTTP/1.1 500 Server Error");
+			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getMessage() . $RESET_ALL . PHP_EOL;
+			die;
+		} catch (AwsException $e) {
+			header("HTTP/1.1 500 Server Error");
+			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . $RESET_ALL . PHP_EOL;
+			die;
+		}
+	endif;
 
 	// Invalidate the cache for the /assets/analytics folder
 	try {

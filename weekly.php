@@ -4,6 +4,7 @@
 	 */
 	define( 'BASE', __DIR__ );
 	define( 'DS', DIRECTORY_SEPARATOR );
+	$process_start = time();
 
 	// Setting up find/replace for article headlines since Excel doesn't always play nice with diacriticals
 	$find = [ '…', '’', 'ó', 'é', '–', '“', '”', '‘', 'í', 'Ø', 'ú', 'è', 'á', 'ï', 'ñ', 'ä', 'á', 'ö', 'ë', 'è' ];
@@ -619,7 +620,7 @@
 	 * All of these checks are set up as while loops for input checking
 	 * If the user doesn't enter anything into the prompt, or doesn't stick to the pattern, it prints an error and prompts again
 	 */
-	$date_conf = $gdoc = $gdoc_conf = $emails = $email_conf = false;
+	$date_conf = $gdoc = $gdoc_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
 	
 	/**
 	 * Set the end date for your report
@@ -643,6 +644,29 @@
 		elseif ( empty( $date_in ) ) :
 			$date_conf = true;
 			$run_date = time();
+		else :
+			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
+		endif;
+	endwhile;
+
+	/**
+	 * Debug rerun CLAP CLAP CLAPCLAPCLAP
+	 * Saying yes to this will assume some things:
+	 * 		-- You don't want to email the group
+	 * 		-- You don't want to upload to Google Drive
+	 * 		-- You don't want to delete the local Excel file
+	 * 		-- You don't want to update the report list for the graphing app
+	 */
+	while ( $rerun_conf == false ) :
+		echo "Are you rerunning this report because something screwed up? (y/n) ";
+		$rerun_in = read_stdin();
+		if ( $rerun_in == 'y' ) :
+			$rerun_conf = true;
+			$rerun = true;
+			$gdoc_conf = true;
+			$email_conf = true;
+		elseif ( $rerun_in == 'n' ) :
+			$rerun_conf = true;
 		else :
 			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
 		endif;
@@ -693,7 +717,6 @@
 	 * 		copy/pasting it into a file. I had a chunk of code that would use cURL requests to mimic a login 
 	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
 	 * 		for the 5th time or so, I abandoned it
-	 * 		
 	 */
 	echo "Did you remember to update your Twitter and Apple News reports? (y/n) ";
 	$tw_apple = read_stdin();
@@ -809,8 +832,10 @@
 		require BASE . DS . 'google'. DS .'gsheet.php';
 	endif;
 	
-	// Delete the local XLSX file
-	unlink( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
+	if ( $rerun == false ) :
+		// Delete the local XLSX file
+		unlink( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
+	endif;
 
 	// Save the graphing data locally as a JSON file
 	file_put_contents( BASE . DS . 'data' . DS . date( 'Y-m-d', $startu ) . '.json', json_encode( $graphs ) );
@@ -834,7 +859,9 @@
 		];
 		array_unshift( $text, $new_entry );
 	endif;
-	file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
+	if ( $rerun == false ) :
+		file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
+	endif;
 
 	// Upload the file to S3, alert everyone via email, clear the Cloudfront cache
 	if ( !empty( $aws_key ) ) :
@@ -842,5 +869,7 @@
 	endif;
 
 	// All done!
-	echo $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . 'Report process completed successfully!' . $RESET_ALL . PHP_EOL;
+	$process_end = time();
+	$process_total = ( $process_end - $process_start );
+	echo $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . 'Report process completed successfully!' . PHP_EOL . 'Total execution time: ' . $process_total . ' seconds' . $RESET_ALL . PHP_EOL;
 ?>
