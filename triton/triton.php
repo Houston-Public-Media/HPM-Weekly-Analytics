@@ -157,7 +157,11 @@
 			'Smart TV' => [
 				'base' => 20,
 				'num' => 0
-			]
+			],
+			'Unspecified' => [
+				'base' => 340,
+				'num' => 0
+			],
 		];
 
 		// Loop through the station data
