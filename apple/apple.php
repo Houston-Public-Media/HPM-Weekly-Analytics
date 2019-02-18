@@ -79,6 +79,7 @@
 					($data[25] * 100).'%',
 					($data[26] * 100).'%'
 				];
+				$graphs['overall-totals']['apple-news']['data'] += ( empty( intval( $data[18] ) ) ? 0 : intval( $data[18] ) );
 			endif;
 			$row++;
 		endwhile;

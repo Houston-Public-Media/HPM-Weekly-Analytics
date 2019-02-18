@@ -113,6 +113,7 @@
 	$sheet = 'Twitter Graphs';
 	$json = json_decode( file_get_contents( BASE . DS . "twitter" . DS . "graphs-" . $end . ".json" ) );
 
+	$graphs['overall-totals']['twitter']['data'] = $json->totals->impressions;
 	// Divide the start and end times in the JSON file by 1000, since they measure in microseconds
 	$twstart = ( $json->startTime / 1000 );
 	$twend = ( $json->endTime / 1000 );

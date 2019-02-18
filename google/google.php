@@ -175,6 +175,20 @@
 			]
 		);
 
+		$result4 = $analytics->data_ga->get(
+			'ga:'.$ga,
+			$start,
+			$end,
+			'ga:visits',
+			[
+				'dimensions' => 'ga:year,ga:month',
+				'metrics' => 'ga:users',
+				'sort' => 'ga:year,ga:month',
+				'output' => 'json'
+			]
+		);
+		$graphs['overall-totals'][$ga_acct_name]['data'] += $result4->rows[0][2];
+
 		// New sheet
 		$sheet = 'Hourly Stats ('.$g.')';
 		$sheets[$sheet] = [];

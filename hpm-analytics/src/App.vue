@@ -12,7 +12,7 @@
 						<div class="col-md-8 col-lg-6">
 							<!--
 								The reports.json data is used to populate this dropdown, which is used to switch between datasets
-							 -->
+							-->
 							<select class="form-control" v-model="week">
 								<option v-for="(option, index) in options" :key="index" :value="option.value">
 									{{ option.text }}
@@ -28,8 +28,9 @@
 				<!--
 					If you modified the PHP script to not pull one or more of these services,
 					don't forget to remove their entries here
-				 -->
-				<div v-on:click="updateTab('google-main')" id="google-main-tab" class="col-sm-3 col-lg google tab-active">Google (Main)</div>
+				-->
+				<div v-on:click="updateTab('overall-totals')" id="overall-tab" class="col-sm-3 col-lg overall tab-active">Overall</div>
+				<div v-on:click="updateTab('google-main')" id="google-main-tab" class="col-sm-3 col-lg google">Google (Main)</div>
 				<div v-on:click="updateTab('google-amp')" id="google-amp-tab" class="col-sm-3 col-lg google">Google (AMP)</div>
 				<div v-on:click="updateTab('facebook')" id="facebook-tab" class="col-sm-3 col-lg facebook">Facebook</div>
 				<div v-on:click="updateTab('instagram')" id="instagram-tab" class="col-sm-3 col-lg instagram">Instagram</div>
@@ -42,6 +43,7 @@
 				<!--
 					And here too
 				-->
+				<Overall :chart-data="chartData"></Overall>
 				<GoogleMain :chart-data="chartData"></GoogleMain>
 				<GoogleAmp :chart-data="chartData"></GoogleAmp>
 				<Facebook :chart-data="chartData"></Facebook>
@@ -58,6 +60,7 @@
 <script>
 // Remove the entry here too, and in the "components:" section below
 import $ from 'jquery'
+import Overall from '@/components/Overall'
 import GoogleMain from '@/components/GoogleMain'
 import GoogleAmp from '@/components/GoogleAmp'
 import Facebook from '@/components/Facebook'
@@ -71,7 +74,7 @@ export default {
 	props: [
 		'options', 'week-selected', 'chart-data'
 	],
-	components: { GoogleMain, GoogleAmp, Facebook, Twitter, Instagram, Triton, YouTube, AppleNews },
+	components: { Overall, GoogleMain, GoogleAmp, Facebook, Twitter, Instagram, Triton, YouTube, AppleNews },
 	data() {
 		return {
 			week: this.weekSelected
@@ -214,7 +217,8 @@ label.form-check-label {
 	background-color: rgba(255,0,0,0.2);
 	border-top: 2px solid rgba(255,0,0,1);
 }
-#tab div.apple {
+#tab div.apple,
+#tab div.overall {
 	background-color: rgba(128,128,128,0.2);
 	border-top: 2px solid rgba(128,128,128,1);
 }
@@ -240,7 +244,8 @@ label.form-check-label {
 #tab div.tab-active.youtube {
 	background-color: rgba(255,0,0,0.75);
 }
-#tab div.tab-active.apple {
+#tab div.tab-active.apple,
+#tab div.tab-active.overall {
 	background-color: rgba(128,128,128,0.75);
 }
 #chart-wrap {

@@ -1,6 +1,7 @@
 <?php
 	/**
 	 * Triton Webcast Metrics. If you have a username and password for the analytics dashboard, you can use this
+	 * 
 	 * A note: I could never get Triton to give me any documentation for the API, so I bascially spent some time
 	 * 		watching the Network panel of Chrome Developer Tools and worked backwards. All of the requests that went 
 	 *		to wcm2api.tritondigital.com gave it away
@@ -104,6 +105,10 @@
 		$graphs['triton-hourly']['datasets'][0]['data'][] = $wcm_news[$k]->value;
 		$graphs['triton-hourly']['datasets'][1]['data'][] = $wcm_classical[$k]->value;
 		$graphs['triton-hourly']['datasets'][2]['data'][] = $wcm_mixtape[$k]->value;
+
+		$graphs['overall-totals']['triton-news']['data'] += $wcm_news[$k]->value;
+		$graphs['overall-totals']['triton-classical']['data'] += $wcm_classical[$k]->value;
+		$graphs['overall-totals']['triton-mixtape']['data'] += $wcm_mixtape[$k]->value;
 	endforeach;
 
 	// Parsing the device numbers

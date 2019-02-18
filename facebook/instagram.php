@@ -109,6 +109,9 @@
 		$graphs['instagram-stats']['labels'][] = $day;
 		foreach ( $re as $rek => $ree ) :
 			$sheets[$sheet][$c][$g] = $ree;
+			if ( $rek == 'reach' ) :
+				$graphs['overall-totals']['instagram']['data'] += $ree;
+			endif;
 			$graphs['instagram-stats']['datasets'][$insta_labels[$rek]]['data'][] = $ree;
 			$g++;
 		endforeach;

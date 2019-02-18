@@ -163,6 +163,9 @@
 				$rek == 'page_impressions_organic'
 			 ) :
 				$graphs['facebook-impressions']['datasets'][$fb_label[$rek]]['data'][] = $ree;
+				if ( $rek == 'page_impressions_unique' ) :
+					$graphs['overall-totals']['facebook']['data'] += $ree;
+				endif;
 			elseif ( $rek == 'page_fans' ) :
 				$graphs['facebook-likes']['datasets'][0]['data'][] = $ree;
 			elseif (

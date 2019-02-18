@@ -1,5 +1,5 @@
 <template>
-	<div class="services service-active" id="google-main-service">
+	<div class="services" id="google-main-service">
 		<!-- Import each of the global graphing components you set up -->
 		<h2 class="text-center">{{ msg }}</h2>
 		<div class="row">

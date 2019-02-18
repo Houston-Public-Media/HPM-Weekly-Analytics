@@ -63,8 +63,16 @@
 		'startDate' => $start
 	];
 
+	$params_over = [
+		'endDate' => $end,
+		'ids' => 'channel==MINE',
+		'metrics' => 'views',
+		'startDate' => $start
+	];
+
 	// Make the request, and set up intermediate arrays to hold the data
 	$response = $service->reports->query( $params );
+	$response_over = $service->reports->query( $params_over );
 	$videos = $vid_ids = [];
 
 	// Loop through the response rows
@@ -80,6 +88,7 @@
 			'Subscribers Gained' => ( empty( $r[6] ) ? 0 : $r[6] )
 		];
 	endforeach;
+	$graphs['overall-totals']['youtube']['data'] = $response_over->rows[0][0];
 	$vids = implode( ',', $vid_ids );
 	$youtube = new Google_Service_YouTube( $client );
 
