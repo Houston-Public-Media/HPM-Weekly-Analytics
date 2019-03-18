@@ -139,7 +139,7 @@
 				'base' => 0,
 				'num' => 0
 			],
-			'Desktop or Laptop' => [
+			'Desktop/Laptop/Server' => [
 				'base' => 120,
 				'num' => 0
 			],
