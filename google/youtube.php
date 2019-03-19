@@ -56,7 +56,7 @@
 	$params = [
 		'dimensions' => 'video',
 		'endDate' => $end,
-		'ids' => 'channel==MINE',
+		'ids' => 'channel=='.YT_CHANNEL_ID,
 		'maxResults' => 20,
 		'metrics' => 'views,likes,dislikes,comments,estimatedMinutesWatched,subscribersGained',
 		'sort' => '-views',
@@ -65,7 +65,7 @@
 
 	$params_over = [
 		'endDate' => $end,
-		'ids' => 'channel==MINE',
+		'ids' => 'channel=='.YT_CHANNEL_ID,
 		'metrics' => 'views',
 		'startDate' => $start
 	];

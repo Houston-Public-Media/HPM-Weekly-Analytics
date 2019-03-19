@@ -15,8 +15,7 @@
 			'day' => 'page_engaged_users,page_consumptions',
 		],
 		2 => [
-			'day' => 'page_fan_adds',
-			'lifetime' => 'page_fans'
+			'day' => 'page_fan_adds,page_fans'
 		],
 		3 => [
 			'day' => 'page_positive_feedback_by_type,page_negative_feedback_by_type,page_actions_post_reactions_total'

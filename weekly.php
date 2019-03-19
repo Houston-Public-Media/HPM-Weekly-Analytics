@@ -46,7 +46,7 @@
 	$dotenv = new Dotenv\Dotenv( BASE );
 	if ( file_exists( BASE . DS . '.env' ) ) :
 		$dotenv->load();
-		$dotenv->required([ 'GA_CLIENT', 'GDRIVE_CREDS', 'GDRIVE_TOKEN', 'YT_ACCESS', 'YT_CLIENT', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_PROOF', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ACCESS', 'INSTAGRAM_PROOF', 'INSTAGRAM_ID', 'GDRIVE_PARENT', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET' ]);
+		$dotenv->required([ 'GA_CLIENT', 'GDRIVE_CREDS', 'GDRIVE_TOKEN', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_PROOF', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ACCESS', 'INSTAGRAM_PROOF', 'INSTAGRAM_ID', 'GDRIVE_PARENT', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET' ]);
 	endif;
 
 	// Map all of the variables from .env to constants and variables
@@ -56,6 +56,7 @@
 	define( 'GDRIVE_TOKEN', BASE . DS . env( 'GDRIVE_TOKEN' ) );
 	define( 'YT_ACCESS', BASE . DS . env( 'YT_ACCESS' ) );
 	define( 'YT_CLIENT', BASE . DS . env( 'YT_CLIENT' ) );
+	define( 'YT_CHANNEL_ID', env( 'YT_CHANNEL_ID' ) );
 	define( 'GA_MAIN', env( 'GA_MAIN' ) );
 	define( 'GA_AMP', env( 'GA_AMP' ) );
 	define( 'GDRIVE_PARENT', env( 'GDRIVE_PARENT' ) );
@@ -233,10 +234,8 @@
 	if ( !empty( WCM_USER ) ) :
 		require BASE . DS . 'triton' . DS . 'triton.php';
 	endif;
-	
-	if ( file_exists( YT_ACCESS ) ) :
-		require BASE . DS . 'google' . DS . 'youtube.php';
-	endif;
+
+	require BASE . DS . 'google' . DS . 'youtube.php';
 	
 	require BASE . DS . 'apple' . DS . 'apple.php';
 

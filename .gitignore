@@ -10,3 +10,4 @@ apple/*.csv
 twitter/*.csv
 twitter/*.json
 triton/*.json
+*-test.php
