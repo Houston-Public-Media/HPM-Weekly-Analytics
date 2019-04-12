@@ -40,6 +40,34 @@
 			'apple-news' => [
 				'name' => 'Apple News Unique Views',
 				'data' => 0
+			],
+			'houston-matters' => [
+				'name' => 'Houston Matters',
+				'data' => [
+					'downloads' => 0,
+					'downloaders' => 0
+				]
+			],
+			'party-politics' => [
+				'name' => 'Party Politics',
+				'data' => [
+					'downloads' => 0,
+					'downloaders' => 0
+				]
+			],
+			'unwrap-your-candies-now' => [
+				'name' => 'Unwrap Your Candies Now',
+				'data' => [
+					'downloads' => 0,
+					'downloaders' => 0
+				]
+			],
+			'engines-of-our-ingenuity' => [
+				'name' => 'Engines of Our Ingenuity',
+				'data' => [
+					'downloads' => 0,
+					'downloaders' => 0
+				]
 			]
 		],
 		'ga-main-articles' => [

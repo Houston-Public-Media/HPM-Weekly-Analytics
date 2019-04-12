@@ -193,7 +193,7 @@
 	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
 	 * 		for the 5th time or so, I abandoned it
 	 */
-	echo "Did you remember to update your Twitter and Apple News reports? (y/n) ";
+	echo "Did you remember to update your Twitter, Apple News, and StreamGuys reports? (y/n) ";
 	$tw_apple = read_stdin();
 	if ( $tw_apple != 'y' ) :
 		echo PHP_EOL . $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Well, go fix that and come back to me. I'll wait." . PHP_EOL;
@@ -236,7 +236,7 @@
 	endif;
 
 	require BASE . DS . 'google' . DS . 'youtube.php';
-	
+	require BASE . DS . 'podcasts' . DS . 'podcasts.php';
 	require BASE . DS . 'apple' . DS . 'apple.php';
 
 	// Flipping the sheet array so Google Analytics stats are first
@@ -258,6 +258,8 @@
 			$myWorkSheet->getTabColor()->setRGB('056ab2');
 		elseif ( strpos( $k, 'YouTube' ) !== false ) :
 			$myWorkSheet->getTabColor()->setRGB('ff0000');
+		elseif ( strpos( $k, 'Podcasts' ) !== false ) :
+			$myWorkSheet->getTabColor()->setRGB('808080');
 		elseif ( strpos( $k, 'Apple' ) !== false ) :
 			$myWorkSheet->getTabColor()->setRGB('000000');
 		endif;
@@ -330,7 +332,15 @@
 			'text' => 'Week of '.date( 'F jS, Y', $startu ),
 			'value' => date( 'Y-m-d', $startu )
 		];
-		array_unshift( $text, $new_entry );
+		$add = true;
+		foreach ( $text as $t ) :
+			if ( $t->text === $new_entry['text'] && $t->value === $new_entry['value'] ) :
+				$add = false;
+			endif;
+		endforeach;
+		if ( $add ) :
+			array_unshift( $text, $new_entry );
+		endif;
 	endif;
 	if ( $rerun == false ) :
 		file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
