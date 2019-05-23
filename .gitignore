@@ -12,4 +12,4 @@ twitter/*.csv
 twitter/*.json
 triton/*.json
 *-test.php
-package-lock.json
+hpm-analytics/package-lock.json
