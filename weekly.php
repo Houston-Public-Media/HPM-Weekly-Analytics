@@ -96,7 +96,7 @@
 	 * If the user doesn't enter anything into the prompt, or doesn't stick to the pattern, it prints an error and prompts again
 	 */
 	$date_conf = $gdoc = $gdoc_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
-	
+
 	/**
 	 * Set the end date for your report
 	 * Typically, I'm running these on a Monday with the intent to cover the previous Monday through Sunday
@@ -185,11 +185,11 @@
 	 * In order to facilitate past reports, all of the CSVs should have the report date in the filename
 	 * Example: if you entered '2018-08-27' as the end date for your report, then Apple News data should
 	 * 		be in 'channel-2018-08-27.csv'
-	 * 
+	 *
 	 * One more note: if you look in the Twitter parser, there is reference to a 'graphs-YYYY-MM-DD.json' file
 	 * 		That can be found by using the web inspector in the Twitter Analytics console, looking for the
-	 * 		'account_stats.json' request in the Network panel (it will be made when you set the date), and 
-	 * 		copy/pasting it into a file. I had a chunk of code that would use cURL requests to mimic a login 
+	 * 		'account_stats.json' request in the Network panel (it will be made when you set the date), and
+	 * 		copy/pasting it into a file. I had a chunk of code that would use cURL requests to mimic a login
 	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
 	 * 		for the 5th time or so, I abandoned it
 	 */
@@ -207,30 +207,30 @@
 	 */
 	$suw = $run_date - ( 60 * 60 * 24 * 7 );
 	$startu = mktime( 0, 0, 0, date( 'm', $suw ), date( 'd', $suw ), date( 'y', $suw ) );
-	
+
 	$start = date( 'Y-m-d', $startu );
 	$endu = mktime( 0, 0, 0, date( 'm', $run_date ), date( 'd', $run_date ), date( 'Y', $run_date ) );
 	$end = date( 'Y-m-d', $endu );
 	$num = 20;
 
-	// Facebook Graph API base 
-	$fb_base = 'https://graph.facebook.com/v3.1/';
+	// Facebook Graph API base
+	$fb_base = 'https://graph.facebook.com/v5.0/';
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) :
 		require BASE . DS . 'google' . DS . 'google.php';
 	endif;
-	
+
 	if ( !empty( $page_access ) ) :
 		require BASE . DS . 'facebook' . DS . 'facebook.php';
 	endif;
-	
+
 	if ( !empty( $access ) ) :
 		require BASE . DS . 'facebook' . DS . 'instagram.php';
 	endif;
 
 	require BASE . DS . 'twitter' . DS . 'twitter.php';
-	
+
 	if ( !empty( WCM_USER ) ) :
 		require BASE . DS . 'triton' . DS . 'triton.php';
 	endif;
@@ -306,7 +306,7 @@
 		// Upload file contents to Google Sheet
 		require BASE . DS . 'google'. DS .'gsheet.php';
 	endif;
-	
+
 	if ( $rerun == false ) :
 		// Delete the local XLSX file
 		unlink( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
