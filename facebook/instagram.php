@@ -117,7 +117,7 @@
 		endforeach;
 		$c++;
 	endforeach;
-	
+
 	/**
 	 * Do a pull of all of our Instagram posts from the time period, and gather metrics about each
 	 */
@@ -147,7 +147,7 @@
 	$query = str_replace( '%2C', ',', $query );
 	$url = "{$fb_page_url}media?{$query}";
 
-	/** 
+	/**
 	 * Set a waypoint that we can come back to if need be. Since we can only pull 100 posts from the Graph API,
 	 * 		we may need to loop back and request more (if more than 100 posts exist for that time period)
 	 */
@@ -160,7 +160,7 @@
 
 	// Decode the results and loop
 	$json = json_decode( $result );
-	if ( !empty( $json->data ) ) : 
+	if ( !empty( $json->data ) ) :
 		foreach ( $json->data as $j ) :
 			$id = $j->id;
 			$pubtime = strtotime( $j->timestamp );
