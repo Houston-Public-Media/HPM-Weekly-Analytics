@@ -46,7 +46,7 @@
 	$dotenv = new Dotenv\Dotenv( BASE );
 	if ( file_exists( BASE . DS . '.env' ) ) :
 		$dotenv->load();
-		$dotenv->required([ 'GA_CLIENT', 'GDRIVE_CREDS', 'GDRIVE_TOKEN', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_PROOF', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ACCESS', 'INSTAGRAM_PROOF', 'INSTAGRAM_ID', 'GDRIVE_PARENT', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET' ]);
+		$dotenv->required([ 'GA_CLIENT', 'GDRIVE_CREDS', 'GDRIVE_TOKEN', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_SECRET', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ID', 'GDRIVE_PARENT', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET' ]);
 	endif;
 
 	// Map all of the variables from .env to constants and variables
@@ -68,11 +68,10 @@
 	$cf_distro = env( 'CF_DISTRO' );
 	$email_arr = explode( ',', env( 'CLIENT_EMAILS' ) );
 	$hpm_fb = env( 'FB_PAGE_ID' );
-	$page_access = env( 'FB_PAGE_ACCESS' );
-	$page_proof = env( 'FB_PAGE_PROOF' );
+	$fb_access = env( 'FB_PAGE_ACCESS' );
+	$fb_secret = env( 'FB_PAGE_SECRET' );
+	$fb_proof = hash_hmac( 'sha256', $fb_access, $fb_secret );
 	$hpm_insta = env( 'INSTAGRAM_ID' );
-	$access = env( 'INSTAGRAM_ACCESS' );
-	$proof = env( 'INSTAGRAM_PROOF' );
 	$aws_key = env( 'AWS_KEY' );
 	$aws_secret = env( 'AWS_SECRET' );
 
@@ -221,11 +220,11 @@
 		require BASE . DS . 'google' . DS . 'google.php';
 	endif;
 
-	if ( !empty( $page_access ) ) :
+	if ( !empty( $fb_access ) && !empty( $hpm_fb ) ) :
 		require BASE . DS . 'facebook' . DS . 'facebook.php';
 	endif;
 
-	if ( !empty( $access ) ) :
+	if ( !empty( $fb_access ) && !empty( $hpm_insta ) ) :
 		require BASE . DS . 'facebook' . DS . 'instagram.php';
 	endif;
 

@@ -55,8 +55,8 @@
 					'period' => $period,
 					'since' => $i,
 					'until' => $endt,
-					'access_token' => $access,
-					'appsecret_proof' => $proof
+					'access_token' => $fb_access,
+					'appsecret_proof' => $fb_proof
 				];
 
 				// Build and clean the query and generate the URL
@@ -138,8 +138,8 @@
 		'pretty' => 0,
 		'limit' => 100,
 		'fields' => 'id,permalink,like_count,timestamp,comments_count,caption,media_type',
-		'access_token' => $access,
-		'appsecret_proof' => $proof
+		'access_token' => $fb_access,
+		'appsecret_proof' => $fb_proof
 	];
 
 	// Build and clean the query
@@ -189,8 +189,8 @@
 		'pretty' => 0,
 		'metric' => 'engagement,impressions,reach',
 		'period' => 'lifetime',
-		'access_token' => $access,
-		'appsecret_proof' => $proof
+		'access_token' => $fb_access,
+		'appsecret_proof' => $fb_proof
 	];
 
 	// Build and clean the query for each individual post

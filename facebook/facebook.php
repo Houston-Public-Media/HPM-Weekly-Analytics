@@ -70,8 +70,8 @@
 					'period' => $period,
 					'since' => $i,
 					'until' => $endt,
-					'access_token' => $page_access,
-					'appsecret_proof' => $page_proof
+					'access_token' => $fb_access,
+					'appsecret_proof' => $fb_proof
 				];
 
 				// Build and clean the query and generate the URL
@@ -143,7 +143,7 @@
 		$i += 7776000;
 	endfor;
 	$sheets[$sheet][] = $titles;
-	
+
 	// Loop through the $results array and map that data into the graphing dataset and spreadsheet
 	$c = 1;
 	foreach ( $results as $day => $re ) :
@@ -156,9 +156,9 @@
 		foreach ( $re as $rek => $ree ) :
 			$sheets[$sheet][$c][$g] = $ree;
 			if (
-				$rek == 'page_impressions_paid' || 
-				$rek == 'page_impressions_unique' || 
-				$rek == 'page_impressions_viral' || 
+				$rek == 'page_impressions_paid' ||
+				$rek == 'page_impressions_unique' ||
+				$rek == 'page_impressions_viral' ||
 				$rek == 'page_impressions_organic'
 			 ) :
 				$graphs['facebook-impressions']['datasets'][$fb_label[$rek]]['data'][] = $ree;
@@ -203,8 +203,8 @@
 		'fields' => 'id,created_time,message,permalink_url,shares,type',
 		'since' => $startu,
 		'until' => $endu,
-		'access_token' => $page_access,
-		'appsecret_proof' => $page_proof
+		'access_token' => $fb_access,
+		'appsecret_proof' => $fb_proof
 	];
 
 	// Build and clean the query
@@ -212,7 +212,7 @@
 	$query = str_replace( '%2C', ',', $query );
 	$url = "{$fb_page_url}posts?{$query}";
 
-	/** 
+	/**
 	 * Set a waypoint that we can come back to if need be. Since we can only pull 100 posts from the Graph API,
 	 * 		we may need to loop back and request more (if more than 100 posts exist for that time period)
 	 */
@@ -225,7 +225,7 @@
 
 	// Decode the results and loop
 	$json = json_decode( $result );
-	if ( !empty( $json->data ) ) : 
+	if ( !empty( $json->data ) ) :
 		foreach ( $json->data as $j ) :
 			$id = $j->id;
 
@@ -251,8 +251,8 @@
 		'pretty' => 0,
 		'metric' => 'post_impressions,post_impressions_unique,post_impressions_paid,post_impressions_fan,post_impressions_fan_paid,post_impressions_organic,post_impressions_viral,post_engaged_users,post_engaged_fan',
 		'period' => 'lifetime',
-		'access_token' => $page_access,
-		'appsecret_proof' => $page_proof
+		'access_token' => $fb_access,
+		'appsecret_proof' => $fb_proof
 	];
 
 	// Build and clean the query for each individual post
