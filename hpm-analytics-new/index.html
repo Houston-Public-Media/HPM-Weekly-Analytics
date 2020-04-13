@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>HPM Weekly Analytics Report</title>
+		<link rel="shortcut icon" href="https://cdn.hpm.io/assets/images/favicon.ico">
+		<link rel="icon" type="image/png" href="https://cdn.hpm.io/assets/images/favicon-192x192.png" sizes="192x192">
+		<link rel="apple-touch-icon" sizes="180x180" href="https://cdn.hpm.io/assets/images/apple-touch-icon-180x180.png">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" integrity="sha256-D9M5yrVDqFlla7nlELDaYZIpXfFWDytQtiV+TaH6F1I=" crossorigin="anonymous">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js" integrity="sha256-TQq84xX6vkwR0Qs1qH5ADkP+MvH0W+9E7TdHJsoIQiM=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+		<style>
+			canvas {
+				-moz-user-select: none;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+				margin-bottom: 1em;
+			}
+			#update {
+				font: italic 12px/14px 'Helvetica Neue',helvetica,arial,sans-serif;
+				text-align: right;
+				padding-bottom: 2em;
+			}
+			h2 {
+				text-align: center;
+				font: bolder 24px/26px 'Helvetica Neue',helvetica,arial,sans-serif;
+				padding: 1em 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<header class="container-fluid">
+				<div class="row align-items-center">
+					<div class="col-md-12 col-lg-5">
+						<h3>HPM Analytics Report</h3>
+					</div>
+					<div class="col-md-12 col-lg-7">
+						<div class="row align-items-center">
+							<label for="weekSelect" class="col-md-4 col-lg-6 text-right">Week Select:</label>
+							<div class="col-md-8 col-lg-6">
+								<!--
+									The reports.json data is used to populate this dropdown, which is used to switch between datasets
+								-->
+								<select class="form-control" v-model="week">
+									<option v-for="(option, index) in options" :key="index" :value="option.value">
+										{{ option.text }}
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+			<div class="container-fluid body-wrap">
+				<div id="tab" class="row">
+					<!--
+						If you modified the PHP script to not pull one or more of these services,
+						don't forget to remove their entries here
+					-->
+					<div v-on:click="updateTab('overall-totals')" id="overall-tab" class="col-sm-3 col-lg overall tab-active">Overall</div>
+					<div v-on:click="updateTab('google-main')" id="google-main-tab" class="col-sm-3 col-lg google">Google (Main)</div>
+					<div v-on:click="updateTab('google-amp')" id="google-amp-tab" class="col-sm-3 col-lg google">Google (AMP)</div>
+					<div v-on:click="updateTab('facebook')" id="facebook-tab" class="col-sm-3 col-lg facebook">Facebook</div>
+					<div v-on:click="updateTab('instagram')" id="instagram-tab" class="col-sm-3 col-lg instagram">Instagram</div>
+					<div v-on:click="updateTab('twitter')" id="twitter-tab" class="col-sm-3 col-lg twitter">Twitter</div>
+					<div v-on:click="updateTab('triton')" id="triton-tab" class="col-sm-3 col-lg triton">Triton</div>
+					<div v-on:click="updateTab('youtube')" id="youtube-tab" class="col-sm-3 col-lg youtube">YouTube</div>
+					<div v-on:click="updateTab('apple-news')" id="apple-news-tab" class="col-sm-3 col-lg apple">Apple News</div>
+				</div>
+				<div id="chart-wrap"></div>
+			</div>
+		</div>
+		<!-- built files will be auto injected -->
+	</body>
+</html>
