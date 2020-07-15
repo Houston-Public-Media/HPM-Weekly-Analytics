@@ -46,24 +46,23 @@
 	$dotenv = new Dotenv\Dotenv( BASE );
 	if ( file_exists( BASE . DS . '.env' ) ) :
 		$dotenv->load();
-		$dotenv->required([ 'GA_CLIENT', 'GDRIVE_CREDS', 'GDRIVE_TOKEN', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_SECRET', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ID', 'GDRIVE_PARENT', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET' ]);
+		$dotenv->required([ 'GA_CLIENT', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_SECRET', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ID', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET', 'STORAGE_PATH', 'STORAGE_SHARE' ]);
 	endif;
 
 	// Map all of the variables from .env to constants and variables
 	date_default_timezone_set( env('TIMEZONE') );
 	define( 'GA_CLIENT', BASE . DS . env( 'GA_CLIENT' ) );
-	define( 'GDRIVE_CREDS', BASE . DS . env( 'GDRIVE_CREDS' ) );
-	define( 'GDRIVE_TOKEN', BASE . DS . env( 'GDRIVE_TOKEN' ) );
 	define( 'YT_ACCESS', BASE . DS . env( 'YT_ACCESS' ) );
 	define( 'YT_CLIENT', BASE . DS . env( 'YT_CLIENT' ) );
 	define( 'YT_CHANNEL_ID', env( 'YT_CHANNEL_ID' ) );
 	define( 'GA_MAIN', env( 'GA_MAIN' ) );
 	define( 'GA_AMP', env( 'GA_AMP' ) );
-	define( 'GDRIVE_PARENT', env( 'GDRIVE_PARENT' ) );
 	define( 'WCM_USER', env( 'WCM_USER' ) );
 	define( 'WCM_PASSWORD', env( 'WCM_PASSWORD' ) );
 	define( 'APP_URL', env( 'APP_URL' ) );
 	define( 'FROM_EMAIL', env( 'FROM_EMAIL' ) );
+	define( 'STORAGE_PATH', env( 'STORAGE_PATH' ) );
+	define( 'STORAGE_SHARE', env( 'STORAGE_SHARE' ) );
 	$s3_bucket = env( 'S3_BUCKET' );
 	$cf_distro = env( 'CF_DISTRO' );
 	$email_arr = explode( ',', env( 'CLIENT_EMAILS' ) );
@@ -94,15 +93,20 @@
 	 * All of these checks are set up as while loops for input checking
 	 * If the user doesn't enter anything into the prompt, or doesn't stick to the pattern, it prints an error and prompts again
 	 */
-	$date_conf = $gdoc = $gdoc_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
+
+	$date_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
 
 	/**
 	 * Set the end date for your report
 	 * Typically, I'm running these on a Monday with the intent to cover the previous Monday through Sunday
 	 */
 	while ( $date_conf == false ) :
-		echo "Enter the end date for your report (YYYY-MM-DD), or hit enter to set it as today: ";
-		$date_in = read_stdin();
+		if ( count( $argv ) === 1 ) :
+			echo "Enter the end date for your report (YYYY-MM-DD), or hit enter to set it as today: ";
+			$date_in = read_stdin();
+		else :
+			$date_in = $argv[1];
+		endif;
 		if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_in ) ) :
 			$datex = explode( '-', $date_in );
 			if (
@@ -113,31 +117,41 @@
 				$run_date = mktime( 12, 0, 0, intval( $datex[1] ), intval( $datex[2] ), intval( $datex[0] ) );
 				$date_conf = true;
 			else :
-				echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
+				echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
 			endif;
 		elseif ( empty( $date_in ) ) :
 			$date_conf = true;
 			$run_date = time();
 		else :
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
+			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
 		endif;
+		/**
+		 * Setting the start and end dates in both YYYY-MM-DD format and Unixtime
+		 */
+		$suw = $run_date - ( 60 * 60 * 24 * 7 );
+		$startu = mktime( 0, 0, 0, date( 'm', $suw ), date( 'd', $suw ), date( 'y', $suw ) );
+
+		$start = date( 'Y-m-d', $startu );
+		$endu = mktime( 0, 0, 0, date( 'm', $run_date ), date( 'd', $run_date ), date( 'Y', $run_date ) );
+		$end = date( 'Y-m-d', $endu );
 	endwhile;
 
 	/**
 	 * Debug rerun CLAP CLAP CLAPCLAPCLAP
 	 * Saying yes to this will assume some things:
 	 * 		-- You don't want to email the group
-	 * 		-- You don't want to upload to Google Drive
-	 * 		-- You don't want to delete the local Excel file
 	 * 		-- You don't want to update the report list for the graphing app
 	 */
 	while ( $rerun_conf == false ) :
-		echo "Are you rerunning this report because something screwed up? (y/n) ";
-		$rerun_in = read_stdin();
+		if ( count( $argv ) === 1 ) :
+			echo "Are you rerunning this report because something screwed up? (y/n) ";
+			$rerun_in = read_stdin();
+		else :
+			$rerun_in = $argv[2];
+		endif;
 		if ( $rerun_in == 'y' ) :
 			$rerun_conf = true;
 			$rerun = true;
-			$gdoc_conf = true;
 			$email_conf = true;
 		elseif ( $rerun_in == 'n' ) :
 			$rerun_conf = true;
@@ -147,27 +161,15 @@
 	endwhile;
 
 	/**
-	 * Choose whether or not to upload to Google Docs. Useful for testing
-	 */
-	while ( $gdoc_conf == false ) :
-		echo "Do you want this data uploaded to Google Drive? (y/n) ";
-		$gdoc_in = read_stdin();
-		if ( $gdoc_in == 'y' ) :
-			$gdoc_conf = true;
-			$gdoc = true;
-		elseif ( $gdoc_in == 'n' ) :
-			$gdoc_conf = true;
-		else :
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
-		endif;
-	endwhile;
-
-	/**
 	 * Choose whether or not to email the group. Also useful for testing
 	 */
 	while ( $email_conf == false ) :
-		echo "Do you want this report emailed to the group? (y/n) ";
-		$email_in = read_stdin();
+		if ( count( $argv ) === 1 ) :
+			echo "Do you want this report emailed to the group? (y/n) ";
+			$email_in = read_stdin();
+		else :
+			$email_in = $argv[3];
+		endif;
 		if ( $email_in == 'y' ) :
 			$email_conf = true;
 			$emails = true;
@@ -187,29 +189,23 @@
 	 *
 	 * One more note: if you look in the Twitter parser, there is reference to a 'graphs-YYYY-MM-DD.json' file
 	 * 		That can be found by using the web inspector in the Twitter Analytics console, looking for the
-	 * 		'account_stats.json' request in the Network panel (it will be made when you set the date), and
+	 * 		'account_stats.json' request in the Network panel (it will be made when you set the date range), and
 	 * 		copy/pasting it into a file. I had a chunk of code that would use cURL requests to mimic a login
 	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
 	 * 		for the 5th time or so, I abandoned it
 	 */
-	echo "Did you remember to update your Twitter, Apple News, and StreamGuys reports? (y/n) ";
-	$tw_apple = read_stdin();
-	if ( $tw_apple != 'y' ) :
-		echo PHP_EOL . $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Well, go fix that and come back to me. I'll wait." . PHP_EOL;
+	if (
+		!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
+		!file_exists( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv" ) ||
+		!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
+		!file_exists( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" )
+	) :
+		echo PHP_EOL . $FG_BR_RED . $BG_BLACK . $FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
 		die;
 	endif;
 
 	echo $FG_BR_CYAN . $BG_BLACK . $FS_BOLD ."Hold please..." . $RESET_ALL . PHP_EOL;
 
-	/**
-	 * Setting the start and end dates in both YYYY-MM-DD format and Unixtime
-	 */
-	$suw = $run_date - ( 60 * 60 * 24 * 7 );
-	$startu = mktime( 0, 0, 0, date( 'm', $suw ), date( 'd', $suw ), date( 'y', $suw ) );
-
-	$start = date( 'Y-m-d', $startu );
-	$endu = mktime( 0, 0, 0, date( 'm', $run_date ), date( 'd', $run_date ), date( 'Y', $run_date ) );
-	$end = date( 'Y-m-d', $endu );
 	$num = 20;
 
 	// Facebook Graph API base
@@ -299,17 +295,7 @@
 
 	// Write XLSX file
 	$writer =  new Xlsx( $spreadsheet );
-	$writer->save( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
-
-	if ( $gdoc && file_exists( GDRIVE_CREDS ) ) :
-		// Upload file contents to Google Sheet
-		require BASE . DS . 'google'. DS .'gsheet.php';
-	endif;
-
-	if ( $rerun == false ) :
-		// Delete the local XLSX file
-		unlink( BASE . DS . 'data' . DS . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
-	endif;
+	$writer->save( STORAGE_PATH . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
 
 	// Save the graphing data locally as a JSON file
 	file_put_contents( BASE . DS . 'data' . DS . date( 'Y-m-d', $startu ) . '.json', json_encode( $graphs ) );

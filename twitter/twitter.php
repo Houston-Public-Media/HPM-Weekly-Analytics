@@ -2,7 +2,7 @@
 	/**
 	 * Twitter does not have a publicly-accessible analytics API that isn't solely dedicated to advertisers
 	 * 		(API problems with Twitter? Shocked! Shocked I say!)
-	 * 
+	 *
 	 * That said, the data for this section comes in 2 parts: the "Export Data" function in Twitter's analytics
 	 * 		dashboard, which spits out a CSV file; and a JSON file called "account_stats.json" that you have to
 	 * 		grab from the Network tab of your browser's developer tools. Open the dev tools, change the date range
@@ -12,7 +12,7 @@
 	 * I know that last part seems a bit arduous, but it's better than the previous method, which was to simulate
 	 * 		a login and download the data using cURL request, which works up to maybe 5 times before Twitter starts
 	 * 		locking your account for "exhibiting automated behavior that violates their terms of service."
-	 * 
+	 *
 	 * One last note: I always save the files in the following format: "tweets-YYYY-MM-DD.csv" and "graphs-YYYY-MM-DD.json"
 	 * 		with the dates matching the end date of the report
 	 */
@@ -20,7 +20,7 @@
 	$row = 0;
 
 	// Open the CSV file
-	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) :
+	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) :
 		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
 			if ( $row > 0 ) :
 				// Insert each tweet as a row using the tweets ID as the array key
@@ -50,7 +50,7 @@
 		endwhile;
 		fclose($handle);
 	endif;
-	
+
 	// Create a worksheet in the spreadsheet that lists all of the tweets and their relevant stats
 	$t = 0;
 	$sheet = 'Tweets';
@@ -111,13 +111,13 @@
 
 	// Parse through the account_stats/graph data from Twitter
 	$sheet = 'Twitter Graphs';
-	$json = json_decode( file_get_contents( BASE . DS . "twitter" . DS . "graphs-" . $end . ".json" ) );
+	$json = json_decode( file_get_contents( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" ) );
 
 	$graphs['overall-totals']['twitter']['data'] = $json->totals->impressions;
 	// Divide the start and end times in the JSON file by 1000, since they measure in microseconds
 	$twstart = ( $json->startTime / 1000 );
 	$twend = ( $json->endTime / 1000 );
-	
+
 	// Figure out the time interval between each data point
 	$interval = ( $twend - $twstart ) / count( $json->timeSeries->orgImpressions );
 

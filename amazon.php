@@ -28,11 +28,11 @@
 					'Body' => [
 						'Html' => [
 							'Charset' => 'UTF-8',
-							'Data' => '<h2 style="font-size: 20px; line-height: 24px;">HPM Analytics Report for the Week of '.date( 'F j, Y', $startu ).'</h2><p>The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready <a href="'.$file_url.'">for you to review</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Charts, Graphs, Etc.</h4><p>You can view visualizations of these reports at <a href="'.APP_URL.'">'.APP_URL.'</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Previous Weekly Reports</h4><p>Previous weekly reports can be <a href="https://drive.google.com/drive/folders/'.GDRIVE_PARENT.'">found here</a>.</p>'
+							'Data' => '<h2 style="font-size: 20px; line-height: 24px;">HPM Analytics Report for the Week of '.date( 'F j, Y', $startu ).'</h2><p>The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready <a href="'.STORAGE_SHARE.'">for you to review</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Charts, Graphs, Etc.</h4><p>You can view visualizations of these reports at <a href="'.APP_URL.'">'.APP_URL.'</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Previous Weekly Reports</h4><p>Previous weekly reports can be <a href="'.STORAGE_SHARE.'">found here</a>.</p>'
 						],
 					'Text' => [
 						'Charset' => 'UTF-8',
-						'Data' => 'The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready for you to review:\n\n'.$file_url.'\n\n**Charts, Graphs, Etc.**\n\nVisualizations of these reports are available at '.APP_URL.' \n\n**Previous Reports**\n\nPrevious weekly reports can be found here:\n\nhttps://drive.google.com/drive/folders/'.GDRIVE_PARENT
+						'Data' => 'The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready for you to review:\n\n'.STORAGE_SHARE.'\n\n**Charts, Graphs, Etc.**\n\nVisualizations of these reports are available at '.APP_URL.' \n\n**Previous Reports**\n\nPrevious weekly reports can be found here:\n\n'.STORAGE_SHARE
 					],
 				],
 				'Subject' => [
@@ -118,7 +118,7 @@
 			'DistributionId' => $cf_distro,
 			'InvalidationBatch' => [
 				'CallerReference' => microtime(),
-				'Paths' => [ 
+				'Paths' => [
 					'Items' => [ '/assets/analytics/*' ],
 					'Quantity' => 1
 				]

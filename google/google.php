@@ -13,7 +13,7 @@
 	 * We have our main Google Analytics property for the site, as well as a separate property for Google AMP
 	 * If you only have one you want to check, or more than two, modify this array
 	 */
-	$gas = [ 
+	$gas = [
 		'Main' => GA_MAIN,
 		'AMP' => GA_AMP
 	];
@@ -28,7 +28,7 @@
 	$analytics = initializeAnalytics();
 	foreach ( $gas as $g => $ga ) :
 		$ga_acct_name = 'ga-'.strtolower( $g );
-		
+
 		// Pull article numbers from GA
 		$result = $analytics->data_ga->get(
 			'ga:'.$ga,
@@ -83,7 +83,7 @@
 				endforeach;
 			endif;
 			$date_format = date( 'Y-m-d g:i A', $date );
-			
+
 			// Secondary GA pull to gather source / medium information for each article
 			$sources = $analytics->data_ga->get(
 				'ga:'.$ga,
@@ -99,7 +99,7 @@
 				]
 			);
 			$google = $facebook = $twitter = $bing = $yahoo = $direct = $organic = $email = $referral = $social = '0';
-			
+
 			// Parsing the source / medium pull from GA
 			foreach ( $sources->rows as $source ) :
 				$source_ex = explode( '/', $source[0] );
@@ -128,7 +128,7 @@
 					$yahoo += $source[1];
 				endif;
 			endforeach;
-			
+
 			// Adding the row to the sheet
 			$sheets[$sheet][] = [
 				$title,
@@ -187,7 +187,8 @@
 				'output' => 'json'
 			]
 		);
-		$graphs['overall-totals'][$ga_acct_name]['data'] += $result4->rows[0][2];
+
+		$graphs['overall-totals'][$ga_acct_name]['data'] += $result4->totalsForAllResults['ga:users'];
 
 		// New sheet
 		$sheet = 'Hourly Stats ('.$g.')';

@@ -8,8 +8,8 @@ vendor/
 data.php
 apple/*.csv
 podcasts/*.csv
-twitter/*.csv
-twitter/*.json
+twitter/graphs
+twitter/tweets
 triton/*.json
 *-test.php
 hpm-analytics/package-lock.json

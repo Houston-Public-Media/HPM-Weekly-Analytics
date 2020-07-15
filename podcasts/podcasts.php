@@ -15,6 +15,9 @@
 				];
 			else :
 				$slug = str_replace( '/', '', $data[0] );
+				if ( $slug === 'recast' ) :
+					$slug = 'HPM Newscast New';
+				endif;
 				$pod_data = [
 					'name' => ucwords( str_replace( '-', ' ', $slug ) ),
 					'data' => [
@@ -22,14 +25,12 @@
 						'downloaders' => ( empty( intval( $data[2] ) ) ? 0 : intval( $data[2] ) )
 					]
 				];
-				if ( $slug !== 'recast' ) :
-					$graphs['overall-totals']['podcasts'][$slug] = $pod_data;
-					$sheets[$sheet][] = [
-						ucwords( str_replace( '-', ' ', $slug ) ),
-						( empty( intval( $data[1] ) ) ? 0 : intval( $data[1] ) ),
-						( empty( intval( $data[2] ) ) ? 0 : intval( $data[2] ) )
-					];
-				endif;
+				$graphs['overall-totals']['podcasts'][$slug] = $pod_data;
+				$sheets[$sheet][] = [
+					ucwords( str_replace( '-', ' ', $slug ) ),
+					( empty( intval( $data[1] ) ) ? 0 : intval( $data[1] ) ),
+					( empty( intval( $data[2] ) ) ? 0 : intval( $data[2] ) )
+				];
 			endif;
 			$row++;
 		endwhile;
