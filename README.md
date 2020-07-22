@@ -1,6 +1,6 @@
 # Weekly Analytics by Service
 
-A PHP script that aggregates and parses analytics from various services either programmatically (Google Analytics, Facebook, Instagram, Triton Webcast Metrics, YouTube) or from a pre-run report (Twitter, Apple News). It then saves that information as a sheet in Google Drive, and as a JSON file for use in the [included graphing application](./hpm-analytics). Finally, it sends an email to a designated group so that they can make use of the data.
+A PHP script that aggregates and parses analytics from various services either programmatically (Google Analytics, Facebook, Instagram, Triton Webcast Metrics, YouTube) or from a pre-run report (Twitter, Apple News). It then saves that information as a sheet in Google Drive, and as a JSON file for use in the [included graphing application](./hpm-analytics-new). Finally, it sends an email to a designated group so that they can make use of the data.
 
 ## Why does this exist?
 

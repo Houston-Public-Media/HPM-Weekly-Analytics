@@ -1,0 +1,98 @@
+.tabs li {
+	margin: 0 0.5em;
+}
+.tabs li:hover {
+	opacity: 0.75;
+	cursor: pointer;
+}
+.tabs li.google {
+	background-color: rgba(219,68,55,0.2);
+}
+.tabs li.facebook {
+	background-color: rgba(59,89,152,0.2);
+}
+.tabs li.instagram {
+	background-color: rgba(138,58,185,0.2);
+}
+.tabs li.twitter {
+	background-color: rgba(29,161,242,0.2);
+}
+.tabs li.triton {
+	background-color: rgba(5,106,178,0.2);
+}
+.tabs li.youtube {
+	background-color: rgba(255,0,0,0.2);
+}
+.tabs li.apple,
+.tabs li.overall {
+	background-color: rgba(128,128,128,0.2);
+}
+.tabs li a {
+	font-weight: bolder;
+}
+.tabs li.is-active a {
+	color: white !important;
+}
+.tabs li.is-active.google {
+	background-color: rgba(219,68,55,0.75);
+}
+.tabs li.is-active.facebook {
+	background-color: rgba(59,89,152,0.75);
+}
+.tabs li.is-active.instagram {
+	background-color: rgba(138,58,185,0.75);
+}
+.tabs li.is-active.twitter {
+	background-color: rgba(29,161,242,0.75);
+}
+.tabs li.is-active.triton {
+	background-color: rgba(5,106,178,0.75);
+}
+.tabs li.is-active.youtube {
+	background-color: rgba(255,0,0,0.75);
+}
+.tabs li.is-active.apple,
+.tabs li.is-active.overall {
+	background-color: rgba(128,128,128,0.75);
+}
+#app {
+	-webkit-overflow-scrolling: touch;
+	overflow: hidden;
+	overflow-x: auto;
+}
+#app .services {
+	width: 100%;
+	min-width: 800px;
+	display: none;
+	margin-bottom: 2em;
+}
+#app #overall-service.services {
+	min-width: auto;
+}
+#app .services.service-active {
+	display: block;
+}
+nav.navbar {
+	border-bottom: 1px solid #808080;
+}
+canvas {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	margin-bottom: 1em;
+	max-width: 100% !important;
+}
+.overall-section > td {
+	font-weight: bolder;
+	text-align: center !important;
+	background-color: #808080;
+	color: white;
+}
+@media screen and (min-width: 1024px) {
+	#app {
+		overflow: hidden;
+	}
+	#app .services {
+		min-width: auto;
+	}
+}

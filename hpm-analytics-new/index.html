@@ -2,76 +2,133 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>HPM Weekly Analytics Report</title>
-		<link rel="shortcut icon" href="https://cdn.hpm.io/assets/images/favicon.ico">
-		<link rel="icon" type="image/png" href="https://cdn.hpm.io/assets/images/favicon-192x192.png" sizes="192x192">
-		<link rel="apple-touch-icon" sizes="180x180" href="https://cdn.hpm.io/assets/images/apple-touch-icon-180x180.png">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" integrity="sha256-D9M5yrVDqFlla7nlELDaYZIpXfFWDytQtiV+TaH6F1I=" crossorigin="anonymous">
+		<link rel="icon" sizes="48x48" href="https://cdn.hpm.io/assets/images/favicon/icon-48.png">
+		<link rel="icon" sizes="96x96" href="https://cdn.hpm.io/assets/images/favicon/icon-96.png">
+		<link rel="icon" sizes="144x144" href="https://cdn.hpm.io/assets/images/favicon/icon-144.png">
+		<link rel="icon" sizes="192x192" href="https://cdn.hpm.io/assets/images/favicon/icon-192.png">
+		<link rel="icon" sizes="256x256" href="https://cdn.hpm.io/assets/images/favicon/icon-256.png">
+		<link rel="icon" sizes="384x384" href="https://cdn.hpm.io/assets/images/favicon/icon-384.png">
+		<link rel="icon" sizes="512x512" href="https://cdn.hpm.io/assets/images/favicon/icon-512.png">
+		<link rel="apple-touch-icon" sizes="57x57" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-120.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-152.png">
+		<link rel="apple-touch-icon" sizes="167x167" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-167.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="https://cdn.hpm.io/assets/images/favicon/apple-touch-icon-180.png">
+		<link rel="mask-icon" href="https://cdn.hpm.io/assets/images/favicon/safari-pinned-tab.svg" color="#ff0000">
+		<meta name="msapplication-config" content="https://cdn.hpm.io/assets/images/favicon/config.xml" />
+		<link rel="manifest" href="https://cdn.hpm.io/assets/images/favicon/manifest.json">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js" integrity="sha256-TQq84xX6vkwR0Qs1qH5ADkP+MvH0W+9E7TdHJsoIQiM=" crossorigin="anonymous"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
-		<style>
-			canvas {
-				-moz-user-select: none;
-				-webkit-user-select: none;
-				-ms-user-select: none;
-				margin-bottom: 1em;
-			}
-			#update {
-				font: italic 12px/14px 'Helvetica Neue',helvetica,arial,sans-serif;
-				text-align: right;
-				padding-bottom: 2em;
-			}
-			h2 {
-				text-align: center;
-				font: bolder 24px/26px 'Helvetica Neue',helvetica,arial,sans-serif;
-				padding: 1em 0;
-			}
-		</style>
+		<link rel="stylesheet" href="assets/style.css">
 	</head>
 	<body>
-		<div id="app">
-			<header class="container-fluid">
-				<div class="row align-items-center">
-					<div class="col-md-12 col-lg-5">
-						<h3>HPM Analytics Report</h3>
-					</div>
-					<div class="col-md-12 col-lg-7">
-						<div class="row align-items-center">
-							<label for="weekSelect" class="col-md-4 col-lg-6 text-right">Week Select:</label>
-							<div class="col-md-8 col-lg-6">
-								<!--
-									The reports.json data is used to populate this dropdown, which is used to switch between datasets
-								-->
-								<select class="form-control" v-model="week">
-									<option v-for="(option, index) in options" :key="index" :value="option.value">
-										{{ option.text }}
-									</option>
-								</select>
-							</div>
-						</div>
+		<nav class="navbar" role="navigation" aria-label="main navigation">
+			<div class="navbar-brand">
+				<a class="navbar-item" href="https://www.houstonpublicmedia.org/">
+					<img src="https://cdn.hpm.io/assets/images/favicon/icon-48.png" style="margin-right: 5px;"> Weekly Analytics Report
+				</a>
+			</div>
+			<div class="navbar-end">
+				<div class="navbar-item">
+					<div class="select">
+						<select id="weekSelect"></select>
 					</div>
 				</div>
-			</header>
-			<div class="container-fluid body-wrap">
-				<div id="tab" class="row">
-					<!--
-						If you modified the PHP script to not pull one or more of these services,
-						don't forget to remove their entries here
-					-->
-					<div v-on:click="updateTab('overall-totals')" id="overall-tab" class="col-sm-3 col-lg overall tab-active">Overall</div>
-					<div v-on:click="updateTab('google-main')" id="google-main-tab" class="col-sm-3 col-lg google">Google (Main)</div>
-					<div v-on:click="updateTab('google-amp')" id="google-amp-tab" class="col-sm-3 col-lg google">Google (AMP)</div>
-					<div v-on:click="updateTab('facebook')" id="facebook-tab" class="col-sm-3 col-lg facebook">Facebook</div>
-					<div v-on:click="updateTab('instagram')" id="instagram-tab" class="col-sm-3 col-lg instagram">Instagram</div>
-					<div v-on:click="updateTab('twitter')" id="twitter-tab" class="col-sm-3 col-lg twitter">Twitter</div>
-					<div v-on:click="updateTab('triton')" id="triton-tab" class="col-sm-3 col-lg triton">Triton</div>
-					<div v-on:click="updateTab('youtube')" id="youtube-tab" class="col-sm-3 col-lg youtube">YouTube</div>
-					<div v-on:click="updateTab('apple-news')" id="apple-news-tab" class="col-sm-3 col-lg apple">Apple News</div>
+			</div>
+		</nav>
+		<div class="tabs is-centered">
+			<ul>
+				<li id="overall" class="overall is-active"><a>Overall</a></li>
+				<li id="google-main" class="google"><a>Google (Main)</a></li>
+				<li id="google-amp" class="google"><a>Google (AMP)</a></li>
+				<li id="facebook" class="facebook"><a>Facebook</a></li>
+				<li id="instagram" class="instagram"><a>Instagram</a></li>
+				<li id="twitter" class="twitter"><a>Twitter</a></li>
+				<li id="triton" class="triton"><a>Triton</a></li>
+				<li id="youtube" class="youtube"><a>YouTube</a></li>
+				<li id="apple-news" class="apple"><a>Apple News</a></li>
+			</ul>
+		</div>
+		<div class="container" id="app">
+			<div id="overall-service" class="services service-active">
+				<h2 class="is-size-3">Overall Totals</h2>
+				<div class="columns is-centered">
+					<div id="overall-totals" class="column is-three-quarters"></div>
 				</div>
-				<div id="chart-wrap"></div>
+			</div>
+			<div id="google-main-service" class="services">
+				<h2 class="is-size-3">Google Analytics (Main Account)</h2>
+				<div id="ga-main-articles"></div>
+				<div class="columns">
+					<div id="ga-main-hourly" class="column is-two-thirds"></div>
+					<div id="ga-main-devices" class="column is-one-third"></div>
+				</div>
+			</div>
+			<div id="google-amp-service" class="services">
+				<h2 class="is-size-3">Google Analytics (Accelerated Mobile Pages)</h2>
+				<div id="ga-amp-articles"></div>
+				<div class="columns">
+					<div id="ga-amp-hourly" class="column is-two-thirds"></div>
+					<div id="ga-amp-devices" class="column is-one-third"></div>
+				</div>
+			</div>
+			<div id="facebook-service" class="services">
+				<h2 class="is-size-3">Facebook Insights</h2>
+				<div id="facebook-impressions"></div>
+				<div class="columns">
+					<div id="facebook-likes" class="column is-half"></div>
+					<div id="facebook-reactions" class="column is-half"></div>
+				</div>
+			</div>
+			<div id="instagram-service" class="services">
+				<h2 class="is-size-3">Instagram Insights</h2>
+				<div id="instagram-stats"></div>
+			</div>
+			<div id="twitter-service" class="services">
+				<h2 class="is-size-3">Twitter Analytics</h2>
+				<div id="twitter-tweets-by-impression"></div>
+				<div id="twitter-tweets-by-engagement"></div>
+				<div class="columns">
+					<div id="twitter-account-tweets" class="column is-one-third"></div>
+					<div id="twitter-account-impressions" class="column is-one-third"></div>
+					<div id="twitter-account-engagements" class="column is-one-third"></div>
+				</div>
+			</div>
+			<div id="triton-service" class="services">
+				<h2 class="is-size-3">Triton Webcast Metrics</h2>
+				<div id="triton-hourly"></div>
+				<div class="columns">
+					<div id="triton-news-devices" class="column is-half"></div>
+					<div id="triton-classical-devices" class="column is-half"></div>
+				</div>
+				<div class="columns is-centered">
+					<div id="triton-mixtape-devices" class="column is-half"></div>
+				</div>
+			</div>
+			<div id="youtube-service" class="services">
+				<h2 class="is-size-3">YouTube Analytics</h2>
+				<div id="youtube-videos-by-views"></div>
+				<div id="youtube-videos-by-engagement"></div>
+			</div>
+			<div id="apple-news-service" class="services">
+				<h2 class="is-size-3">Apple News Analytics</h2>
+				<div class="columns">
+					<div id="apple-demo" class="column is-half"></div>
+					<div id="apple-age" class="column is-half"></div>
+				</div>
+				<div class="columns">
+					<div id="apple-reach" class="column is-half"></div>
+					<div id="apple-engage" class="column is-half"></div>
+				</div>
 			</div>
 		</div>
-		<!-- built files will be auto injected -->
+		<script src="assets/main.js"></script>
 	</body>
 </html>
