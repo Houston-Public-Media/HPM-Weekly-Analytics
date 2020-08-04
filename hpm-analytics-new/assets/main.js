@@ -1,7 +1,8 @@
-window.dlUrl = 'https://cdn.hpm.io/assets/analytics/';
-window.currentReport = {};
-window.currentData = [];
-window['config'] = {
+const dlUrl = 'https://cdn.hpm.io/assets/analytics/';
+const tabs = document.querySelectorAll('.tabs ul li');
+var currentReport = {};
+var currentData = [];
+var config = {
 	'ga-main-articles': {
 		'options': {
 			elements: {
@@ -688,8 +689,6 @@ window['config'] = {
 		'type': 'bar'
 	}
 };
-window.dlUrl = 'https://cdn.hpm.io/assets/analytics/';
-window.tabs = document.querySelectorAll('.tabs ul li');
 function GetIEVersion() {
 	var sAgent = window.navigator.userAgent;
 	var Idx = sAgent.indexOf("MSIE");
@@ -720,13 +719,16 @@ function graphUpdate(report) {
 		if (err !== null) {
 			console.log(err);
 		} else {
-			window.currentData = data;
+			if (GetIEVersion() > 0) {
+				data = JSON.parse(data);
+			}
+			currentData = data;
 			for ( var d in currentData ) {
 				if ( d === 'overall-totals') {
 					overallGen(currentData[d]);
 				} else {
-					window['config'][d]['data'] = currentData[d];
-					window[d+'-graph'].data = window['config'][d]['data'];
+					config[d]['data'] = currentData[d];
+					window[d+'-graph'].data = config[d]['data'];
 					window[d+'-graph'].update();
 				}
 			}
@@ -822,72 +824,75 @@ function overallGen(data) {
 	document.getElementById('overall-totals').innerHTML = output;
 }
 (function(){
-	if (GetIEVersion() > 0) {
-		alert("Internet Explorer " + GetIEVersion() + " is no longer being actively supported by Microsoft. Please try a different browser, such as Firefox, Chrome, Edge, or Safari.");
-	} else {
-		tabs.forEach(function(tab){
-			tab.addEventListener('click', function(){
-				if (this.classList.contains('is-active')) {
-					return false;
-				} else {
-					tabs.forEach(function(tab){
-						tab.classList.remove('is-active');
-					});
-					this.classList.add('is-active');
-					var tabId = this.getAttribute('id');
-					document.querySelectorAll('.services').forEach(function(serve){
-						var sId = serve.getAttribute('id');
-						if ( tabId+'-service' === sId ) {
-							serve.classList.add('service-active');
-						} else {
-							serve.classList.remove('service-active');
-						}
-					});
-				}
-			});
-		});
-		getJSON( dlUrl + "reports.json", function(err,data) {
-			if (err !== null) {
-				console.log(err);
+	[].forEach.call(tabs, function (tab) {
+		tab.addEventListener('click', function(){
+			if (this.classList.contains('is-active')) {
+				return false;
 			} else {
-				window.currentReport = data[0];
-				var selector = document.querySelector( '#weekSelect' );
-				for (var i = 0; i < data.length; i++ ) {
-					var option = document.createElement('option');
-					option.text = data[i].text;
-					option.value = data[i].value;
-					if (i == 0 ) {
-						option.selected = 'selected';
-					}
-					selector.add(option);
-				}
-				selector.addEventListener("change",function(){
-					graphUpdate(selector.value);
+				[].forEach.call(tabs, function (ta) {
+					ta.classList.remove('is-active');
 				});
-				getJSON( dlUrl + currentReport.value + ".json", function(err,data) {
-					if (err !== null) {
-						console.log(err);
+				this.classList.add('is-active');
+				var tabId = this.getAttribute('id');
+				var services = document.querySelectorAll('.services');
+				[].forEach.call(services, function (serve) {
+					var sId = serve.getAttribute('id');
+					if ( tabId+'-service' === sId ) {
+						serve.classList.add('service-active');
 					} else {
-						window.currentData = data;
-						for ( var d in currentData ) {
-							if ( d === 'overall-totals') {
-								overallGen(currentData[d]);
-							} else {
-								var container = document.getElementById(d);
-								var canvas = document.createElement('canvas');
-								container.appendChild(canvas).setAttribute('id',d+'-graph');
-								var ctx = document.getElementById(d+'-graph').getContext('2d');
-								window['config'][d]['data'] = currentData[d];
-								window[d+'-graph'] = new Chart(ctx, {
-									type: window['config'][d]['type'],
-									data: window['config'][d]['data'],
-									options: window['config'][d]['options']
-								});
-							}
-						}
+						serve.classList.remove('service-active');
 					}
 				});
 			}
 		});
-	}
+	});
+	getJSON( dlUrl + "reports.json", function(err,data) {
+		if (err !== null) {
+			console.log(err);
+		} else {
+			if (GetIEVersion() > 0) {
+				data = JSON.parse(data);
+			}
+			currentReport = data[0];
+			var selector = document.querySelector( '#weekSelect' );
+			for (var i = 0; i < data.length; i++ ) {
+				var option = document.createElement('option');
+				option.text = data[i].text;
+				option.value = data[i].value;
+				if (i == 0 ) {
+					option.selected = 'selected';
+				}
+				selector.add(option);
+			}
+			selector.addEventListener("change",function(){
+				graphUpdate(selector.value);
+			});
+			getJSON( dlUrl + currentReport.value + ".json", function(err,data) {
+				if (err !== null) {
+					console.log(err);
+				} else {
+					if (GetIEVersion() > 0) {
+						data = JSON.parse(data);
+					}
+					currentData = data;
+					for ( var d in currentData ) {
+						if ( d === 'overall-totals') {
+							overallGen(currentData[d]);
+						} else {
+							var container = document.getElementById(d);
+							var canvas = document.createElement('canvas');
+							container.appendChild(canvas).setAttribute('id',d+'-graph');
+							var ctx = document.getElementById(d+'-graph').getContext('2d');
+							config[d]['data'] = currentData[d];
+							window[d+'-graph'] = new Chart(ctx, {
+								type: config[d]['type'],
+								data: config[d]['data'],
+								options: config[d]['options']
+							});
+						}
+					}
+				}
+			});
+		}
+	});
 }());
