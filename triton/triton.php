@@ -68,7 +68,7 @@
 		endfor;
 
 		// Pull device usage by type for the stream
-		$wcm_data['devices'][$k] = json_decode( file_get_contents( $wcm_base.'audience_analysis/station/'.$s, FALSE, $post_context ), true );
+		// $wcm_data['devices'][$k] = json_decode( file_get_contents( $wcm_base.'audience_analysis/station/'.$s, FALSE, $post_context ), true );
 	endforeach;
 
 	// Parsing the listener numbers
@@ -99,109 +99,109 @@
 	endforeach;
 
 	// Parsing the device numbers
-	$sheet = 'Triton By Device';
-	$sheets[$sheet][] = [
-		'Station CUME by Device and Device Family ('.date( 'Y-m-d', $tstart ).' - '.date( 'Y-m-d', $tend ).')'
-	];
+	// $sheet = 'Triton By Device';
+	// $sheets[$sheet][] = [
+	// 	'Station CUME by Device and Device Family ('.date( 'Y-m-d', $tstart ).' - '.date( 'Y-m-d', $tend ).')'
+	// ];
 
 
-	$sheets[$sheet][] = [
-		'Station',
-		'Device Family',
-		'Device',
-		'CUME',
-		'CUME Percent'
-	];
-	foreach ( $stations as $k => $v ) :
-		/**
-		 * Since I don't know how many individual devices will be included in the data, I came up with a system
-		 * 		to generate colors for them in the graphing data. Each device family has a base hue, the saturation
-		 * 		is 100%, and the lightness is 50 + ( 5 * number of devices in the family ) %
-		 */
-		$device_colors = [
-			'Mobile Device' => [
-				'base' => 0,
-				'num' => 0
-			],
-			'Desktop/Laptop/Server' => [
-				'base' => 120,
-				'num' => 0
-			],
-			'Smart Speaker' => [
-				'base' => 240,
-				'num' => 0
-			],
-			'Not Provided' => [
-				'base' => 180,
-				'num' => 0
-			],
-			'Unknown' => [
-				'base' => 300,
-				'num' => 0
-			],
-			'Digital Media Player' => [
-				'base' => 60,
-				'num' => 0
-			],
-			'Smart TV' => [
-				'base' => 20,
-				'num' => 0
-			],
-			'Unspecified' => [
-				'base' => 340,
-				'num' => 0
-			],
-		];
+	// $sheets[$sheet][] = [
+	// 	'Station',
+	// 	'Device Family',
+	// 	'Device',
+	// 	'CUME',
+	// 	'CUME Percent'
+	// ];
+	// foreach ( $stations as $k => $v ) :
+	// 	/**
+	// 	 * Since I don't know how many individual devices will be included in the data, I came up with a system
+	// 	 * 		to generate colors for them in the graphing data. Each device family has a base hue, the saturation
+	// 	 * 		is 100%, and the lightness is 50 + ( 5 * number of devices in the family ) %
+	// 	 */
+	// 	$device_colors = [
+	// 		'Mobile Device' => [
+	// 			'base' => 0,
+	// 			'num' => 0
+	// 		],
+	// 		'Desktop/Laptop/Server' => [
+	// 			'base' => 120,
+	// 			'num' => 0
+	// 		],
+	// 		'Smart Speaker' => [
+	// 			'base' => 240,
+	// 			'num' => 0
+	// 		],
+	// 		'Not Provided' => [
+	// 			'base' => 180,
+	// 			'num' => 0
+	// 		],
+	// 		'Unknown' => [
+	// 			'base' => 300,
+	// 			'num' => 0
+	// 		],
+	// 		'Digital Media Player' => [
+	// 			'base' => 60,
+	// 			'num' => 0
+	// 		],
+	// 		'Smart TV' => [
+	// 			'base' => 20,
+	// 			'num' => 0
+	// 		],
+	// 		'Unspecified' => [
+	// 			'base' => 340,
+	// 			'num' => 0
+	// 		],
+	// 	];
 
-		// Loop through the station data
-		foreach ( $wcm_data['devices'][$k]['data'] as $n ) :
+	// 	// Loop through the station data
+	// 	foreach ( $wcm_data['devices'][$k]['data'] as $n ) :
 
-			// Overall station CUME information
-			$overall_cume = $n['CUME'];
-			$sheets[$sheet][] = [
-				ucwords( $k ),
-				'',
-				'',
-				$overall_cume,
-				'100.0%'
-			];
+	// 		// Overall station CUME information
+	// 		$overall_cume = $n['CUME'];
+	// 		$sheets[$sheet][] = [
+	// 			ucwords( $k ),
+	// 			'',
+	// 			'',
+	// 			$overall_cume,
+	// 			'100.0%'
+	// 		];
 
-			// Loop through each device family
-			foreach ( $n['level1']['data'] as $lvl ) :
-				// Gather CUME for each family, and also calculate percentage of overall station CUME
-				$family_cume = $lvl['CUME'];
-				$family_cume_percent = round( ( $family_cume/$overall_cume ) * 100, 1 )."%";
-				$sheets[$sheet][] = [
-					ucwords( $k ),
-					$lvl['Family'],
-					'',
-					$family_cume,
-					$family_cume_percent
-				];
+	// 		// Loop through each device family
+	// 		foreach ( $n['level1']['data'] as $lvl ) :
+	// 			// Gather CUME for each family, and also calculate percentage of overall station CUME
+	// 			$family_cume = $lvl['CUME'];
+	// 			$family_cume_percent = round( ( $family_cume/$overall_cume ) * 100, 1 )."%";
+	// 			$sheets[$sheet][] = [
+	// 				ucwords( $k ),
+	// 				$lvl['Family'],
+	// 				'',
+	// 				$family_cume,
+	// 				$family_cume_percent
+	// 			];
 
-				// Loop through each family's device
-				foreach ( $lvl['level2']['data'] as $lvl2 ) :
-					// Gather CUME for each device, and also calculate percentage of device family
-					$device_cume = $lvl2['CUME'];
-					$device_cume_percent = round( ( $device_cume/$family_cume ) * 100, 1 )."%";
-					$sheets[$sheet][] = [
-						ucwords( $k ),
-						$lvl['Family'],
-						$lvl2['Device'],
-						$device_cume,
-						$device_cume_percent
-					];
+	// 			// Loop through each family's device
+	// 			foreach ( $lvl['level2']['data'] as $lvl2 ) :
+	// 				// Gather CUME for each device, and also calculate percentage of device family
+	// 				$device_cume = $lvl2['CUME'];
+	// 				$device_cume_percent = round( ( $device_cume/$family_cume ) * 100, 1 )."%";
+	// 				$sheets[$sheet][] = [
+	// 					ucwords( $k ),
+	// 					$lvl['Family'],
+	// 					$lvl2['Device'],
+	// 					$device_cume,
+	// 					$device_cume_percent
+	// 				];
 
-					// Calculate the color for each device for the graphing app
-					$dcolor = 'hsla('.$device_colors[ $lvl['Family'] ]['base'].',100%,'.( 50 + ( $device_colors[ $lvl['Family'] ]['num'] * 5 ) ).'%,1)';
-					$device_colors[ $lvl['Family'] ]['num']++;
+	// 				// Calculate the color for each device for the graphing app
+	// 				$dcolor = 'hsla('.$device_colors[ $lvl['Family'] ]['base'].',100%,'.( 50 + ( $device_colors[ $lvl['Family'] ]['num'] * 5 ) ).'%,1)';
+	// 				$device_colors[ $lvl['Family'] ]['num']++;
 
-					// Map the graphing data
-					$graphs['triton-'.$k.'-devices']['labels'][] = $lvl2['Device'];
-					$graphs['triton-'.$k.'-devices']['datasets'][0]['data'][] = $device_cume;
-					$graphs['triton-'.$k.'-devices']['datasets'][0]['backgroundColor'][] = $dcolor;
-				endforeach;
-			endforeach;
-		endforeach;
-	endforeach;
+	// 				// Map the graphing data
+	// 				$graphs['triton-'.$k.'-devices']['labels'][] = $lvl2['Device'];
+	// 				$graphs['triton-'.$k.'-devices']['datasets'][0]['data'][] = $device_cume;
+	// 				$graphs['triton-'.$k.'-devices']['datasets'][0]['backgroundColor'][] = $dcolor;
+	// 			endforeach;
+	// 		endforeach;
+	// 	endforeach;
+	// endforeach;
 ?>

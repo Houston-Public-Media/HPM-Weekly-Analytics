@@ -846,6 +846,14 @@ function overallGen(data) {
 			}
 		});
 	});
+	var notifs = document.querySelectorAll('.notification .delete');
+	console.log(notifs);
+	[].forEach.call(notifs, function (del) {
+		var notification = del.parentNode;
+		del.addEventListener('click', function(){
+			notification.parentNode.removeChild(notification);
+		});
+	});
 	getJSON( dlUrl + "reports.json", function(err,data) {
 		if (err !== null) {
 			console.log(err);
