@@ -204,6 +204,13 @@ var config = {
 				display: true,
 				text: 'Lifetime Total Page Likes',
 				fontSize: 16
+			},
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
 			}
 		},
 		'data': [],
@@ -231,7 +238,10 @@ var config = {
 					stacked: true,
 				}],
 				yAxes: [{
-					stacked: true
+					stacked: true,
+					ticks: {
+						beginAtZero: true
+					}
 				}]
 			}
 		},
@@ -298,6 +308,11 @@ var config = {
 								return trimmed+'...';
 							}
 						}
+					}
+				}],
+				xAxes: [{
+					ticks: {
+						beginAtZero: true
 					}
 				}]
 			}
