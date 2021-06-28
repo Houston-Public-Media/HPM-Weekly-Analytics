@@ -34,6 +34,7 @@
 	 */
 	require BASE . DS . 'vendor' . DS . 'autoload.php';
 	require BASE . DS . 'colors.php';
+	require BASE . DS . 'notif.php';
 
 	/**
 	 * Expose global env() function from oscarotero/env
@@ -340,4 +341,5 @@
 	$process_end = time();
 	$process_total = ( $process_end - $process_start );
 	echo $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . 'Report process completed successfully!' . PHP_EOL . 'Total execution time: ' . $process_total . ' seconds' . $RESET_ALL . PHP_EOL;
+	notification_toast( 'Total execution time: ' . $process_total, 'Weekly Analytics Report', 'Reporting process completed successfully', 'Crystal' );
 ?>
