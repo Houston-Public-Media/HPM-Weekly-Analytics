@@ -1,7 +1,11 @@
 const dlUrl = 'https://cdn.hpm.io/assets/analytics/';
+//const dlUrl = 'https://local.hpm.io/assets/analytics/';
 const tabs = document.querySelectorAll('.tabs ul li');
-var currentReport = {};
+const services = document.querySelectorAll('.services');
+const googleTabs = document.querySelectorAll('.tabs ul li.google');
+var currentReport, graphs = {};
 var currentData = [];
+var activeTab = 'overall';
 var config = {
 	'ga-main-articles': {
 		'options': {
@@ -166,6 +170,226 @@ var config = {
 		},
 		'data': [],
 		'type': 'doughnut'
+	},
+	'ga-combined-articles': {
+		'options': {
+			elements: {
+				rectangle: {
+					borderWidth: 2,
+				}
+			},
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Top 20 Articles - Pageviews by Source',
+				fontSize: 16
+			},
+			tooltips: {
+				callbacks: {
+					title: function(tooltipItem, data) {
+						return data.labels[tooltipItem[0].index];
+					}
+				}
+			},
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true,
+					ticks: {
+						callback: function(value, index, values) {
+							if ( value.length < 35 ) {
+								return value;
+							} else {
+								var trimmed = value.substring(0,35);
+								return trimmed+'...';
+							}
+						}
+					}
+				}]
+			}
+		},
+		'data': [],
+		'type': 'horizontalBar'
+	},
+	'ga-combined-hourly': {
+		'options': {
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Site Users By Hour',
+				fontSize: 16
+			}
+		},
+		'data': [],
+		'type': 'line'
+	},
+	'ga-combined-devices': {
+		'options': {
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Users by Device Category',
+				fontSize: 16
+			},
+			animation: {
+				animateScale: true,
+				animateRotate: true
+			}
+		},
+		'data': [],
+		'type': 'doughnut'
+	},
+	'ga-houston-matters-articles': {
+		'options': {
+			elements: {
+				rectangle: {
+					borderWidth: 2,
+				}
+			},
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Top 20 Houston Matters Articles - Pageviews by Source',
+				fontSize: 16
+			},
+			tooltips: {
+				callbacks: {
+					title: function(tooltipItem, data) {
+						return data.labels[tooltipItem[0].index];
+					}
+				}
+			},
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true,
+					ticks: {
+						callback: function(value, index, values) {
+							if ( value.length < 35 ) {
+								return value;
+							} else {
+								var trimmed = value.substring(0,35);
+								return trimmed+'...';
+							}
+						}
+					}
+				}]
+			}
+		},
+		'data': [],
+		'type': 'horizontalBar'
+	},
+	'ga-town-square-articles': {
+		'options': {
+			elements: {
+				rectangle: {
+					borderWidth: 2,
+				}
+			},
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Top 20 Town Square Articles - Pageviews by Source',
+				fontSize: 16
+			},
+			tooltips: {
+				callbacks: {
+					title: function(tooltipItem, data) {
+						return data.labels[tooltipItem[0].index];
+					}
+				}
+			},
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true,
+					ticks: {
+						callback: function(value, index, values) {
+							if ( value.length < 35 ) {
+								return value;
+							} else {
+								var trimmed = value.substring(0,35);
+								return trimmed+'...';
+							}
+						}
+					}
+				}]
+			}
+		},
+		'data': [],
+		'type': 'horizontalBar'
+	},
+	'ga-i-see-u-articles': {
+		'options': {
+			elements: {
+				rectangle: {
+					borderWidth: 2,
+				}
+			},
+			maintainAspectRatio: true,
+			responsive: true,
+			legend: {
+				position: 'bottom',
+			},
+			title: {
+				display: true,
+				text: 'Top 20 I SEE U Articles - Pageviews by Source',
+				fontSize: 16
+			},
+			tooltips: {
+				callbacks: {
+					title: function(tooltipItem, data) {
+						return data.labels[tooltipItem[0].index];
+					}
+				}
+			},
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true,
+					ticks: {
+						callback: function(value, index, values) {
+							if ( value.length < 35 ) {
+								return value;
+							} else {
+								var trimmed = value.substring(0,35);
+								return trimmed+'...';
+							}
+						}
+					}
+				}]
+			}
+		},
+		'data': [],
+		'type': 'horizontalBar'
 	},
 	'facebook-impressions': {
 		'options': {
@@ -704,22 +928,11 @@ var config = {
 		'type': 'bar'
 	}
 };
-function GetIEVersion() {
-	var sAgent = window.navigator.userAgent;
-	var Idx = sAgent.indexOf("MSIE");
-	if (Idx > 0) {
-		return parseInt(sAgent.substring(Idx+ 5, sAgent.indexOf(".", Idx)));
-	} else if (!!navigator.userAgent.match(/Trident\/7\./)) {
-		return 11;
-	} else {
-	  return 0;
-	}
-}
-window.getJSON = function(url, callback) {
+window.getJSON = (url, callback) => {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
 	xhr.responseType = 'json';
-	xhr.onload = function() {
+	xhr.onload = () => {
 		var status = xhr.status;
 		if (status === 200) {
 			callback(null, xhr.response);
@@ -730,22 +943,54 @@ window.getJSON = function(url, callback) {
 	xhr.send();
 };
 function graphUpdate(report) {
-	getJSON( dlUrl + report + ".json", function(err,data) {
+	getJSON( dlUrl + report + ".json", (err,data) => {
 		if (err !== null) {
 			console.log(err);
 		} else {
-			if (GetIEVersion() > 0) {
-				data = JSON.parse(data);
-			}
 			currentData = data;
+			Array.from(googleTabs).forEach((gtab) => {
+				gtab.classList.add('disabled');
+			});
 			for ( var d in currentData ) {
+				if ( d.includes('ga-main') ) {
+					document.getElementById('google-main').classList.remove('disabled');
+				} else if ( d.includes('ga-amp') ) {
+					document.getElementById('google-amp').classList.remove('disabled');
+				} else if ( d.includes('ga-combined') ) {
+					document.getElementById('google-combined').classList.remove('disabled');
+				} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') ) {
+					document.getElementById('google-talkshows').classList.remove('disabled');
+				}
 				if ( d === 'overall-totals') {
 					overallGen(currentData[d]);
 				} else {
 					config[d]['data'] = currentData[d];
-					window[d+'-graph'].data = config[d]['data'];
-					window[d+'-graph'].update();
+					if (typeof graphs[d+'-graph'] === 'object') {
+						graphs[d+'-graph'].data = config[d]['data'];
+						graphs[d+'-graph'].update();
+					} else {
+						var container = document.getElementById(d);
+						var canvas = document.createElement('canvas');
+						container.appendChild(canvas).setAttribute('id',d+'-graph');
+						var ctx = document.getElementById(d+'-graph').getContext('2d');
+						graphs[d+'-graph'] = new Chart(ctx, {
+							type: config[d]['type'],
+							data: config[d]['data'],
+							options: config[d]['options']
+						});
+					}
 				}
+			}
+			if (document.getElementById(activeTab).classList.contains('disabled')) {
+				activeTab = 'overall';
+				Array.from(tabs).forEach((ta) => {
+					ta.classList.remove('is-active');
+				});
+				Array.from(services).forEach((serve) => {
+					serve.classList.remove('service-active');
+				});
+				document.getElementById(activeTab).classList.add('is-active');
+				document.getElementById(activeTab+'-service').classList.add('service-active');
 			}
 		}
 	});
@@ -762,18 +1007,29 @@ function overallGen(data) {
 		"<tr class=\"overall-section\">" +
 			"<td>Website</td>" +
 			"<td colspan=\"2\">Users</td>" +
-		"</tr>" +
-		"<tr>" +
+		"</tr>";
+	if ( typeof data['ga-main'] === 'object' ) {
+		output += "<tr>" +
 			"<td>" + data['ga-main']['name'] + "</td>" +
 			"<td>" + data['ga-main']['data'] + "</td>" +
 			"<td></td>" +
-		"</tr>" +
-		"<tr>" +
+		"</tr>";
+	}
+	if ( typeof data['ga-amp'] === 'object' ) {
+		output += "<tr>" +
 			"<td>" + data['ga-amp']['name'] + "</td>" +
 			"<td>" + data['ga-amp']['data'] + "</td>" +
 			"<td></td>" +
-		"</tr>" +
-		"<tr class=\"overall-section\">" +
+		"</tr>";
+	}
+	if ( typeof data['ga-combined'] === 'object' ) {
+		output += "<tr>" +
+			"<td>" + data['ga-combined']['name'] + "</td>" +
+			"<td>" + data['ga-combined']['data'] + "</td>" +
+			"<td></td>" +
+		"</tr>";
+	}
+	output += "<tr class=\"overall-section\">" +
 			"<td>Social</td>" +
 			"<td colspan=\"2\">Reach</td>" +
 		"</tr>" +
@@ -839,20 +1095,20 @@ function overallGen(data) {
 	document.getElementById('overall-totals').innerHTML = output;
 }
 (function(){
-	[].forEach.call(tabs, function (tab) {
-		tab.addEventListener('click', function(){
-			if (this.classList.contains('is-active')) {
+	Array.from(tabs).forEach((tab) => {
+		tab.addEventListener('click', (event) => {
+			if (event.currentTarget.classList.contains('is-active')) {
 				return false;
 			} else {
-				[].forEach.call(tabs, function (ta) {
+				Array.from(tabs).forEach((ta) => {
 					ta.classList.remove('is-active');
 				});
-				this.classList.add('is-active');
-				var tabId = this.getAttribute('id');
+				event.currentTarget.classList.add('is-active');
+				activeTab = event.currentTarget.getAttribute('id');
 				var services = document.querySelectorAll('.services');
-				[].forEach.call(services, function (serve) {
+				Array.from(services).forEach((serve) => {
 					var sId = serve.getAttribute('id');
-					if ( tabId+'-service' === sId ) {
+					if ( activeTab+'-service' === sId ) {
 						serve.classList.add('service-active');
 					} else {
 						serve.classList.remove('service-active');
@@ -862,20 +1118,16 @@ function overallGen(data) {
 		});
 	});
 	var notifs = document.querySelectorAll('.notification .delete');
-	console.log(notifs);
-	[].forEach.call(notifs, function (del) {
+	Array.from(notifs).forEach((del) => {
 		var notification = del.parentNode;
-		del.addEventListener('click', function(){
+		del.addEventListener('click', () => {
 			notification.parentNode.removeChild(notification);
 		});
 	});
-	getJSON( dlUrl + "reports.json", function(err,data) {
+	getJSON( dlUrl + "reports.json", (err,data) => {
 		if (err !== null) {
 			console.log(err);
 		} else {
-			if (GetIEVersion() > 0) {
-				data = JSON.parse(data);
-			}
 			currentReport = data[0];
 			var selector = document.querySelector( '#weekSelect' );
 			for (var i = 0; i < data.length; i++ ) {
@@ -887,18 +1139,24 @@ function overallGen(data) {
 				}
 				selector.add(option);
 			}
-			selector.addEventListener("change",function(){
+			selector.addEventListener("change",() => {
 				graphUpdate(selector.value);
 			});
-			getJSON( dlUrl + currentReport.value + ".json", function(err,data) {
+			getJSON( dlUrl + currentReport.value + ".json", (err,data) => {
 				if (err !== null) {
 					console.log(err);
 				} else {
-					if (GetIEVersion() > 0) {
-						data = JSON.parse(data);
-					}
 					currentData = data;
 					for ( var d in currentData ) {
+						if ( d.includes('ga-main') ) {
+							document.getElementById('google-main').classList.remove('disabled');
+						} else if ( d.includes('ga-amp') ) {
+							document.getElementById('google-amp').classList.remove('disabled');
+						} else if ( d.includes('ga-combined') ) {
+							document.getElementById('google-combined').classList.remove('disabled');
+						} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') ) {
+							document.getElementById('google-talkshows').classList.remove('disabled');
+						}
 						if ( d === 'overall-totals') {
 							overallGen(currentData[d]);
 						} else {
@@ -907,7 +1165,7 @@ function overallGen(data) {
 							container.appendChild(canvas).setAttribute('id',d+'-graph');
 							var ctx = document.getElementById(d+'-graph').getContext('2d');
 							config[d]['data'] = currentData[d];
-							window[d+'-graph'] = new Chart(ctx, {
+							graphs[d+'-graph'] = new Chart(ctx, {
 								type: config[d]['type'],
 								data: config[d]['data'],
 								options: config[d]['options']

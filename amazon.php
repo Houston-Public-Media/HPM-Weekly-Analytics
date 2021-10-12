@@ -9,7 +9,7 @@
 
 	if ( $emails ) :
 		// If you chose to email the group, set up the AWS SES Client
-		$client = SesClient::factory([
+		$client = new SesClient([
 			'credentials' => [
 				'key' => $aws_key,
 				'secret' => $aws_secret

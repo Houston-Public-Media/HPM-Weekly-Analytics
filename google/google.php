@@ -9,13 +9,101 @@
 		return $analytics;
 	}
 
+	function googleArticleSources( $row ) {
+		global $analytics, $start, $end, $ga, $find, $replace;
+		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
+		if ( !empty( $match ) ) :
+			$id = $match[1];
+			$post = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/'.$id );
+			$cats = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/categories?post='.$id );
+			$pjs = json_decode( $post );
+			$catjs = json_decode( $cats );
+			$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
+			$date = strtotime( $pjs->date );
+			$authors = $tags = [];
+			foreach( $pjs->coauthors as $coa ) :
+				$authors[] = $coa->display_name;
+			endforeach;
+			foreach( $catjs as $ca ) :
+				$tags[] = html_entity_decode( $ca->name );
+			endforeach;
+		endif;
+		$date_format = date( 'Y-m-d g:i A', $date );
+
+		// Secondary GA pull to gather source / medium information for each article
+		$sources = $analytics->data_ga->get(
+			'ga:'.$ga,
+			$start,
+			$end,
+			'ga:visits',
+			[
+				'filters' => 'ga:pagePath=@'.$row[0],
+				'dimensions' => 'ga:sourceMedium',
+				'metrics' => 'ga:pageviews',
+				'sort' => '-ga:pageviews',
+				'output' => 'json'
+			]
+		);
+		$google = $facebook = $twitter = $bing = $yahoo = $direct = $organic = $email = $referral = $social = '0';
+
+		// Parsing the source / medium pull from GA
+		foreach ( $sources->rows as $source ) :
+			$source_ex = explode( '/', $source[0] );
+			$medium = trim( $source_ex[1] );
+			$stype = trim( $source_ex[0] );
+			if ( $medium == '(none)' ) :
+				$direct += $source[1];
+			elseif ( $medium == 'organic' ) :
+				$organic += $source[1];
+			elseif ( $medium == 'social' ) :
+				$social += $source[1];
+			elseif ( $medium == 'email' ) :
+				$email += $source[1];
+			elseif ( $medium == 'referral' ) :
+				$referral += $source[1];
+			endif;
+			if ( strpos( $stype, 'google' ) !== false ) :
+				$google += $source[1];
+			elseif ( strpos( $stype, 'bing' ) !== false ) :
+				$bing += $source[1];
+			elseif ( strpos( $stype, 'facebook' ) !== false ) :
+				$facebook += $source[1];
+			elseif ( strpos( $stype, 't.co' ) !== false ) :
+				$twitter += $source[1];
+			elseif ( strpos( $stype, 'yahoo' ) !== false ) :
+				$yahoo += $source[1];
+			endif;
+		endforeach;
+
+		// Adding the row to the sheet
+		return [
+			$title,
+			'https://www.houstonpublicmedia.org'.$row[0],
+			implode( ' / ', $authors ),
+			$date_format,
+			implode( ', ', $tags ),
+			$row[1],
+			$row[2],
+			$direct,
+			$google,
+			$facebook,
+			$twitter,
+			$bing,
+			$yahoo,
+			$direct,
+			$organic,
+			$email,
+			$referral,
+			$social
+		];
+	}
+
 	/**
 	 * We have our main Google Analytics property for the site, as well as a separate property for Google AMP
 	 * If you only have one you want to check, or more than two, modify this array
 	 */
 	$gas = [
-		'Main' => GA_MAIN,
-		'AMP' => GA_AMP
+		'Combined' => GA_COMBO
 	];
 
 	// Setting up device colors for the graphing application
@@ -60,105 +148,19 @@
 					'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'Bing Search', 'Yahoo Search', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 				];
 			endif;
-
-			/**
-			 * Since we're on a Wordpress site, I am using the WP-JSON API to pull additional information
-			 * 		about each article, such as categories, tags, publish date, and authors
-			 */
-			preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
-			if ( !empty( $match ) ) :
-				$id = $match[1];
-				$post = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/'.$id );
-				$cats = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/categories?post='.$id );
-				$pjs = json_decode( $post );
-				$catjs = json_decode( $cats );
-				$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
-				$date = strtotime( $pjs->date );
-				$authors = $tags = [];
-				foreach( $pjs->coauthors as $coa ) :
-					$authors[] = $coa->display_name;
-				endforeach;
-				foreach( $catjs as $ca ) :
-					$tags[] = html_entity_decode( $ca->name );
-				endforeach;
-			endif;
-			$date_format = date( 'Y-m-d g:i A', $date );
-
-			// Secondary GA pull to gather source / medium information for each article
-			$sources = $analytics->data_ga->get(
-				'ga:'.$ga,
-				$start,
-				$end,
-				'ga:visits',
-				[
-					'filters' => 'ga:pagePath=@'.$row[0],
-					'dimensions' => 'ga:sourceMedium',
-					'metrics' => 'ga:pageviews',
-					'sort' => '-ga:pageviews',
-					'output' => 'json'
-				]
-			);
-			$google = $facebook = $twitter = $bing = $yahoo = $direct = $organic = $email = $referral = $social = '0';
-
-			// Parsing the source / medium pull from GA
-			foreach ( $sources->rows as $source ) :
-				$source_ex = explode( '/', $source[0] );
-				$medium = trim( $source_ex[1] );
-				$stype = trim( $source_ex[0] );
-				if ( $medium == '(none)' ) :
-					$direct += $source[1];
-				elseif ( $medium == 'organic' ) :
-					$organic += $source[1];
-				elseif ( $medium == 'social' ) :
-					$social += $source[1];
-				elseif ( $medium == 'email' ) :
-					$email += $source[1];
-				elseif ( $medium == 'referral' ) :
-					$referral += $source[1];
-				endif;
-				if ( strpos( $stype, 'google' ) !== false ) :
-					$google += $source[1];
-				elseif ( strpos( $stype, 'bing' ) !== false ) :
-					$bing += $source[1];
-				elseif ( strpos( $stype, 'facebook' ) !== false ) :
-					$facebook += $source[1];
-				elseif ( strpos( $stype, 't.co' ) !== false ) :
-					$twitter += $source[1];
-				elseif ( strpos( $stype, 'yahoo' ) !== false ) :
-					$yahoo += $source[1];
-				endif;
-			endforeach;
-
+			$gaSources = googleArticleSources( $row );
 			// Adding the row to the sheet
-			$sheets[$sheet][] = [
-				$title,
-				'https://www.houstonpublicmedia.org'.$row[0],
-				implode( ' / ', $authors ),
-				$date_format,
-				implode( ', ', $tags ),
-				$row[1],
-				$row[2],
-				$direct,
-				$google,
-				$facebook,
-				$twitter,
-				$bing,
-				$yahoo,
-				$direct,
-				$organic,
-				$email,
-				$referral,
-				$social
-			];
+			$sheets[$sheet][] = $gaSources;
 
 			// Mapping the data into the graphing data
-			$graphs[$ga_acct_name.'-articles']['labels'][] = $title;
-			$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $direct;
-			$graphs[$ga_acct_name.'-articles']['datasets'][1]['data'][] = $google;
-			$graphs[$ga_acct_name.'-articles']['datasets'][2]['data'][] = $facebook;
-			$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $twitter;
-			$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $bing;
-			$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $yahoo;
+			$graphs[$ga_acct_name.'-articles']['labels'][] = $gaSources[0];
+			$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $gaSources[7];
+			$graphs[$ga_acct_name.'-articles']['datasets'][1]['data'][] = $gaSources[8];
+			$graphs[$ga_acct_name.'-articles']['datasets'][2]['data'][] = $gaSources[9];
+			$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
+			$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
+			$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
+			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
 		endforeach;
 
 		// User / Session pull from GA
@@ -260,5 +262,65 @@
 		$sheets[$sheet][] = [
 			'Total Users', $result2->totalsForAllResults['ga:users']
 		];
+
+		$shows = [
+			[
+				'slug' => 'houston-matters',
+				'title' => 'Houston Matters'
+			], [
+				'slug' => 'town-square',
+				'title' => 'Town Square'
+			], [
+				'slug' => 'i-see-u',
+				'title' => 'I SEE U'
+			]
+		];
+		foreach ( $shows as $show ) :
+			$show_graph = 'ga-'.$show['slug'].'-articles';
+			$result = $analytics->data_ga->get(
+				'ga:'.$ga,
+				$start,
+				$end,
+				'ga:visits',
+				[
+					'filters' => 'ga:pagePath=@/articles/shows/'.$show['slug'].'/',
+					'dimensions' => 'ga:pagePath',
+					'metrics' => 'ga:pageviews,ga:uniquePageviews',
+					'sort' => '-ga:pageviews,-ga:uniquePageviews',
+					'max-results' => $num,
+					'output' => 'json'
+				]
+			);
+
+			$sheet = 'Top Stories ('.$show['title'].')';
+			$sheets[$sheet] = [];
+
+
+			// Parsing the numbers from GA
+			foreach ( $result->rows as $k => $row ) :
+				// Set up the title row in the spreadsheet
+				if ( $k == 0 ) :
+					$sheets[$sheet][] = [
+						'Article Info', '', '', '', '', 'Pageviews', '', 'Pageviews from Source', '', '', '', '', '', 'Source Types', '', '', '', ''
+					];
+					$sheets[$sheet][] = [
+						'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'Bing Search', 'Yahoo Search', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
+					];
+				endif;
+				$gaSources = googleArticleSources( $row );
+				// Adding the row to the sheet
+				$sheets[$sheet][] = $gaSources;
+
+				//Mapping the data into the graphing data
+				$graphs[ $show_graph ]['labels'][] = $gaSources[0];
+				$graphs[ $show_graph ]['datasets'][0]['data'][] = $gaSources[7];
+				$graphs[ $show_graph ]['datasets'][1]['data'][] = $gaSources[8];
+				$graphs[ $show_graph ]['datasets'][2]['data'][] = $gaSources[9];
+				$graphs[ $show_graph ]['datasets'][3]['data'][] = $gaSources[10];
+				$graphs[ $show_graph ]['datasets'][4]['data'][] = $gaSources[11];
+				$graphs[ $show_graph ]['datasets'][5]['data'][] = $gaSources[12];
+				$graphs[ $show_graph ]['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+			endforeach;
+		endforeach;
 	endforeach;
 ?>

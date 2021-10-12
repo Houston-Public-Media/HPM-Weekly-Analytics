@@ -56,8 +56,7 @@
 	define( 'YT_ACCESS', BASE . DS . env( 'YT_ACCESS' ) );
 	define( 'YT_CLIENT', BASE . DS . env( 'YT_CLIENT' ) );
 	define( 'YT_CHANNEL_ID', env( 'YT_CHANNEL_ID' ) );
-	define( 'GA_MAIN', env( 'GA_MAIN' ) );
-	define( 'GA_AMP', env( 'GA_AMP' ) );
+	define( 'GA_COMBO', env( 'GA_COMBO' ) );
 	define( 'WCM_USER', env( 'WCM_USER' ) );
 	define( 'WCM_PASSWORD', env( 'WCM_PASSWORD' ) );
 	define( 'APP_URL', env( 'APP_URL' ) );
@@ -244,7 +243,7 @@
 		// Setting the highlight color for the worksheet tabs in Excel
 		if ( strpos( $k, 'Facebook' ) !== false ) :
 			$myWorkSheet->getTabColor()->setRGB('3b5998');
-		elseif ( strpos( $k, '(Main)' ) !== false || strpos( $k, '(AMP)' ) !== false ) :
+		elseif ( strpos( $k, '(Combined)' ) !== false || strpos( $k, 'Top Stories' ) !== false ) :
 			$myWorkSheet->getTabColor()->setRGB('db4437');
 		elseif ( strpos( $k, 'Tweet' ) !== false || strpos( $k, 'Twitter' ) !== false ) :
 			$myWorkSheet->getTabColor()->setRGB('1da1f2');

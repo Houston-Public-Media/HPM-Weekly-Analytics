@@ -1,12 +1,8 @@
 <?php
 	$graphs = [
 		'overall-totals' => [
-			'ga-main' => [
-				'name' => 'Google Analytics (Main) Users',
-				'data' => 0
-			],
-			'ga-amp' => [
-				'name' => 'Google Analytics (AMP) Users',
+			'ga-combined' => [
+				'name' => 'Google Analytics (Combined) Users',
 				'data' => 0
 			],
 			'facebook' => [
@@ -43,7 +39,7 @@
 			],
 			'podcasts' => []
 		],
-		'ga-main-articles' => [
+		'ga-combined-articles' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
@@ -81,10 +77,16 @@
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []
+				],
+				6 => [
+					'label' => 'Other',
+					'backgroundColor' => 'rgba(0,0,0,0.2 )',
+					'borderColor' => 'rgba(0,0,0,1 )',
+					'data' => []
 				]
 			]
 		],
-		'ga-main-hourly' => [
+		'ga-combined-hourly' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
@@ -95,7 +97,7 @@
 				]
 			]
 		],
-		'ga-main-devices' => [
+		'ga-combined-devices' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
@@ -105,7 +107,7 @@
 				]
 			]
 		],
-		'ga-amp-articles' => [
+		'ga-houston-matters-articles' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
@@ -143,26 +145,105 @@
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []
-				]
-			]
-		],
-		'ga-amp-hourly' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'Users',
-					'backgroundColor' => [ 'rgba( 0, 0, 255, 0.2 )' ],
-					'borderColor' => [ 'rgba( 0, 0, 255, 1 )' ],
+				],
+				6 => [
+					'label' => 'Other',
+					'backgroundColor' => 'rgba(0,0,0,0.2 )',
+					'borderColor' => 'rgba(0,0,0,1 )',
 					'data' => []
 				]
 			]
 		],
-		'ga-amp-devices' => [
+		'ga-town-square-articles' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
-					'label' => 'Users',
-					'backgroundColor' => [],
+					'label' => 'Direct',
+					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
+					'borderColor' => 'rgba( 0, 255, 0, 1 )',
+					'data' => []
+				],
+				1 => [
+					'label' => 'Google',
+					'backgroundColor' => 'rgba(219,68,55,0.2 )',
+					'borderColor' => 'rgba(219,68,55,1 )',
+					'data' => []
+				],
+				2 => [
+					'label' => 'Facebook',
+					'backgroundColor' => 'rgba(59,89,152,0.2 )',
+					'borderColor' => 'rgba(59,89,152,1 )',
+					'data' => []
+				],
+				3 => [
+					'label' => 'Twitter',
+					'backgroundColor' => 'rgba(29,161,242,0.2 )',
+					'borderColor' => 'rgba(29,161,242,1 )',
+					'data' => []
+				],
+				4 => [
+					'label' => 'Bing Search',
+					'backgroundColor' => 'rgba(255,187,0,0.2 )',
+					'borderColor' => 'rgba(255,187,0,1 )',
+					'data' => []
+				],
+				5 => [
+					'label' => 'Yahoo Search',
+					'backgroundColor' => 'rgba(65,0,147,0.2 )',
+					'borderColor' => 'rgba(65,0,147,1 )',
+					'data' => []
+				],
+				6 => [
+					'label' => 'Other',
+					'backgroundColor' => 'rgba(0,0,0,0.2 )',
+					'borderColor' => 'rgba(0,0,0,1 )',
+					'data' => []
+				]
+			]
+		],
+		'ga-i-see-u-articles' => [
+			'labels' => [],
+			'datasets' => [
+				0 => [
+					'label' => 'Direct',
+					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
+					'borderColor' => 'rgba( 0, 255, 0, 1 )',
+					'data' => []
+				],
+				1 => [
+					'label' => 'Google',
+					'backgroundColor' => 'rgba(219,68,55,0.2 )',
+					'borderColor' => 'rgba(219,68,55,1 )',
+					'data' => []
+				],
+				2 => [
+					'label' => 'Facebook',
+					'backgroundColor' => 'rgba(59,89,152,0.2 )',
+					'borderColor' => 'rgba(59,89,152,1 )',
+					'data' => []
+				],
+				3 => [
+					'label' => 'Twitter',
+					'backgroundColor' => 'rgba(29,161,242,0.2 )',
+					'borderColor' => 'rgba(29,161,242,1 )',
+					'data' => []
+				],
+				4 => [
+					'label' => 'Bing Search',
+					'backgroundColor' => 'rgba(255,187,0,0.2 )',
+					'borderColor' => 'rgba(255,187,0,1 )',
+					'data' => []
+				],
+				5 => [
+					'label' => 'Yahoo Search',
+					'backgroundColor' => 'rgba(65,0,147,0.2 )',
+					'borderColor' => 'rgba(65,0,147,1 )',
+					'data' => []
+				],
+				6 => [
+					'label' => 'Other',
+					'backgroundColor' => 'rgba(0,0,0,0.2 )',
+					'borderColor' => 'rgba(0,0,0,1 )',
 					'data' => []
 				]
 			]

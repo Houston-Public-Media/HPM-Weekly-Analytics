@@ -88,6 +88,9 @@ canvas {
 	background-color: #808080;
 	color: white;
 }
+.tabs li.disabled {
+	display: none;
+}
 @media screen and (min-width: 1024px) {
 	#app {
 		overflow: hidden;
