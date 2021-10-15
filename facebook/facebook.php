@@ -195,12 +195,11 @@
 	$titles[] = 'Publish Date';
 	$titles[] = 'URL';
 	$titles[] = 'Message';
-	$titles[] = 'Type';
 	$titles[] = 'Shares';
 	$args = [
 		'pretty' => 0,
 		'limit' => 100,
-		'fields' => 'id,created_time,message,permalink_url,shares,type',
+		'fields' => 'id,created_time,message,permalink_url,shares',
 		'since' => $startu,
 		'until' => $endu,
 		'access_token' => $fb_access,
@@ -234,7 +233,6 @@
 				'Publish Date' => date( 'Y-m-d H:i:s', strtotime( $j->created_time ) ),
 				'URL' => $j->permalink_url,
 				'Message' => ( !empty( $j->message ) ? $j->message : '' ),
-				'Type' => $j->type,
 				'Shares' => ( !empty( $j->shares ) ? $j->shares->count : 0 )
 			];
 		endforeach;

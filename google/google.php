@@ -44,7 +44,7 @@
 				'output' => 'json'
 			]
 		);
-		$google = $facebook = $twitter = $bing = $yahoo = $direct = $organic = $email = $referral = $social = '0';
+		$google = $facebook = $twitter = $rss = $newsbreak = $direct = $organic = $email = $referral = $social = '0';
 
 		// Parsing the source / medium pull from GA
 		foreach ( $sources->rows as $source ) :
@@ -64,14 +64,14 @@
 			endif;
 			if ( strpos( $stype, 'google' ) !== false ) :
 				$google += $source[1];
-			elseif ( strpos( $stype, 'bing' ) !== false ) :
-				$bing += $source[1];
 			elseif ( strpos( $stype, 'facebook' ) !== false ) :
 				$facebook += $source[1];
 			elseif ( strpos( $stype, 't.co' ) !== false ) :
 				$twitter += $source[1];
-			elseif ( strpos( $stype, 'yahoo' ) !== false ) :
-				$yahoo += $source[1];
+			elseif ( strpos( $stype, 'rss' ) !== false ) :
+				$rss += $source[1];
+			elseif ( strpos( $stype, 'newsbreak' ) !== false ) :
+				$newsbreak += $source[1];
 			endif;
 		endforeach;
 
@@ -88,8 +88,8 @@
 			$google,
 			$facebook,
 			$twitter,
-			$bing,
-			$yahoo,
+			$rss,
+			$newsbreak,
 			$direct,
 			$organic,
 			$email,
@@ -145,10 +145,11 @@
 					'Article Info', '', '', '', '', 'Pageviews', '', 'Pageviews from Source', '', '', '', '', '', 'Source Types', '', '', '', ''
 				];
 				$sheets[$sheet][] = [
-					'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'Bing Search', 'Yahoo Search', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
+					'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 				];
 			endif;
 			$gaSources = googleArticleSources( $row );
+
 			// Adding the row to the sheet
 			$sheets[$sheet][] = $gaSources;
 
@@ -304,7 +305,7 @@
 						'Article Info', '', '', '', '', 'Pageviews', '', 'Pageviews from Source', '', '', '', '', '', 'Source Types', '', '', '', ''
 					];
 					$sheets[$sheet][] = [
-						'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'Bing Search', 'Yahoo Search', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
+						'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 					];
 				endif;
 				$gaSources = googleArticleSources( $row );

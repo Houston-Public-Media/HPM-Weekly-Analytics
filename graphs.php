@@ -67,13 +67,13 @@
 					'data' => []
 				],
 				4 => [
-					'label' => 'Bing Search',
+					'label' => 'RSS',
 					'backgroundColor' => 'rgba(255,187,0,0.2 )',
 					'borderColor' => 'rgba(255,187,0,1 )',
 					'data' => []
 				],
 				5 => [
-					'label' => 'Yahoo Search',
+					'label' => 'Newsbreak',
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []
@@ -135,13 +135,13 @@
 					'data' => []
 				],
 				4 => [
-					'label' => 'Bing Search',
+					'label' => 'RSS',
 					'backgroundColor' => 'rgba(255,187,0,0.2 )',
 					'borderColor' => 'rgba(255,187,0,1 )',
 					'data' => []
 				],
 				5 => [
-					'label' => 'Yahoo Search',
+					'label' => 'Newsbreak',
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []
@@ -182,13 +182,13 @@
 					'data' => []
 				],
 				4 => [
-					'label' => 'Bing Search',
+					'label' => 'RSS',
 					'backgroundColor' => 'rgba(255,187,0,0.2 )',
 					'borderColor' => 'rgba(255,187,0,1 )',
 					'data' => []
 				],
 				5 => [
-					'label' => 'Yahoo Search',
+					'label' => 'Newsbreak',
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []
@@ -229,13 +229,13 @@
 					'data' => []
 				],
 				4 => [
-					'label' => 'Bing Search',
+					'label' => 'RSS',
 					'backgroundColor' => 'rgba(255,187,0,0.2 )',
 					'borderColor' => 'rgba(255,187,0,1 )',
 					'data' => []
 				],
 				5 => [
-					'label' => 'Yahoo Search',
+					'label' => 'Newsbreak',
 					'backgroundColor' => 'rgba(65,0,147,0.2 )',
 					'borderColor' => 'rgba(65,0,147,1 )',
 					'data' => []

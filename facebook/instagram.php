@@ -9,7 +9,7 @@
 	 */
 	$insights = [
 		0 => [
-			'day' => 'follower_count,reach,profile_views,impressions'
+			'day' => 'reach,profile_views,impressions'
 		]
 	];
 
@@ -17,10 +17,9 @@
 	 * Mapping information for the graphing data
 	 */
 	$insta_labels = [
-		'follower_count' => 0,
-		'reach' => 1,
-		'profile_views' => 2,
-		'impressions' => 3
+		'reach' => 0,
+		'profile_views' => 1,
+		'impressions' => 2
 	];
 
 	/**
