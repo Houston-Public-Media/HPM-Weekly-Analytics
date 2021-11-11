@@ -10,7 +10,7 @@
 	}
 
 	function googleArticleSources( $row ) {
-		global $analytics, $start, $end, $ga, $find, $replace;
+		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
 		if ( !empty( $match ) ) :
 			$id = $match[1];
@@ -20,6 +20,9 @@
 			$catjs = json_decode( $cats );
 			$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
 			$date = strtotime( $pjs->date );
+			if ( $date >= $startu && $date <= $endu ) :
+				$title = "📅  " . $title;
+			endif;
 			$authors = $tags = [];
 			foreach( $pjs->coauthors as $coa ) :
 				$authors[] = $coa->display_name;
