@@ -6,926 +6,625 @@ const googleTabs = document.querySelectorAll('.tabs ul li.google');
 var currentReport, graphs = {};
 var currentData = [];
 var activeTab = 'overall';
+Chart.defaults.elements.bar.borderWidth = 2;
+Chart.defaults.interaction.mode = 'index';
+Chart.defaults.interaction.axis = 'y';
+Chart.defaults.plugins.title.display = true;
+Chart.defaults.plugins.title.font.size = 16;
+Chart.defaults.plugins.legend.position = 'bottom';
+var axisLabelFix = (value) => {
+	for (var i=0; i < value.ticks.length; i++) {
+		if ( value.ticks[i].label.length >= 40 ) {
+			value.ticks[i].label = value.ticks[i].label.substring(0,40) + '...';
+		}
+	}
+}
 var config = {
 	'ga-main-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 Articles - Pageviews by Source',
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'ga-main-hourly': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Site Users By Hour',
-				fontSize: 16
+		options: {
+			plugins: {
+				title: {
+					text: 'Site Users By Hour',
+				}
 			}
 		},
-		'data': [],
-		'type': 'line'
+		data: [],
+		type: 'line'
 	},
 	'ga-main-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Users by Device Category',
-				fontSize: 16
-			},
-			animation: {
-				animateScale: true,
-				animateRotate: true
+		options: {
+			plugins: {
+				title: {
+					text: 'Users by Device Category'
+				}
 			}
 		},
-		'data': [],
-		'type': 'doughnut'
+		data: [],
+		type: 'doughnut'
 	},
 	'ga-amp-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 Articles - Pageviews by Source'
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'ga-amp-hourly': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Site Users By Hour',
-				fontSize: 16
+		options: {
+			plugins: {
+				title: {
+					text: 'Site Users By Hour'
+				}
 			}
 		},
-		'data': [],
-		'type': 'line'
+		data: [],
+		type: 'line'
 	},
 	'ga-amp-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Users by Device Category',
-				fontSize: 16
-			},
-			animation: {
-				animateScale: true,
-				animateRotate: true
+		options: {
+			plugins: {
+				title: {
+					text: 'Users by Device Category'
+				}
 			}
 		},
-		'data': [],
-		'type': 'doughnut'
+		data: [],
+		type: 'doughnut'
 	},
 	'ga-combined-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 Articles - Pageviews by Source'
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
+			},
+			transitions: {
+				resize: {
+					animation: {
+						duration: 0
+					}
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'ga-combined-hourly': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Site Users By Hour',
-				fontSize: 16
+		options: {
+			plugins: {
+				title: {
+					text: 'Site Users By Hour'
+				}
 			}
 		},
-		'data': [],
-		'type': 'line'
+		data: [],
+		type: 'line'
 	},
 	'ga-combined-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Users by Device Category',
-				fontSize: 16
-			},
-			animation: {
-				animateScale: true,
-				animateRotate: true
+		options: {
+			plugins: {
+				title: {
+					text: 'Users by Device Category'
+				}
 			}
 		},
-		'data': [],
-		'type': 'doughnut'
+		data: [],
+		type: 'doughnut'
 	},
 	'ga-houston-matters-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Houston Matters Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 Houston Matters Articles - Pageviews by Source'
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'ga-town-square-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Town Square Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 Town SquareArticles - Pageviews by Source'
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'ga-i-see-u-articles': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 I SEE U Articles - Pageviews by Source',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
 					}
+				},
+				title: {
+					text: 'Top 20 I SEE U Articles - Pageviews by Source'
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 35 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,35);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'facebook-impressions': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Impressions and Reach'
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Impressions and Reach',
-				fontSize: 16
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'facebook-likes': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Lifetime Total Page Likes'
 				}
 			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Lifetime Total Page Likes',
-				fontSize: 16
-			},
 			scales: {
-				yAxes: [{
+				y: {
 					ticks: {
 						beginAtZero: true
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'facebook-reactions': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Post Reactions by Type'
 				}
 			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Post Reactions by Type',
-				fontSize: 16
-			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
 					ticks: {
 						beginAtZero: true
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'instagram-stats': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					display: false
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: false
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'twitter-tweets-by-impression': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 10 Tweets by Impressions',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						var label = data.labels[tooltipItem[0].index];
-						if ( label.length < 120 ) {
-							return label;
-						} else {
-							var trimmed = label.substring(0,120);
-							return trimmed+'...';
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				title: {
+					text: 'Top 10 Tweets by Impressions'
+				},
+				tooltips: {
+					callbacks: {
+						title: (tooltipItem, data) => {
+							var label = data.labels[tooltipItem[0].index];
+							if ( label.length < 120 ) {
+								return label;
+							} else {
+								var trimmed = label.substring(0,120);
+								return trimmed+'...';
+							}
 						}
 					}
 				}
 			},
 			scales: {
-				yAxes: [{
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 45 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,45);
-								return trimmed+'...';
-							}
-						}
+				y: {
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}],
-				xAxes: [{
+				},
+				x: {
 					ticks: {
 						beginAtZero: true
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'twitter-tweets-by-engagement': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 10 Tweets By Engagement Type',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						var label = data.labels[tooltipItem[0].index];
-						if ( label.length < 120 ) {
-							return label;
-						} else {
-							var trimmed = label.substring(0,120);
-							return trimmed+'...';
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				title: {
+					text: 'Top 10 Tweets By Engagement Type'
+				},
+				tooltips: {
+					callbacks: {
+						title: (tooltipItem, data) => {
+							var label = data.labels[tooltipItem[0].index];
+							if ( label.length < 120 ) {
+								return label;
+							} else {
+								var trimmed = label.substring(0,120);
+								return trimmed+'...';
+							}
 						}
 					}
 				}
 			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 45 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,45);
-								return trimmed+'...';
-							}
-						}
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'twitter-account-tweets': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Tweets per Day'
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Tweets per Day',
-				fontSize: 16
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'twitter-account-impressions': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Overall Tweet Impressions by Type'
 				}
 			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Overall Tweet Impressions by Type',
-				fontSize: 16
-			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'twitter-account-engagements': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Overall Tweet Engagements by Type'
 				}
 			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Overall Tweet Engagements by Type',
-				fontSize: 16
-			},
 			scales: {
-				xAxes: [{
+				x: {
 					stacked: true,
-				}],
-				yAxes: [{
+				},
+				y: {
 					stacked: true,
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'triton-hourly': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Hourly Listeners by Stream',
-				fontSize: 16
+		options: {
+			plugins: {
+				title: {
+					text: 'Hourly Listeners by Stream'
+				}
 			}
 		},
-		'data': [],
-		'type': 'line'
+		data: [],
+		type: 'line'
 	},
 	'triton-news-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'right',
-			},
-			title: {
-				display: true,
-				text: 'News: CUME by Device Type',
-				fontSize: 16
+		options: {
+			plugins: {
+				legend: {
+					position: 'right',
+				},
+				title: {
+					text: 'News: CUME by Device Type'
+				}
 			}
 		},
-		'data': [],
-		'type': 'pie'
+		data: [],
+		type: 'pie'
 	},
 	'triton-classical-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'right',
-			},
-			title: {
-				display: true,
-				text: 'Classical: CUME by Device Type',
-				fontSize: 16
+		options: {
+			plugins: {
+				legend: {
+					position: 'right',
+				},
+				title: {
+					text: 'Classical: CUME by Device Type'
+				}
 			}
 		},
-		'data': [],
-		'type': 'pie'
+		data: [],
+		type: 'pie'
 	},
 	'triton-mixtape-devices': {
-		'options': {
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'right',
-			},
-			title: {
-				display: true,
-				text: 'Mixtape: CUME by Device Type',
-				fontSize: 16
+		options: {
+			plugins: {
+				legend: {
+					position: 'right',
+				},
+				title: {
+					text: 'Mixtape: CUME by Device Type'
+				}
 			}
 		},
-		'data': [],
-		'type': 'pie'
+		data: [],
+		type: 'pie'
 	},
 	'youtube-videos-by-views': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Top 20 Videos by Views',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						var label = data.labels[tooltipItem[0].index];
-						if ( label.length < 120 ) {
-							return label;
-						} else {
-							var trimmed = label.substring(0,120);
-							return trimmed+'...';
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				title: {
+					text: 'Top 20 Videos by Views'
+				},
+				tooltips: {
+					callbacks: {
+						title: (tooltipItem, data) => {
+							var label = data.labels[tooltipItem[0].index];
+							if ( label.length < 120 ) {
+								return label;
+							} else {
+								var trimmed = label.substring(0,120);
+								return trimmed+'...';
+							}
 						}
 					}
 				}
 			},
 			scales: {
-				yAxes: [{
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 45 ) {
-								return value;
-							} else {
-								var trimmed = value.substring(0,45);
-								return trimmed+'...';
-							}
-						}
+				y: {
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
 					}
-				}]
+				}
 			}
 		},
-		'data': [],
-		'type': 'horizontalBar'
+		data: [],
+		type: 'bar'
 	},
 	'youtube-videos-by-engagement': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
-				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Audience Engagement with Top 20 Videos',
-				fontSize: 16
-			},
-			tooltips: {
-				callbacks: {
-					title: function(tooltipItem, data) {
-						var label = data.labels[tooltipItem[0].index];
-						if ( label.length < 120 ) {
-							return label;
-						} else {
-							var trimmed = label.substring(0,120);
-							return trimmed+'...';
-						}
-					}
-				}
-			},
-			scales: {
-				yAxes: [{
-					ticks: {
-						callback: function(value, index, values) {
-							if ( value.length < 45 ) {
-								return value;
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				title: {
+					text: 'Audience Engagement with Top 20 Videos'
+				},
+				tooltips: {
+					callbacks: {
+						title: (tooltipItem, data) => {
+							var label = data.labels[tooltipItem[0].index];
+							if ( label.length < 120 ) {
+								return label;
 							} else {
-								var trimmed = value.substring(0,45);
+								var trimmed = label.substring(0,120);
 								return trimmed+'...';
 							}
 						}
 					}
-				}]
-			}
-		},
-		'data': [],
-		'type': 'horizontalBar'
-	},
-	'apple-demo': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'User Gender by Day',
-				fontSize: 16
 			},
 			scales: {
-				yAxes: [{
-					stacked: true
-				}],
-				xAxes: [{
-					stacked: true
-				}]
+				y: {
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
+					}
+				}
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
+	},
+	'apple-demo': {
+		options: {
+			plugins: {
+				title: {
+					text: 'User Gender by Day'
+				}
+			},
+			scales: {
+				y: {
+					stacked: true
+				},
+				x: {
+					stacked: true
+				}
+			}
+		},
+		data: [],
+		type: 'bar'
 	},
 	'apple-age': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Channel Age Groups (Percentage)'
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Channel Age Groups (Percentage)',
-				fontSize: 16
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'apple-reach': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Reach and Views Per Day'
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Reach and Views Per Day',
-				fontSize: 16
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	},
 	'apple-engage': {
-		'options': {
-			elements: {
-				rectangle: {
-					borderWidth: 2,
+		options: {
+			plugins: {
+				title: {
+					text: 'Article Engagements Per Day'
 				}
-			},
-			maintainAspectRatio: true,
-			responsive: true,
-			legend: {
-				position: 'bottom',
-			},
-			title: {
-				display: true,
-				text: 'Article Engagements Per Day',
-				fontSize: 16
 			}
 		},
-		'data': [],
-		'type': 'bar'
+		data: [],
+		type: 'bar'
 	}
 };
 window.getJSON = (url, callback) => {
@@ -942,7 +641,7 @@ window.getJSON = (url, callback) => {
 	};
 	xhr.send();
 };
-function graphUpdate(report) {
+var graphUpdate = (report) => {
 	getJSON( dlUrl + report + ".json", (err,data) => {
 		if (err !== null) {
 			console.log(err);
@@ -995,7 +694,7 @@ function graphUpdate(report) {
 		}
 	});
 }
-function overallGen(data) {
+var overallGen = (data) => {
 	var output = "<table class=\"table is-bordered is-striped is-hoverable is-fullwidth\">" +
 		"<thead>" +
 		"<tr>" +
@@ -1094,7 +793,7 @@ function overallGen(data) {
 	output += "</tbody></table>";
 	document.getElementById('overall-totals').innerHTML = output;
 }
-(function(){
+(function() {
 	Array.from(tabs).forEach((tab) => {
 		tab.addEventListener('click', (event) => {
 			if (event.currentTarget.classList.contains('is-active')) {
