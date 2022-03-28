@@ -156,6 +156,8 @@
 			// Adding the row to the sheet
 			$sheets[$sheet][] = $gaSources;
 
+			$others = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+
 			// Mapping the data into the graphing data
 			$graphs[$ga_acct_name.'-articles']['labels'][] = $gaSources[0];
 			$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $gaSources[7];
@@ -164,7 +166,7 @@
 			$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
 			$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
 			$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
-			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others < 0 ? 0 : $others );
 		endforeach;
 
 		// User / Session pull from GA
