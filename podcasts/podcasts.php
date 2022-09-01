@@ -7,32 +7,34 @@
 	 * 		I then save it in the 'podcasts' folder with a filename 'podcasts-YYYY-MM-DD.csv' (same as the report end date)
 	 *
 	 */
+
 	if ( ( $handle = fopen( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv", "r" ) ) !== FALSE ) :
 		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
 			if ( $row === 0 ) :
 				$sheets[$sheet][] = [
 					'Name','Downloads','Downloaders'
 				];
+				$pod_head = array_flip( $data );
 			else :
-				$slug = str_replace( '/', '', $data[0] );
+				$slug = str_replace( '/', '', $data[ $pod_head[ 'Programs' ] ] );
 				if ( $slug === 'recast' ) :
 					$slug = 'HPM Newscast New';
 				endif;
 				$pod_data = [
 					'name' => ucwords( str_replace( '-', ' ', $slug ) ),
 					'data' => [
-						'downloads' => ( empty( intval( $data[1] ) ) ? 0 : intval( $data[1] ) ),
-						'downloaders' => ( empty( intval( $data[2] ) ) ? 0 : intval( $data[2] ) )
+						'downloads' => csv_int_check( 'Downloads', $data, $pod_head ),
+						'downloaders' => csv_int_check( 'Downloaders', $data, $pod_head )
 					]
 				];
 				$graphs['overall-totals']['podcasts'][$slug] = $pod_data;
 				$sheets[$sheet][] = [
 					ucwords( str_replace( '-', ' ', $slug ) ),
-					( empty( intval( $data[1] ) ) ? 0 : intval( $data[1] ) ),
-					( empty( intval( $data[2] ) ) ? 0 : intval( $data[2] ) )
+					csv_int_check( 'Downloads', $data, $pod_head ),
+					csv_int_check( 'Downloaders', $data, $pod_head )
 				];
 			endif;
 			$row++;
 		endwhile;
-		fclose($handle);
+		fclose( $handle );
 	endif;

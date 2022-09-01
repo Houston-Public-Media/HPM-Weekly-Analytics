@@ -10,7 +10,6 @@
 
 	$sheet = 'Apple News';
 	$row = 0;
-	$ao = 0;
 	/**
 	 * Open the CSV report downloaded from Apple News. They have a way to set up weekly reports that they email you
 	 * 		which makes downloading the report a lot easier. The report referenced below is the "Channel Summary" report.
@@ -20,75 +19,74 @@
 	if ( ( $handle = fopen( BASE . DS . "apple" . DS . "channel-" . $end . ".csv", "r" ) ) !== FALSE ) :
 		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
 			if ( $row === 0 ) :
+				$apple_head = array_flip( $data );
+
 				$sheets[$sheet][] = [
 					// Header row for the spreadsheet
 					'Date','Total Views','Unique Views','Reach','Shares','Likes','Favorites','Saved Articles','Male Users','Female Users','Users 18-24','Users 25-34','Users 35-44','Users 45-54','Users 55-64','Users 65+'
 				];
-				if ( $data[0] == 'Channel' ) :
-					$ao = 1;
-				endif;
 			else :
 
 				/**
 				 * Mapping all of the CSV fields into the graphing data structure
 				 * Demographics by gender
 				 */
-				$graphs['apple-demo']['labels'][] = $data[0+$ao];
-				$graphs['apple-demo']['datasets'][0]['data'][] = $data[19+$ao] * 100;
-				$graphs['apple-demo']['datasets'][1]['data'][] = $data[20+$ao] * 100;
+				$graphs['apple-demo']['labels'][] = $data[ $apple_head[ 'Date' ] ];
+				$graphs['apple-demo']['datasets'][0]['data'][] = $data[ $apple_head[ 'Demographics, Proportion Male' ] ] * 100;
+				$graphs['apple-demo']['datasets'][1]['data'][] = $data[ $apple_head[ 'Demographics, Proportion Female' ] ] * 100;
 
 				/**
 				 * Total views, unique views and overall reach
 				 */
-				$graphs['apple-reach']['labels'][] = $data[0+$ao];
-				$graphs['apple-reach']['datasets'][0]['data'][] = ( empty( intval( $data[1+$ao] ) ) ? 0 : intval( $data[1+$ao] ) );
-				$graphs['apple-reach']['datasets'][1]['data'][] = ( empty( intval( $data[2+$ao] ) ) ? 0 : intval( $data[2+$ao] ) );
-				$graphs['apple-reach']['datasets'][2]['data'][] = ( empty( intval( $data[18+$ao] ) ) ? 0 : intval( $data[18+$ao] ) );
+				$graphs['apple-reach']['labels'][] = $data[ $apple_head[ 'Date' ] ];
+				$graphs['apple-reach']['datasets'][0]['data'][] = csv_int_check( 'Total Views', $data, $apple_head );
+				$graphs['apple-reach']['datasets'][1]['data'][] = csv_int_check( 'Unique Viewers', $data, $apple_head );
+				$graphs['apple-reach']['datasets'][2]['data'][] = csv_int_check( 'Reach', $data, $apple_head );
 
 				/**
 				 * Shares, likes, favorites, saved articles
 				 */
-				$graphs['apple-engage']['labels'][] = $data[0+$ao];
-				$graphs['apple-engage']['datasets'][0]['data'][] = ( empty( intval( $data[3+$ao] ) ) ? 0 : intval( $data[3+$ao] ) );
-				$graphs['apple-engage']['datasets'][1]['data'][] = ( empty( intval( $data[9+$ao] ) ) ? 0 : intval( $data[9+$ao] ) );
-				$graphs['apple-engage']['datasets'][2]['data'][] = ( empty( intval( $data[10+$ao] ) ) ? 0 : intval( $data[10+$ao] ) );
-				$graphs['apple-engage']['datasets'][3]['data'][] = ( empty( intval( $data[13+$ao] ) ) ? 0 : intval( $data[13+$ao] ) );
+				$graphs['apple-engage']['labels'][] = $data[ $apple_head[ 'Date' ] ];
+				$graphs['apple-engage']['datasets'][0]['data'][] = csv_int_check( 'Article Shares', $data, $apple_head );
+				$graphs['apple-engage']['datasets'][1]['data'][] = csv_int_check( 'Likes', $data, $apple_head );
+				$graphs['apple-engage']['datasets'][2]['data'][] = csv_int_check( 'New Favorites', $data, $apple_head );
+				$graphs['apple-engage']['datasets'][3]['data'][] = csv_int_check( 'Saves', $data, $apple_head );
 
 				/**
 				 * User breakdown by age range. Currently trending majority 50+
 				 * This breakdown is presented by day, so I'm saving it to the side for averaging
 				 */
-				$apple_ages['18-24'][] = ( empty( $data[21+$ao] ) ? '0%' : ($data[21+$ao] * 100).'%' );
-				$apple_ages['25-34'][] = ( empty( $data[22+$ao] ) ? '0%' : ($data[22+$ao] * 100).'%' );
-				$apple_ages['35-44'][] = ( empty( $data[23+$ao] ) ? '0%' : ($data[23+$ao] * 100).'%' );
-				$apple_ages['45-54'][] = ( empty( $data[24+$ao] ) ? '0%' : ($data[24+$ao] * 100).'%' );
-				$apple_ages['55-64'][] = ( empty( $data[25+$ao] ) ? '0%' : ($data[25+$ao] * 100).'%' );
-				$apple_ages['65+'][] = ( empty( $data[26+$ao] ) ? '0%' : ($data[26+$ao] * 100).'%' );
+				$apple_ages['18-24'][] = csv_int_check( 'Demographics, Proportion Age 18–24', $data, $apple_head );
+				$apple_ages['25-34'][] = csv_int_check( 'Demographics, Proportion Age 25–34', $data, $apple_head );
+				$apple_ages['35-44'][] = csv_int_check( 'Demographics, Proportion Age 35–44', $data, $apple_head );
+				$apple_ages['45-54'][] = csv_int_check( 'Demographics, Proportion Age 45–54', $data, $apple_head );
+				$apple_ages['55-64'][] = csv_int_check( 'Demographics, Proportion Age 55–64', $data, $apple_head );
+				$apple_ages['65+'][] = csv_int_check( 'Demographics, Proportion Age 65+', $data, $apple_head );
 
 				// Save all of that info into a row in the spreadsheet
 				$sheets[$sheet][] = [
-					$data[0+$ao],
-					( empty( intval( $data[1+$ao] ) ) ? 0 : intval( $data[1+$ao] ) ),
-					( empty( intval( $data[2+$ao] ) ) ? 0 : intval( $data[2+$ao] ) ),
-					( empty( intval( $data[18+$ao] ) ) ? 0 : intval( $data[18+$ao] ) ),
-					( empty( intval( $data[3+$ao] ) ) ? 0 : intval( $data[3+$ao] ) ),
-					( empty( intval( $data[9+$ao] ) ) ? 0 : intval( $data[9+$ao] ) ),
-					( empty( intval( $data[10+$ao] ) ) ? 0 : intval( $data[10+$ao] ) ),
-					( empty( intval( $data[13+$ao] ) ) ? 0 : intval( $data[13+$ao] ) ),
-					( empty( $data[19+$ao] ) ? '0%' : ($data[19+$ao] * 100).'%' ),
-					( empty( $data[20+$ao] ) ? '0%' : ($data[20+$ao] * 100).'%' ),
-					( empty( $data[21+$ao] ) ? '0%' : ($data[21+$ao] * 100).'%' ),
-					( empty( $data[22+$ao] ) ? '0%' : ($data[22+$ao] * 100).'%' ),
-					( empty( $data[23+$ao] ) ? '0%' : ($data[23+$ao] * 100).'%' ),
-					( empty( $data[24+$ao] ) ? '0%' : ($data[24+$ao] * 100).'%' ),
-					( empty( $data[25+$ao] ) ? '0%' : ($data[25+$ao] * 100).'%' ),
-					( empty( $data[26+$ao] ) ? '0%' : ($data[26+$ao] * 100).'%' )
+					$data[ $apple_head[ 'Date' ] ],
+					csv_int_check( 'Total Views', $data, $apple_head ),
+					csv_int_check( 'Unique Viewers', $data, $apple_head ),
+					csv_int_check( 'Reach', $data, $apple_head ),
+					csv_int_check( 'Article Shares', $data, $apple_head ),
+					csv_int_check( 'Likes', $data, $apple_head ),
+					csv_int_check( 'New Favorites', $data, $apple_head ),
+					csv_int_check( 'Saves', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Male', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Female', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 18–24', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 25–34', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 35–44', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 45–54', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 55–64', $data, $apple_head ),
+					csv_int_check( 'Demographics, Proportion Age 65+', $data, $apple_head )
 				];
-				$graphs['overall-totals']['apple-news']['data'] += ( empty( intval( $data[18+$ao] ) ) ? 0 : intval( $data[18+$ao] ) );
+				$graphs['overall-totals']['apple-news']['data'] += csv_int_check( 'Reach', $data, $apple_head );
 			endif;
 			$row++;
 		endwhile;
-		fclose($handle);
+		fclose( $handle );
 	endif;
 
 	/**

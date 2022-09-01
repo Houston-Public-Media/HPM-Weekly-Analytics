@@ -22,33 +22,35 @@
 	// Open the CSV file
 	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) :
 		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
-			if ( $row > 0 ) :
+			if ( $row == 0 ) :
+				$tw_head = array_flip( $data );
+			else :
 				// Insert each tweet as a row using the tweets ID as the array key
-				$tweets[$data[0]] = [
-					'Tweet Text' => preg_replace( [ '/ https:\/\/t\.co\/[a-zA-Z0-9]+/', '/\n/' ], [ '', ' ' ], $data[2] ),
-					'Tweet Link' => $data[1],
-					'Date' => $data[3],
-					'Impressions' => ( empty( intval( $data[4] ) ) ? 0 : intval( $data[4] ) ),
-					'Engagements' => ( empty( intval( $data[5] ) ) ? 0 : intval( $data[5] ) ),
-					'Engagement Rate' => round( $data[6] * 100, 1 )."%",
-					'Retweets' => ( empty( intval( $data[7] ) ) ? 0 : intval( $data[7] ) ),
-					'Replies' => ( empty( intval( $data[8] ) ) ? 0 : intval( $data[8] ) ),
-					'Likes' => ( empty( intval( $data[9] ) ) ? 0 : intval( $data[9] ) ),
-					'URL Clicks' => ( empty( intval( $data[11] ) ) ? 0 : intval( $data[11] ) ),
-					'Hashtag Clicks' => ( empty( intval( $data[12] ) ) ? 0 : intval( $data[12] ) ),
-					'Detail Expands' => ( empty( intval( $data[13] ) ) ? 0 : intval( $data[13] ) ),
-					'Media Views' => ( empty( intval( $data[20] ) ) ? 0 : intval( $data[20] ) ),
-					'Media Engagements' => ( empty( intval( $data[21] ) ) ? 0 : intval( $data[21] ) )
+				$tweets[ $data[ $tw_head['Tweet id'] ] ] = [
+					'Tweet Text' => preg_replace( [ '/ https:\/\/t\.co\/[a-zA-Z0-9]+/', '/\n/' ], [ '', ' ' ], $data[ $tw_head['Tweet text'] ] ),
+					'Tweet Link' => $data[ $tw_head['Tweet permalink'] ],
+					'Date' => $data[ $tw_head['time'] ],
+					'Impressions' => csv_int_check( 'impressions', $data, $tw_head ),
+					'Engagements' => csv_int_check( 'engagements', $data, $tw_head ),
+					'Engagement Rate' => round( $data[ $tw_head[ 'engagement rate' ] ] * 100, 1 )."%",
+					'Retweets' => csv_int_check( 'retweets', $data, $tw_head ),
+					'Replies' => csv_int_check( 'replies', $data, $tw_head ),
+					'Likes' => csv_int_check( 'likes', $data, $tw_head ),
+					'URL Clicks' => csv_int_check( 'url clicks', $data, $tw_head ),
+					'Hashtag Clicks' => csv_int_check( 'hashtag clicks', $data, $tw_head ),
+					'Detail Expands' => csv_int_check( 'detail expands', $data, $tw_head ),
+					'Media Views' => csv_int_check( 'media views', $data, $tw_head ),
+					'Media Engagements' => csv_int_check( 'media engagements', $data, $tw_head )
 				];
 				// Save the number of engagements for each tweet into an array for sorting
-				$tw_eng[$data[0]] = ( empty( intval( $data[5] ) ) ? 0 : intval( $data[5] ) );
+				$tw_eng[ $data[ $tw_head[ 'Tweet id' ] ] ] = csv_int_check( 'engagements', $data, $tw_head );
 
 				// Save the number of impressions for each tweet into an array for sorting
-				$tw_imp[$data[0]] = ( empty( intval( $data[4] ) ) ? 0 : intval( $data[4] ) );
+				$tw_imp[ $data[ $tw_head[ 'Tweet id' ] ] ] = csv_int_check( 'impressions', $data, $tw_head );
 			endif;
 			$row++;
 		endwhile;
-		fclose($handle);
+		fclose( $handle );
 	endif;
 
 	// Create a worksheet in the spreadsheet that lists all of the tweets and their relevant stats

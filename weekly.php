@@ -20,6 +20,14 @@
 		return false;
 	}
 
+	function csv_int_check ( $index, $data, $head ) {
+		if ( strpos( $index, 'Demographics' ) !== false ) {
+			return ( empty( $data[ $head[ $index ] ] ) ? '0%' : ($data[ $head[ $index ] ] * 100).'%' );
+		} else {
+			return ( empty( intval( $data[ $head[ $index ] ] ) ) ? 0 : intval( $data[ $head[ $index ] ] ) );
+		}
+	}
+
 	// Read keyboard input from terminal during execution
 	function read_stdin() {
 		$fr = fopen( "php://stdin", "r" );
