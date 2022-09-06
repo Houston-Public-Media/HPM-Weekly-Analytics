@@ -166,7 +166,7 @@
 			$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
 			$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
 			$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
-			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others < 0 ? 0 : $others );
+			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
 		endforeach;
 
 		// User / Session pull from GA
