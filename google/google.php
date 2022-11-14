@@ -12,25 +12,26 @@
 	function googleArticleSources( $row ) {
 		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
-		if ( !empty( $match ) ) :
-			$id = $match[1];
-			$post = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/'.$id );
-			$cats = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/categories?post='.$id );
-			$pjs = json_decode( $post );
-			$catjs = json_decode( $cats );
-			$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
-			$date = strtotime( $pjs->date );
-			if ( $date >= $startu && $date <= $endu ) :
-				$title = "📅  " . $title;
-			endif;
-			$authors = $tags = [];
-			foreach( $pjs->coauthors as $coa ) :
-				$authors[] = $coa->display_name;
-			endforeach;
-			foreach( $catjs as $ca ) :
-				$tags[] = html_entity_decode( $ca->name );
-			endforeach;
+		if ( empty( $match ) ) :
+			return [];
 		endif;
+		$id = $match[1];
+		$post = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/'.$id );
+		$cats = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/categories?post='.$id );
+		$pjs = json_decode( $post );
+		$catjs = json_decode( $cats );
+		$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
+		$date = strtotime( $pjs->date );
+		if ( $date >= $startu && $date <= $endu ) :
+			$title = "📅  " . $title;
+		endif;
+		$authors = $tags = [];
+		foreach( $pjs->coauthors as $coa ) :
+			$authors[] = $coa->display_name;
+		endforeach;
+		foreach( $catjs as $ca ) :
+			$tags[] = html_entity_decode( $ca->name );
+		endforeach;
 		$date_format = date( 'Y-m-d g:i A', $date );
 
 		// Secondary GA pull to gather source / medium information for each article
@@ -153,20 +154,22 @@
 			endif;
 			$gaSources = googleArticleSources( $row );
 
-			// Adding the row to the sheet
-			$sheets[$sheet][] = $gaSources;
+			if ( !empty( $gaSources ) ) :
+				// Adding the row to the sheet
+				$sheets[$sheet][] = $gaSources;
 
-			$others = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+				$others = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
 
-			// Mapping the data into the graphing data
-			$graphs[$ga_acct_name.'-articles']['labels'][] = $gaSources[0];
-			$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $gaSources[7];
-			$graphs[$ga_acct_name.'-articles']['datasets'][1]['data'][] = $gaSources[8];
-			$graphs[$ga_acct_name.'-articles']['datasets'][2]['data'][] = $gaSources[9];
-			$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
-			$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
-			$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
-			$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
+				// Mapping the data into the graphing data
+				$graphs[$ga_acct_name.'-articles']['labels'][] = $gaSources[0];
+				$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $gaSources[7];
+				$graphs[$ga_acct_name.'-articles']['datasets'][1]['data'][] = $gaSources[8];
+				$graphs[$ga_acct_name.'-articles']['datasets'][2]['data'][] = $gaSources[9];
+				$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
+				$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
+				$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
+				$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
+			endif;
 		endforeach;
 
 		// User / Session pull from GA
@@ -314,18 +317,21 @@
 					];
 				endif;
 				$gaSources = googleArticleSources( $row );
-				// Adding the row to the sheet
-				$sheets[$sheet][] = $gaSources;
 
-				//Mapping the data into the graphing data
-				$graphs[ $show_graph ]['labels'][] = $gaSources[0];
-				$graphs[ $show_graph ]['datasets'][0]['data'][] = $gaSources[7];
-				$graphs[ $show_graph ]['datasets'][1]['data'][] = $gaSources[8];
-				$graphs[ $show_graph ]['datasets'][2]['data'][] = $gaSources[9];
-				$graphs[ $show_graph ]['datasets'][3]['data'][] = $gaSources[10];
-				$graphs[ $show_graph ]['datasets'][4]['data'][] = $gaSources[11];
-				$graphs[ $show_graph ]['datasets'][5]['data'][] = $gaSources[12];
-				$graphs[ $show_graph ]['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+				if ( !empty( $gaSources ) ) :
+					// Adding the row to the sheet
+					$sheets[$sheet][] = $gaSources;
+
+					//Mapping the data into the graphing data
+					$graphs[ $show_graph ]['labels'][] = $gaSources[0];
+					$graphs[ $show_graph ]['datasets'][0]['data'][] = $gaSources[7];
+					$graphs[ $show_graph ]['datasets'][1]['data'][] = $gaSources[8];
+					$graphs[ $show_graph ]['datasets'][2]['data'][] = $gaSources[9];
+					$graphs[ $show_graph ]['datasets'][3]['data'][] = $gaSources[10];
+					$graphs[ $show_graph ]['datasets'][4]['data'][] = $gaSources[11];
+					$graphs[ $show_graph ]['datasets'][5]['data'][] = $gaSources[12];
+					$graphs[ $show_graph ]['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+				endif;
 			endforeach;
 		endforeach;
 	endforeach;
