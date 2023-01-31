@@ -1,6 +1,6 @@
 # Weekly Analytics by Service
 
-A PHP script that aggregates and parses analytics from various services either programmatically (Google Analytics, Facebook, Instagram, Triton Webcast Metrics, YouTube) or from a pre-run report (Twitter, Apple News). It then saves that information as a sheet in Google Drive, and as a JSON file for use in the [included graphing application](./hpm-analytics-new). Finally, it sends an email to a designated group so that they can make use of the data.
+A PHP script that aggregates and parses analytics from various services either programmatically (Google Analytics, Facebook, Instagram, Triton Webcast Metrics, YouTube) or from a pre-run report (Twitter, Apple News, StreamGuys podcast reporting). It then saves that information as an Excel file, and as a JSON file for use in the [included graphing application](./hpm-analytics-new). Finally, it sends an email to a designated group so that they can make use of the data.
 
 ## Why does this exist?
 
@@ -32,7 +32,7 @@ Contact me at [jcounts@houstonpublicmedia.org](mailto:jcounts@houstonpublicmedia
 
 ## License
 
-Copyright (c) 2018 Houston Public Media
+Copyright (c) 2023 Houston Public Media
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
