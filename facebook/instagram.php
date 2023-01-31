@@ -33,19 +33,19 @@
 	 * The Graph API only allows you to pull 93 days at a time. This script is dealing with weekly increments,
 	 * 		so the loop isn't completely necessary, but this way it can be used for longer pulls if need be
 	 */
-	for ( $i = $startu; $i <= $endu; ) :
+	for ( $i = $startu; $i <= $endu; ) {
 		$di = $endu - $i;
-		if ( $di > 7776000 ) :
+		if ( $di > 7776000 ) {
 			$endt = $i + 7776000;
-		else :
+		} else {
 			$endt = $endu;
-		endif;
+		}
 
 		/**
 		 * Loop through the $insights array to pull the various metrics we need
 		 */
-		foreach ( $insights as $insight ) :
-			foreach ( $insight as $k => $v ) :
+		foreach ( $insights as $insight ) {
+			foreach ( $insight as $k => $v ) {
 				$period = $k;
 				$metric = $v;
 				$args = [
@@ -72,50 +72,50 @@
 
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
-				foreach ( $json->data as $d ) :
+				foreach ( $json->data as $d ) {
 					$title = $d->title;
 					$name = $d->name;
 
 					// Check if the term's definition is in the glossary, and add it if not
-					if ( !in_array_r( $d->title, $glossary ) ) :
+					if ( !in_array_r( $d->title, $glossary ) ) {
 						$glossary[] = [ $d->title, $d->description ];
-					endif;
-					foreach ( $d->values as $val ) :
+					}
+					foreach ( $d->values as $val ) {
 						$endi = strtotime( $val->end_time );
 						$time = date( 'Y-m-d', $endi - 86400 );
 
 						// Check if the data title is in the title array, if not, add it
-						if ( !in_array( $title, $titles ) ) :
+						if ( !in_array( $title, $titles ) ) {
 							$titles[] = $title;
-						endif;
+						}
 
 						// Insert the data into the intermediate $results array
-						$results[$time][$name] = $val->value;
-					endforeach;
-				endforeach;
-			endforeach;
-		endforeach;
+						$results[ $time ][ $name ] = $val->value;
+					}
+				}
+			}
+		}
 		$i += 7776000;
-	endfor;
-	$sheets[$sheet][] = $titles;
+	}
+	$sheets[ $sheet ][] = $titles;
 	$c = 1;
 
 	// Loop through the $results array and map that data into the graphing dataset and spreadsheet
-	foreach ( $results as $day => $re ) :
+	foreach ( $results as $day => $re ) {
 		$g = 1;
-		$sheets[$sheet][$c] = [];
-		$sheets[$sheet][$c][0] = $day;
+		$sheets[ $sheet ][ $c ] = [];
+		$sheets[ $sheet ][ $c ][0] = $day;
 		$graphs['instagram-stats']['labels'][] = $day;
-		foreach ( $re as $rek => $ree ) :
-			$sheets[$sheet][$c][$g] = $ree;
-			if ( $rek == 'reach' ) :
+		foreach ( $re as $rek => $ree ) {
+			$sheets[ $sheet ][ $c ][ $g ] = $ree;
+			if ( $rek == 'reach' ) {
 				$graphs['overall-totals']['instagram']['data'] += $ree;
-			endif;
-			$graphs['instagram-stats']['datasets'][$insta_labels[$rek]]['data'][] = $ree;
+			}
+			$graphs['instagram-stats']['datasets'][ $insta_labels[ $rek ] ]['data'][] = $ree;
 			$g++;
-		endforeach;
+		}
 		$c++;
-	endforeach;
+	}
 
 	/**
 	 * Do a pull of all of our Instagram posts from the time period, and gather metrics about each
@@ -159,14 +159,14 @@
 
 	// Decode the results and loop
 	$json = json_decode( $result );
-	if ( !empty( $json->data ) ) :
-		foreach ( $json->data as $j ) :
+	if ( !empty( $json->data ) ) {
+		foreach ( $json->data as $j ) {
 			$id = $j->id;
 			$pubtime = strtotime( $j->timestamp );
 
 			// Save the post information into an intermediate array
-			if ( $pubtime >= $startu && $pubtime <= $endu ) :
-				$posts[$id] = [
+			if ( $pubtime >= $startu && $pubtime <= $endu ) {
+				$posts[ $id ] = [
 					'Publish Date' => date( 'Y-m-d H:i:s', $pubtime ),
 					'URL' => $j->permalink,
 					'Caption' => ( !empty( $j->caption ) ? $j->caption : '' ),
@@ -174,15 +174,15 @@
 					'Likes' => ( !empty( $j->like_count ) ? $j->like_count : 0 ),
 					'Comments' => ( !empty( $j->comments_count ) ? $j->comments_count : 0 )
 				];
-			endif;
-		endforeach;
+			}
+		}
 
 		// If another page of results is available, reset the query, go back to A, and run it again
-		if ( !empty( $json->paging->next ) ) :
+		if ( !empty( $json->paging->next ) ) {
 			$url = $json->paging->next;
 			goto a;
-		endif;
-	endif;
+		}
+	}
 
 	$args = [
 		'pretty' => 0,
@@ -199,47 +199,47 @@
 	/**
 	 * Pull enhanced stats for all of the posts
 	 */
-	foreach ( $posts as $pid => $pv ) :
+	foreach ( $posts as $pid => $pv ) {
 		$ch = curl_init();
 		curl_setopt( $ch, CURLOPT_URL, "{$fb_base}{$pid}/insights?{$query}" );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		$res = curl_exec( $ch );
 		curl_close( $ch );
 		$js = json_decode( $res );
-		if ( !empty( $js->data ) ) :
-			foreach ( $js->data as $d ) :
+		if ( !empty( $js->data ) ) {
+			foreach ( $js->data as $d ) {
 				$title = $d->title;
 				$name = $d->name;
 
 				// Check if the term's definition is in the glossary, and add it if not
-				if ( !in_array_r( $d->title, $glossary ) ) :
+				if ( !in_array_r( $d->title, $glossary ) ) {
 					$glossary[] = [ $d->title, $d->description ];
-				endif;
+				}
 
 				// Check if the term's definition is in the title array, and add it if not
-				if ( !in_array( $title, $titles ) ) :
+				if ( !in_array( $title, $titles ) ) {
 					$titles[] = $title;
-				endif;
-				foreach ( $d->values as $val ) :
-					$posts[$pid][$name] = $val->value;
-				endforeach;
-			endforeach;
-		endif;
-	endforeach;
+				}
+				foreach ( $d->values as $val ) {
+					$posts[ $pid ][ $name ] = $val->value;
+				}
+			}
+		}
+	}
 
 	// Map that data into the spreadsheet
-	$sheets[$sheet][] = $titles;
+	$sheets[ $sheet ][] = $titles;
 	$c = 1;
-	foreach ( $posts as $p => $pv ) :
+	foreach ( $posts as $p => $pv ) {
 		$g = 1;
-		$sheets[$sheet][$c] = [];
-		$sheets[$sheet][$c][0] = $p;
-		foreach ( $pv as $ppv ) :
-			$sheets[$sheet][$c][$g] = $ppv;
+		$sheets[ $sheet ][ $c ] = [];
+		$sheets[ $sheet ][ $c ][0] = $p;
+		foreach ( $pv as $ppv ) {
+			$sheets[ $sheet ][ $c ][ $g ] = $ppv;
 			$g++;
-		endforeach;
+		}
 		$c++;
-	endforeach;
+	}
 
 	$sheets['Instagram Glossary'] = $glossary;
 ?>

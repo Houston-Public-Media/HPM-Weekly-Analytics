@@ -16,16 +16,16 @@
 	 * 		I then save it in the 'apple' folder with a filename 'channel-YYYY-MM-DD.csv' (same as the report end date)
 	 *
 	 */
-	if ( ( $handle = fopen( BASE . DS . "apple" . DS . "channel-" . $end . ".csv", "r" ) ) !== FALSE ) :
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
-			if ( $row === 0 ) :
+	if ( ( $handle = fopen( BASE . DS . "apple" . DS . "channel-" . $end . ".csv", "r" ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+			if ( $row === 0 ) {
 				$apple_head = array_flip( $data );
 
-				$sheets[$sheet][] = [
+				$sheets[ $sheet ][] = [
 					// Header row for the spreadsheet
 					'Date','Total Views','Unique Views','Reach','Shares','Likes','Favorites','Saved Articles','Male Users','Female Users','Users 18-24','Users 25-34','Users 35-44','Users 45-54','Users 55-64','Users 65+'
 				];
-			else :
+			} else {
 
 				/**
 				 * Mapping all of the CSV fields into the graphing data structure
@@ -64,7 +64,7 @@
 				$apple_ages['65+'][] = csv_int_check( 'Demographics, Proportion Age 65+', $data, $apple_head );
 
 				// Save all of that info into a row in the spreadsheet
-				$sheets[$sheet][] = [
+				$sheets[ $sheet ][] = [
 					$data[ $apple_head[ 'Date' ] ],
 					csv_int_check( 'Total Views', $data, $apple_head ),
 					csv_int_check( 'Unique Viewers', $data, $apple_head ),
@@ -83,18 +83,18 @@
 					csv_int_check( 'Demographics, Proportion Age 65+', $data, $apple_head )
 				];
 				$graphs['overall-totals']['apple-news']['data'] += csv_int_check( 'Reach', $data, $apple_head );
-			endif;
+			}
 			$row++;
-		endwhile;
+		}
 		fclose( $handle );
-	endif;
+	}
 
 	/**
 	 * Creating weekly averages for the different age ranges, for inclusion in the graphs
 	 */
-	foreach ( $apple_ages as $k => $v ) :
+	foreach ( $apple_ages as $k => $v ) {
 		$graphs['apple-age']['labels'][] = $k;
 		$avg = round( array_sum( $v ) / count( $v ), 1 );
 		$graphs['apple-age']['datasets'][0]['data'][] = $avg;
-	endforeach;
+	}
 ?>

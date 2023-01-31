@@ -13,9 +13,9 @@
 
 		// Load previously authorized credentials from a file.
 		$credentialsPath = YT_ACCESS;
-		if ( file_exists( $credentialsPath ) ) :
+		if ( file_exists( $credentialsPath ) ) {
 			$accessToken = json_decode( file_get_contents( $credentialsPath ), true );
-		else :
+		} else {
 			// Request authorization from the user.
 			$authUrl = $client->createAuthUrl();
 			printf( "Open the following link in your browser:\n%s\n", $authUrl );
@@ -26,24 +26,24 @@
 			$accessToken = $client->fetchAccessTokenWithAuthCode( $authCode );
 
 			// Check to see if there was an error.
-			if ( array_key_exists( 'error', $accessToken ) ) :
+			if ( array_key_exists( 'error', $accessToken ) ) {
 				throw new Exception( join( ', ', $accessToken ) );
-			endif;
+			}
 
 			// Store the credentials to disk.
-			if ( !file_exists( dirname( $credentialsPath ) ) ) :
+			if ( !file_exists( dirname( $credentialsPath ) ) ) {
 				mkdir( dirname( $credentialsPath ), 0700, true );
-			endif;
+			}
 			file_put_contents( $credentialsPath, json_encode( $accessToken ) );
 			printf( "Credentials saved to %s\n", $credentialsPath );
-		endif;
+		}
 		$client->setAccessToken( $accessToken );
 
 		// Refresh the token if it's expired.
-		if ( $client->isAccessTokenExpired() ) :
+		if ( $client->isAccessTokenExpired() ) {
 			$client->fetchAccessTokenWithRefreshToken( $client->getRefreshToken() );
 			file_put_contents( $credentialsPath, json_encode( $client->getAccessToken() ) );
-		endif;
+		}
 		return $client;
 	}
 
@@ -76,7 +76,7 @@
 	$videos = $vid_ids = [];
 
 	// Loop through the response rows
-	foreach ( $response->rows as $r ) :
+	foreach ( $response->rows as $r ) {
 		// Save video IDs into an array so we can pull individual video analytics as a batch
 		$vid_ids[] = $r[0];
 		$videos[$r[0]] = [
@@ -87,7 +87,7 @@
 			'Estimated Minutes Watched' => ( empty( $r[5] ) ? 0 : $r[5] ),
 			'Subscribers Gained' => ( empty( $r[6] ) ? 0 : $r[6] )
 		];
-	endforeach;
+	}
 	$graphs['overall-totals']['youtube']['data'] = $response_over->rows[0][0];
 	$vids = implode( ',', $vid_ids );
 	$youtube = new Google_Service_YouTube( $client );
@@ -97,13 +97,13 @@
 		'snippet,statistics',
 		[ 'id' => $vids ]
 	);
-	
+
 	$sheet = 'Top YouTube Videos';
 	$sheets[$sheet] = [];
 	$sheets[$sheet][] = [
 		'Title', 'URL', 'Date', 'Views', 'Likes', 'Dislikes', 'Comments', 'Estimated Minutes Watched', 'Subscribers Gained', 'Lifetime Views', 'Lifetime Likes', 'Lifetime Dislikes', 'Lifetime Favorites', 'Lifetime Comments'
 	];
-	foreach ( $ytlist['items'] as $yti ) :
+	foreach ( $ytlist['items'] as $yti ) {
 		$ytid = $yti->id;
 
 		// Map that data as a row for the spreadsheet
@@ -111,12 +111,12 @@
 			$yti->snippet->title,
 			'https://youtube.com/watch?v='.$ytid,
 			date( 'Y-m-d g:i A', strtotime( $yti->snippet->publishedAt ) ),
-			( empty( $videos[$ytid]['Views'] ) ? 0 : $videos[$ytid]['Views'] ),
-			( empty( $videos[$ytid]['Likes'] ) ? 0 : $videos[$ytid]['Likes'] ),
-			( empty( $videos[$ytid]['Dislikes'] ) ? 0 : $videos[$ytid]['Dislikes'] ),
-			( empty( $videos[$ytid]['Comments'] ) ? 0 : $videos[$ytid]['Comments'] ),
-			( empty( $videos[$ytid]['Estimated Minutes Watched'] ) ? 0 : $videos[$ytid]['Estimated Minutes Watched'] ),
-			( empty( $videos[$ytid]['Subscribers Gained'] ) ? 0 : $videos[$ytid]['Subscribers Gained'] ),
+			( empty( $videos[ $ytid ]['Views'] ) ? 0 : $videos[ $ytid ]['Views'] ),
+			( empty( $videos[ $ytid ]['Likes'] ) ? 0 : $videos[ $ytid ]['Likes'] ),
+			( empty( $videos[ $ytid ]['Dislikes'] ) ? 0 : $videos[ $ytid ]['Dislikes'] ),
+			( empty( $videos[ $ytid ]['Comments'] ) ? 0 : $videos[ $ytid ]['Comments'] ),
+			( empty( $videos[ $ytid ]['Estimated Minutes Watched'] ) ? 0 : $videos[ $ytid ]['Estimated Minutes Watched'] ),
+			( empty( $videos[ $ytid ]['Subscribers Gained'] ) ? 0 : $videos[ $ytid ]['Subscribers Gained'] ),
 			( empty( $yti->statistics->viewCount ) ? 0 : $yti->statistics->viewCount ),
 			( empty( $yti->statistics->likeCount ) ? 0 : $yti->statistics->likeCount ),
 			( empty( $yti->statistics->dislikeCount ) ? 0 : $yti->statistics->dislikeCount ),
@@ -126,12 +126,12 @@
 
 		// Map it as graphing data
 		$graphs['youtube-videos-by-views']['labels'][] = $yti->snippet->title;
-		$graphs['youtube-videos-by-views']['datasets'][0]['data'][] = ( empty( $videos[$ytid]['Views'] ) ? 0 : $videos[$ytid]['Views'] );
-		$graphs['youtube-videos-by-views']['datasets'][1]['data'][] = ( empty( $videos[$ytid]['Estimated Minutes Watched'] ) ? 0 : $videos[$ytid]['Estimated Minutes Watched'] );
+		$graphs['youtube-videos-by-views']['datasets'][0]['data'][] = ( empty( $videos[ $ytid ]['Views'] ) ? 0 : $videos[ $ytid ]['Views'] );
+		$graphs['youtube-videos-by-views']['datasets'][1]['data'][] = ( empty( $videos[ $ytid ]['Estimated Minutes Watched'] ) ? 0 : $videos[ $ytid ]['Estimated Minutes Watched'] );
 
 		$graphs['youtube-videos-by-engagement']['labels'][] = $yti->snippet->title;
 		$graphs['youtube-videos-by-engagement']['datasets'][0]['data'][] = ( empty( $yti->statistics->commentCount ) ? 0 : $yti->statistics->commentCount );
-		$graphs['youtube-videos-by-engagement']['datasets'][1]['data'][] = ( empty( $videos[$ytid]['Subscribers Gained'] ) ? 0 : $videos[$ytid]['Subscribers Gained'] );
+		$graphs['youtube-videos-by-engagement']['datasets'][1]['data'][] = ( empty( $videos[ $ytid ]['Subscribers Gained'] ) ? 0 : $videos[ $ytid ]['Subscribers Gained'] );
 		$graphs['youtube-videos-by-engagement']['datasets'][2]['data'][] = ( empty( $yti->statistics->likeCount ) ? 0 : $yti->statistics->likeCount );
-	endforeach;
+	}
 ?>

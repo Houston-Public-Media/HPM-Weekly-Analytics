@@ -12,9 +12,9 @@
 	function googleArticleSources( $row ) {
 		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
-		if ( empty( $match ) ) :
+		if ( empty( $match ) ) {
 			return [];
-		endif;
+		}
 		$id = $match[1];
 		$post = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/'.$id );
 		$cats = file_get_contents( 'https://www.houstonpublicmedia.org/wp-json/wp/v2/categories?post='.$id );
@@ -22,16 +22,16 @@
 		$catjs = json_decode( $cats );
 		$title = html_entity_decode( str_replace( $find, $replace, $pjs->title->rendered ), ENT_QUOTES, 'UTF-8' );
 		$date = strtotime( $pjs->date );
-		if ( $date >= $startu && $date <= $endu ) :
+		if ( $date >= $startu && $date <= $endu ) {
 			$title = "📅  " . $title;
-		endif;
+		}
 		$authors = $tags = [];
-		foreach( $pjs->coauthors as $coa ) :
+		foreach( $pjs->coauthors as $coa ) {
 			$authors[] = $coa->display_name;
-		endforeach;
-		foreach( $catjs as $ca ) :
+		}
+		foreach( $catjs as $ca ) {
 			$tags[] = html_entity_decode( $ca->name );
-		endforeach;
+		}
 		$date_format = date( 'Y-m-d g:i A', $date );
 
 		// Secondary GA pull to gather source / medium information for each article
@@ -51,33 +51,33 @@
 		$google = $facebook = $twitter = $rss = $newsbreak = $direct = $organic = $email = $referral = $social = '0';
 
 		// Parsing the source / medium pull from GA
-		foreach ( $sources->rows as $source ) :
+		foreach ( $sources->rows as $source ) {
 			$source_ex = explode( '/', $source[0] );
 			$medium = trim( $source_ex[1] );
 			$stype = trim( $source_ex[0] );
-			if ( $medium == '(none)' ) :
+			if ( $medium == '(none)' ) {
 				$direct += $source[1];
-			elseif ( $medium == 'organic' ) :
+			} elseif ( $medium == 'organic' ) {
 				$organic += $source[1];
-			elseif ( $medium == 'social' ) :
+			} elseif ( $medium == 'social' ) {
 				$social += $source[1];
-			elseif ( $medium == 'email' ) :
+			} elseif ( $medium == 'email' ) {
 				$email += $source[1];
-			elseif ( $medium == 'referral' ) :
+			} elseif ( $medium == 'referral' ) {
 				$referral += $source[1];
-			endif;
-			if ( strpos( $stype, 'google' ) !== false ) :
+			}
+			if ( strpos( $stype, 'google' ) !== false ) {
 				$google += $source[1];
-			elseif ( strpos( $stype, 'facebook' ) !== false ) :
+			} elseif ( strpos( $stype, 'facebook' ) !== false ) {
 				$facebook += $source[1];
-			elseif ( strpos( $stype, 't.co' ) !== false ) :
+			} elseif ( strpos( $stype, 't.co' ) !== false ) {
 				$twitter += $source[1];
-			elseif ( strpos( $stype, 'rss' ) !== false ) :
+			} elseif ( strpos( $stype, 'rss' ) !== false ) {
 				$rss += $source[1];
-			elseif ( strpos( $stype, 'newsbreak' ) !== false ) :
+			} elseif ( strpos( $stype, 'newsbreak' ) !== false ) {
 				$newsbreak += $source[1];
-			endif;
-		endforeach;
+			}
+		}
 
 		// Adding the row to the sheet
 		return [
@@ -118,7 +118,7 @@
 	];
 
 	$analytics = initializeAnalytics();
-	foreach ( $gas as $g => $ga ) :
+	foreach ( $gas as $g => $ga ) {
 		$ga_acct_name = 'ga-'.strtolower( $g );
 
 		// Pull article numbers from GA
@@ -138,39 +138,39 @@
 		);
 
 		$sheet = 'Top Stories ('.$g.')';
-		$sheets[$sheet] = [];
+		$sheets[ $sheet ] = [];
 
 
 		// Parsing the numbers from GA
-		foreach ( $result->rows as $k => $row ) :
+		foreach ( $result->rows as $k => $row ) {
 			// Set up the title row in the spreadsheet
-			if ( $k == 0 ) :
-				$sheets[$sheet][] = [
+			if ( $k == 0 ) {
+				$sheets[ $sheet ][] = [
 					'Article Info', '', '', '', '', 'Pageviews', '', 'Pageviews from Source', '', '', '', '', '', 'Source Types', '', '', '', ''
 				];
-				$sheets[$sheet][] = [
+				$sheets[ $sheet ][] = [
 					'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 				];
-			endif;
+			}
 			$gaSources = googleArticleSources( $row );
 
-			if ( !empty( $gaSources ) ) :
+			if ( !empty( $gaSources ) ) {
 				// Adding the row to the sheet
-				$sheets[$sheet][] = $gaSources;
+				$sheets[ $sheet ][] = $gaSources;
 
 				$others = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
 
 				// Mapping the data into the graphing data
-				$graphs[$ga_acct_name.'-articles']['labels'][] = $gaSources[0];
-				$graphs[$ga_acct_name.'-articles']['datasets'][0]['data'][] = $gaSources[7];
-				$graphs[$ga_acct_name.'-articles']['datasets'][1]['data'][] = $gaSources[8];
-				$graphs[$ga_acct_name.'-articles']['datasets'][2]['data'][] = $gaSources[9];
-				$graphs[$ga_acct_name.'-articles']['datasets'][3]['data'][] = $gaSources[10];
-				$graphs[$ga_acct_name.'-articles']['datasets'][4]['data'][] = $gaSources[11];
-				$graphs[$ga_acct_name.'-articles']['datasets'][5]['data'][] = $gaSources[12];
-				$graphs[$ga_acct_name.'-articles']['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
-			endif;
-		endforeach;
+				$graphs[ $ga_acct_name.'-articles' ]['labels'][] = $gaSources[0];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][0]['data'][] = $gaSources[7];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][1]['data'][] = $gaSources[8];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][2]['data'][] = $gaSources[9];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][3]['data'][] = $gaSources[10];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][4]['data'][] = $gaSources[11];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][5]['data'][] = $gaSources[12];
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
+			}
+		}
 
 		// User / Session pull from GA
 		$result2 = $analytics->data_ga->get(
@@ -199,31 +199,31 @@
 			]
 		);
 
-		$graphs['overall-totals'][$ga_acct_name]['data'] += $result4->totalsForAllResults['ga:users'];
+		$graphs['overall-totals'][ $ga_acct_name ]['data'] += $result4->totalsForAllResults['ga:users'];
 
 		// New sheet
 		$sheet = 'Hourly Stats ('.$g.')';
-		$sheets[$sheet] = [];
+		$sheets[ $sheet ] = [];
 
 		// Parsing User / Session results
-		foreach ( $result2->rows as $k => $row ) :
-			if ( $k == 0 ) :
-				$sheets[$sheet][] = [
+		foreach ( $result2->rows as $k => $row ) {
+			if ( $k == 0 ) {
+				$sheets[ $sheet ][] = [
 					'Day and Time', 'Sessions', 'Users'
 				];
-			endif;
-			$sheets[$sheet][] = [
+			}
+			$sheets[ $sheet ][] = [
 				$row[1].'/'.$row[2].'/'.$row[0].' '.$row[3].':00', $row[4], $row[5]
 			];
-			$graphs[$ga_acct_name.'-hourly']['labels'][] = $row[1].'/'.$row[2].'/'.$row[0].' '.$row[3].':00';
-			$graphs[$ga_acct_name.'-hourly']['datasets'][0]['data'][] = $row[5];
-		endforeach;
+			$graphs[ $ga_acct_name.'-hourly' ]['labels'][] = $row[1].'/'.$row[2].'/'.$row[0].' '.$row[3].':00';
+			$graphs[ $ga_acct_name.'-hourly' ]['datasets'][0]['data'][] = $row[5];
+		}
 
 		// Inserting blank rows
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'', '', ''
 		];
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'', '', ''
 		];
 
@@ -242,33 +242,33 @@
 		);
 
 		// Parsing
-		foreach ( $result3->rows as $k => $row ) :
-			if ( $k == 0 ) :
-				$sheets[$sheet][] = [
+		foreach ( $result3->rows as $k => $row ) {
+			if ( $k == 0 ) {
+				$sheets[ $sheet ][] = [
 					'Device Category', 'Sessions', 'Users'
 				];
-			endif;
-			$sheets[$sheet][] = [
+			}
+			$sheets[ $sheet ][] = [
 				ucwords( $row[0] ), $row[1], $row[2]
 			];
-			$graphs[$ga_acct_name.'-devices']['labels'][] = ucwords( $row[0] );
-			$graphs[$ga_acct_name.'-devices']['datasets'][0]['data'][] = $row[2];
-			$graphs[$ga_acct_name.'-devices']['datasets'][0]['backgroundColor'][] = $ga_device_colors[$row[0]];
-		endforeach;
+			$graphs[ $ga_acct_name.'-devices' ]['labels'][] = ucwords( $row[0] );
+			$graphs[ $ga_acct_name.'-devices' ]['datasets'][0]['data'][] = $row[2];
+			$graphs[ $ga_acct_name.'-devices' ]['datasets'][0]['backgroundColor'][] = $ga_device_colors[ $row[0] ];
+		}
 
 		// Inserting blank rows
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'', '', ''
 		];
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'', '', ''
 		];
 
 		// Overall information
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'Total Sessions', $result2->totalsForAllResults['ga:sessions']
 		];
-		$sheets[$sheet][] = [
+		$sheets[ $sheet ][] = [
 			'Total Users', $result2->totalsForAllResults['ga:users']
 		];
 
@@ -284,7 +284,7 @@
 				'title' => 'I SEE U'
 			]
 		];
-		foreach ( $shows as $show ) :
+		foreach ( $shows as $show ) {
 			$show_graph = 'ga-'.$show['slug'].'-articles';
 			$result = $analytics->data_ga->get(
 				'ga:'.$ga,
@@ -302,25 +302,25 @@
 			);
 
 			$sheet = 'Top Stories ('.$show['title'].')';
-			$sheets[$sheet] = [];
+			$sheets[ $sheet ] = [];
 
 
 			// Parsing the numbers from GA
-			foreach ( $result->rows as $k => $row ) :
+			foreach ( $result->rows as $k => $row ) {
 				// Set up the title row in the spreadsheet
-				if ( $k == 0 ) :
-					$sheets[$sheet][] = [
+				if ( $k == 0 ) {
+					$sheets[ $sheet ][] = [
 						'Article Info', '', '', '', '', 'Pageviews', '', 'Pageviews from Source', '', '', '', '', '', 'Source Types', '', '', '', ''
 					];
-					$sheets[$sheet][] = [
+					$sheets[ $sheet ][] = [
 						'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 					];
-				endif;
+				}
 				$gaSources = googleArticleSources( $row );
 
-				if ( !empty( $gaSources ) ) :
+				if ( !empty( $gaSources ) ) {
 					// Adding the row to the sheet
-					$sheets[$sheet][] = $gaSources;
+					$sheets[ $sheet ][] = $gaSources;
 
 					//Mapping the data into the graphing data
 					$graphs[ $show_graph ]['labels'][] = $gaSources[0];
@@ -331,8 +331,8 @@
 					$graphs[ $show_graph ]['datasets'][4]['data'][] = $gaSources[11];
 					$graphs[ $show_graph ]['datasets'][5]['data'][] = $gaSources[12];
 					$graphs[ $show_graph ]['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
-				endif;
-			endforeach;
-		endforeach;
-	endforeach;
+				}
+			}
+		}
+	}
 ?>

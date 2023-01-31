@@ -8,18 +8,18 @@
 	 *
 	 */
 
-	if ( ( $handle = fopen( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv", "r" ) ) !== FALSE ) :
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
-			if ( $row === 0 ) :
-				$sheets[$sheet][] = [
+	if ( ( $handle = fopen( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv", "r" ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+			if ( $row === 0 ) {
+				$sheets[ $sheet ][] = [
 					'Name','Downloads','Downloaders'
 				];
 				$pod_head = array_flip( $data );
-			else :
+			} else {
 				$slug = str_replace( '/', '', $data[ $pod_head[ 'Programs' ] ] );
-				if ( $slug === 'recast' ) :
+				if ( $slug === 'recast' ) {
 					$slug = 'HPM Newscast New';
-				endif;
+				}
 				$pod_data = [
 					'name' => ucwords( str_replace( '-', ' ', $slug ) ),
 					'data' => [
@@ -27,14 +27,14 @@
 						'downloaders' => csv_int_check( 'Downloaders', $data, $pod_head )
 					]
 				];
-				$graphs['overall-totals']['podcasts'][$slug] = $pod_data;
-				$sheets[$sheet][] = [
+				$graphs['overall-totals']['podcasts'][ $slug ] = $pod_data;
+				$sheets[ $sheet ][] = [
 					ucwords( str_replace( '-', ' ', $slug ) ),
 					csv_int_check( 'Downloads', $data, $pod_head ),
 					csv_int_check( 'Downloaders', $data, $pod_head )
 				];
-			endif;
+			}
 			$row++;
-		endwhile;
+		}
 		fclose( $handle );
-	endif;
+	}

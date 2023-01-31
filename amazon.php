@@ -7,7 +7,7 @@
 	use Aws\CloudFront\Exception\CloudFrontException;
 	use Aws\Exception\AwsException;
 
-	if ( $emails ) :
+	if ( $emails ) {
 		// If you chose to email the group, set up the AWS SES Client
 		$client = new SesClient([
 			'credentials' => [
@@ -47,7 +47,7 @@
 		} catch (SesException $error) {
 			echo( $FG_BR_RED . $BG_BLACK . $FS_BOLD . "The email was not sent. Error message: ".$error->getAwsErrorMessage() . PHP_EOL );
 		}
-	endif;
+	}
 
 	// Set up the S3 client
 	$s3 = new S3Client([
@@ -91,7 +91,7 @@
 		die;
 	}
 
-	if ( $rerun == false ) :
+	if ( $rerun == false ) {
 		// Upload the reports file to Amazon S3
 		try {
 			$ss3 = $s3->putObject([
@@ -110,7 +110,7 @@
 			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . $RESET_ALL . PHP_EOL;
 			die;
 		}
-	endif;
+	}
 
 	// Invalidate the cache for the /assets/analytics folder
 	try {

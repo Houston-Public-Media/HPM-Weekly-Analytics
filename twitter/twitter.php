@@ -20,11 +20,11 @@
 	$row = 0;
 
 	// Open the CSV file
-	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) :
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) :
-			if ( $row == 0 ) :
+	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+			if ( $row == 0 ) {
 				$tw_head = array_flip( $data );
-			else :
+			} else {
 				// Insert each tweet as a row using the tweets ID as the array key
 				$tweets[ $data[ $tw_head['Tweet id'] ] ] = [
 					'Tweet Text' => preg_replace( [ '/ https:\/\/t\.co\/[a-zA-Z0-9]+/', '/\n/' ], [ '', ' ' ], $data[ $tw_head['Tweet text'] ] ),
@@ -47,22 +47,22 @@
 
 				// Save the number of impressions for each tweet into an array for sorting
 				$tw_imp[ $data[ $tw_head[ 'Tweet id' ] ] ] = csv_int_check( 'impressions', $data, $tw_head );
-			endif;
+			}
 			$row++;
-		endwhile;
+		}
 		fclose( $handle );
-	endif;
+	}
 
 	// Create a worksheet in the spreadsheet that lists all of the tweets and their relevant stats
 	$t = 0;
 	$sheet = 'Tweets';
-	foreach ( $tweets as $tweet ) :
-		if ( $t == 0 ) :
-			$sheets[$sheet][] = array_keys( $tweet );
-		endif;
-		$sheets[$sheet][] = array_values( $tweet );
+	foreach ( $tweets as $tweet ) {
+		if ( $t == 0 ) {
+			$sheets[ $sheet ][] = array_keys( $tweet );
+		}
+		$sheets[ $sheet ][] = array_values( $tweet );
 		$t++;
-	endforeach;
+	}
 
 	// Create a worksheet with breakdowns
 	$sheet = 'Tweet Analytics';
@@ -75,41 +75,41 @@
 	$t = 0;
 
 	// Enter the top 10 tweets by engagement into the spreadsheet
-	$sheets[$sheet][] = [ 'Top 10 Tweets by Engagements' ];
-	foreach ( $tw_most_eng as $k => $v ) :
-		if ( $t == 0 ) :
-			$sheets[$sheet][] = array_keys( $tweets[$k] );
-		endif;
-		$sheets[$sheet][] = array_values( $tweets[$k] );
+	$sheets[ $sheet ][] = [ 'Top 10 Tweets by Engagements' ];
+	foreach ( $tw_most_eng as $k => $v ) {
+		if ( $t == 0 ) {
+			$sheets[ $sheet ][] = array_keys( $tweets[ $k ] );
+		}
+		$sheets[ $sheet ][] = array_values( $tweets[ $k ] );
 		$t++;
 
 		// Map that data into the graphing data
-		$graphs['twitter-tweets-by-engagement']['labels'][] = $tweets[$k]['Tweet Text'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][0]['data'][] = $tweets[$k]['Retweets'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][1]['data'][] = $tweets[$k]['Replies'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][2]['data'][] = $tweets[$k]['Likes'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][3]['data'][] = $tweets[$k]['URL Clicks'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][4]['data'][] = $tweets[$k]['Hashtag Clicks'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][5]['data'][] = $tweets[$k]['Detail Expands'];
-		$graphs['twitter-tweets-by-engagement']['datasets'][6]['data'][] = $tweets[$k]['Media Views'];
-	endforeach;
+		$graphs['twitter-tweets-by-engagement']['labels'][] = $tweets[ $k ]['Tweet Text'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][0]['data'][] = $tweets[ $k ]['Retweets'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][1]['data'][] = $tweets[ $k ]['Replies'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][2]['data'][] = $tweets[ $k ]['Likes'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][3]['data'][] = $tweets[ $k ]['URL Clicks'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][4]['data'][] = $tweets[ $k ]['Hashtag Clicks'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][5]['data'][] = $tweets[ $k ]['Detail Expands'];
+		$graphs['twitter-tweets-by-engagement']['datasets'][6]['data'][] = $tweets[ $k ]['Media Views'];
+	}
 
 	$t = 0;
-	$sheets[$sheet][] = [ '' ];
-	$sheets[$sheet][] = [ '' ];
+	$sheets[ $sheet ][] = [ '' ];
+	$sheets[ $sheet ][] = [ '' ];
 
 	// Do the same for the top 10 by impressions
-	$sheets[$sheet][] = [ 'Top 10 Tweets by Impressions' ];
-	foreach ( $tw_most_imp as $k => $v ) :
-		if ( $t == 0 ) :
-			$sheets[$sheet][] = array_keys( $tweets[$k] );
-		endif;
-		$sheets[$sheet][] = array_values( $tweets[$k] );
+	$sheets[ $sheet ][] = [ 'Top 10 Tweets by Impressions' ];
+	foreach ( $tw_most_imp as $k => $v ) {
+		if ( $t == 0 ) {
+			$sheets[ $sheet ][] = array_keys( $tweets[ $k ] );
+		}
+		$sheets[ $sheet ][] = array_values( $tweets[ $k ] );
 		$t++;
 
-		$graphs['twitter-tweets-by-impression']['labels'][] = $tweets[$k]['Tweet Text'];
-		$graphs['twitter-tweets-by-impression']['datasets'][0]['data'][] = $tweets[$k]['Impressions'];
-	endforeach;
+		$graphs['twitter-tweets-by-impression']['labels'][] = $tweets[ $k ]['Tweet Text'];
+		$graphs['twitter-tweets-by-impression']['datasets'][0]['data'][] = $tweets[ $k ]['Impressions'];
+	}
 
 	// Parse through the account_stats/graph data from Twitter
 	$sheet = 'Twitter Graphs';
@@ -126,19 +126,19 @@
 	$c = 0;
 	$graph = [];
 	// Loop through the data points and save them into an intermediate array for the spreadsheet
-	for ( $i = $twstart; $i < $twend; ) :
+	for ( $i = $twstart; $i < $twend; ) {
 		$tw = [
 			'Date/Time' => date( 'Y-m-d', $i ),
-			'Organic Impressions' => ( empty( $json->timeSeries->orgImpressions[$c] ) ? 0 : $json->timeSeries->orgImpressions[$c] ),
-			'Paid Impressions' => ( empty( $json->timeSeries->prImpressions[$c] ) ? 0 : $json->timeSeries->prImpressions[$c] ),
-			'Impressions' => ( empty( $json->timeSeries->impressions[$c] ) ? 0 : $json->timeSeries->impressions[$c] ),
-			'URL Clicks' => ( empty( $json->timeSeries->urlClicks[$c] ) ? 0 : $json->timeSeries->urlClicks[$c] ),
-			'Retweets' => ( empty( $json->timeSeries->retweets[$c] ) ? 0 : $json->timeSeries->retweets[$c] ),
-			'Favorites' => ( empty( $json->timeSeries->favorites[$c] ) ? 0 : $json->timeSeries->favorites[$c] ),
-			'Replies' => ( empty( $json->timeSeries->replies[$c] ) ? 0 : $json->timeSeries->replies[$c] ),
-			'Engagements' => ( empty( $json->timeSeries->engagements[$c] ) ? 0 : $json->timeSeries->engagements[$c] ),
-			'Engagement Rate' => round( $json->timeSeries->engagementRate[$c], 1 )."%",
-			'Tweets' => ( empty( $json->timeSeries->tweets[$c] ) ? 0 : $json->timeSeries->tweets[$c] )
+			'Organic Impressions' => ( empty( $json->timeSeries->orgImpressions[ $c ] ) ? 0 : $json->timeSeries->orgImpressions[ $c ] ),
+			'Paid Impressions' => ( empty( $json->timeSeries->prImpressions[ $c ] ) ? 0 : $json->timeSeries->prImpressions[ $c ] ),
+			'Impressions' => ( empty( $json->timeSeries->impressions[ $c ] ) ? 0 : $json->timeSeries->impressions[ $c ] ),
+			'URL Clicks' => ( empty( $json->timeSeries->urlClicks[ $c ] ) ? 0 : $json->timeSeries->urlClicks[ $c ] ),
+			'Retweets' => ( empty( $json->timeSeries->retweets[ $c ] ) ? 0 : $json->timeSeries->retweets[ $c ] ),
+			'Favorites' => ( empty( $json->timeSeries->favorites[ $c ] ) ? 0 : $json->timeSeries->favorites[ $c ] ),
+			'Replies' => ( empty( $json->timeSeries->replies[ $c ] ) ? 0 : $json->timeSeries->replies[ $c ] ),
+			'Engagements' => ( empty( $json->timeSeries->engagements[ $c ] ) ? 0 : $json->timeSeries->engagements[ $c ] ),
+			'Engagement Rate' => round( $json->timeSeries->engagementRate[ $c ], 1 )."%",
+			'Tweets' => ( empty( $json->timeSeries->tweets[ $c ] ) ? 0 : $json->timeSeries->tweets[ $c ] )
 		];
 		$graph[] = $tw;
 		$i += $interval;
@@ -157,15 +157,15 @@
 		$graphs['twitter-account-engagements']['datasets'][1]['data'][] = $tw['Retweets'];
 		$graphs['twitter-account-engagements']['datasets'][2]['data'][] = $tw['Replies'];
 		$graphs['twitter-account-engagements']['datasets'][3]['data'][] = $tw['Favorites'];
-	endfor;
+	}
 
 	// Insert the spreadsheet data
 	$t = 0;
-	foreach ( $graph as $v ) :
-		if ( $t == 0 ) :
-			$sheets[$sheet][] = array_keys( $v );
-		endif;
-		$sheets[$sheet][] = array_values( $v );
+	foreach ( $graph as $v ) {
+		if ( $t == 0 ) {
+			$sheets[ $sheet ][] = array_keys( $v );
+		}
+		$sheets[ $sheet ][] = array_values( $v );
 		$t++;
-	endforeach;
+	}
 ?>

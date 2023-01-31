@@ -12,11 +12,11 @@
 
 	// Recursive array search
 	function in_array_r( $needle, $haystack, $strict = false ) {
-		foreach ( $haystack as $item ) :
-			if ( ( $strict ? $item === $needle : $item == $needle ) || ( is_array( $item ) && in_array_r( $needle, $item, $strict ) ) ) :
+		foreach ( $haystack as $item ) {
+			if ( ( $strict ? $item === $needle : $item == $needle ) || ( is_array( $item ) && in_array_r( $needle, $item, $strict ) ) ) {
 				return true;
-			endif;
-		endforeach;
+			}
+		}
 		return false;
 	}
 
@@ -53,10 +53,10 @@
 	 * Use Dotenv to set required environment variables and load .env file in root
 	 */
 	$dotenv = new Dotenv\Dotenv( BASE );
-	if ( file_exists( BASE . DS . '.env' ) ) :
+	if ( file_exists( BASE . DS . '.env' ) ) {
 		$dotenv->load();
 		$dotenv->required([ 'GA_CLIENT', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_SECRET', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ID', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET', 'STORAGE_PATH', 'STORAGE_SHARE' ]);
-	endif;
+	}
 
 	// Map all of the variables from .env to constants and variables
 	date_default_timezone_set( env('TIMEZONE') );
@@ -108,31 +108,31 @@
 	 * Set the end date for your report
 	 * Typically, I'm running these on a Monday with the intent to cover the previous Monday through Sunday
 	 */
-	while ( $date_conf == false ) :
-		if ( count( $argv ) === 1 ) :
+	while ( $date_conf == false ) {
+		if ( count( $argv ) === 1 ) {
 			echo "Enter the end date for your report (YYYY-MM-DD), or hit enter to set it as today: ";
 			$date_in = read_stdin();
-		else :
+		} else {
 			$date_in = $argv[1];
-		endif;
-		if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_in ) ) :
+		}
+		if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_in ) ) {
 			$datex = explode( '-', $date_in );
 			if (
 				intval( $datex[0] ) <= date( 'Y' ) &&
 				( intval( $datex[1] ) > 0 && intval( $datex[1] ) <= 12 ) &&
 				( intval( $datex[2] ) > 0 && intval( $datex[2] < 32 ) )
-			):
+			) {
 				$run_date = mktime( 12, 0, 0, intval( $datex[1] ), intval( $datex[2] ), intval( $datex[0] ) );
 				$date_conf = true;
-			else :
+			} else {
 				echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
-			endif;
-		elseif ( empty( $date_in ) ) :
+			}
+		} elseif ( empty( $date_in ) ) {
 			$date_conf = true;
 			$run_date = time();
-		else :
+		} else {
 			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
-		endif;
+		}
 		/**
 		 * Setting the start and end dates in both YYYY-MM-DD format and Unixtime
 		 */
@@ -142,7 +142,7 @@
 		$start = date( 'Y-m-d', $startu );
 		$endu = mktime( 0, 0, 0, date( 'm', $run_date ), date( 'd', $run_date ), date( 'Y', $run_date ) );
 		$end = date( 'Y-m-d', $endu );
-	endwhile;
+	}
 
 	/**
 	 * Debug rerun CLAP CLAP CLAPCLAPCLAP
@@ -150,43 +150,43 @@
 	 * 		-- You don't want to email the group
 	 * 		-- You don't want to update the report list for the graphing app
 	 */
-	while ( $rerun_conf == false ) :
-		if ( count( $argv ) === 1 ) :
+	while ( $rerun_conf == false ) {
+		if ( count( $argv ) === 1 ) {
 			echo "Are you rerunning this report because something screwed up? (y/n) ";
 			$rerun_in = read_stdin();
-		else :
+		} else {
 			$rerun_in = $argv[2];
-		endif;
-		if ( $rerun_in == 'y' ) :
+		}
+		if ( $rerun_in == 'y' ) {
 			$rerun_conf = true;
 			$rerun = true;
 			$email_conf = true;
-		elseif ( $rerun_in == 'n' ) :
+		} elseif ( $rerun_in == 'n' ) {
 			$rerun_conf = true;
-		else :
+		} else {
 			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
-		endif;
-	endwhile;
+		}
+	}
 
 	/**
 	 * Choose whether or not to email the group. Also useful for testing
 	 */
-	while ( $email_conf == false ) :
-		if ( count( $argv ) === 1 ) :
+	while ( $email_conf == false ) {
+		if ( count( $argv ) === 1 ) {
 			echo "Do you want this report emailed to the group? (y/n) ";
 			$email_in = read_stdin();
-		else :
+		} else {
 			$email_in = $argv[3];
-		endif;
-		if ( $email_in == 'y' ) :
+		}
+		if ( $email_in == 'y' ) {
 			$email_conf = true;
 			$emails = true;
-		elseif ( $email_in == 'n' ) :
+		} elseif ( $email_in == 'n' ) {
 			$email_conf = true;
-		else :
+		} else {
 			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
-		endif;
-	endwhile;
+		}
+	}
 
 	/**
 	 * Twitter and Apple News don't have publicly accessible analytics APIs
@@ -207,10 +207,10 @@
 		!file_exists( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv" ) ||
 		!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
 		!file_exists( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" )
-	) :
+	) {
 		echo PHP_EOL . $FG_BR_RED . $BG_BLACK . $FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
 		die;
-	endif;
+	}
 
 	echo $FG_BR_CYAN . $BG_BLACK . $FS_BOLD ."Hold please..." . $RESET_ALL . PHP_EOL;
 
@@ -220,23 +220,23 @@
 	$fb_base = 'https://graph.facebook.com/v12.0/';
 
 	// Where the magic happens
-	if ( file_exists( GA_CLIENT ) ) :
+	if ( file_exists( GA_CLIENT ) ) {
 		require BASE . DS . 'google' . DS . 'google.php';
-	endif;
+	}
 
-	if ( !empty( $fb_access ) && !empty( $hpm_fb ) ) :
+	if ( !empty( $fb_access ) && !empty( $hpm_fb ) ) {
 		require BASE . DS . 'facebook' . DS . 'facebook.php';
-	endif;
+	}
 
-	if ( !empty( $fb_access ) && !empty( $hpm_insta ) ) :
+	if ( !empty( $fb_access ) && !empty( $hpm_insta ) ) {
 		require BASE . DS . 'facebook' . DS . 'instagram.php';
-	endif;
+	}
 
 	require BASE . DS . 'twitter' . DS . 'twitter.php';
 
-	if ( !empty( WCM_USER ) ) :
+	if ( !empty( WCM_USER ) ) {
 		require BASE . DS . 'triton' . DS . 'triton.php';
-	endif;
+	}
 
 	require BASE . DS . 'google' . DS . 'youtube.php';
 	require BASE . DS . 'podcasts' . DS . 'podcasts.php';
@@ -246,41 +246,41 @@
 	$rsheets = array_reverse( $sheets );
 
 	// Write sheets from array into XLSX file
-	foreach ( $rsheets as $k => $v ) :
+	foreach ( $rsheets as $k => $v ) {
 		$myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet( $spreadsheet, $k );
 		// Setting the highlight color for the worksheet tabs in Excel
-		if ( strpos( $k, 'Facebook' ) !== false ) :
+		if ( strpos( $k, 'Facebook' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('3b5998');
-		elseif ( strpos( $k, '(Combined)' ) !== false || strpos( $k, 'Top Stories' ) !== false ) :
+		} elseif ( strpos( $k, '(Combined)' ) !== false || strpos( $k, 'Top Stories' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('db4437');
-		elseif ( strpos( $k, 'Tweet' ) !== false || strpos( $k, 'Twitter' ) !== false ) :
+		} elseif ( strpos( $k, 'Tweet' ) !== false || strpos( $k, 'Twitter' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('1da1f2');
-		elseif ( strpos( $k, 'Instagram' ) !== false ) :
+		} elseif ( strpos( $k, 'Instagram' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('8a3ab9');
-		elseif ( strpos( $k, 'Triton' ) !== false ) :
+		} elseif ( strpos( $k, 'Triton' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('056ab2');
-		elseif ( strpos( $k, 'YouTube' ) !== false ) :
+		} elseif ( strpos( $k, 'YouTube' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('ff0000');
-		elseif ( strpos( $k, 'Podcasts' ) !== false ) :
+		} elseif ( strpos( $k, 'Podcasts' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('808080');
-		elseif ( strpos( $k, 'Apple' ) !== false ) :
+		} elseif ( strpos( $k, 'Apple' ) !== false ) {
 			$myWorkSheet->getTabColor()->setRGB('000000');
-		endif;
+		}
 		$spreadsheet->addSheet( $myWorkSheet, 0 );
 		$spreadsheet->setActiveSheetIndexByName( $k );
 		$spreadsheet->getActiveSheet()->fromArray( $v, NULL, 'A1' );
 
 		// Merging some of the header rows for readability
-		if ( $k == 'Triton By Device' ) :
+		if ( $k == 'Triton By Device' ) {
 			$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
-		endif;
-		if ( strpos( $k, 'Top Stories' ) !== false  ) :
+		}
+		if ( strpos( $k, 'Top Stories' ) !== false ) {
 			$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
 			$spreadsheet->getActiveSheet()->mergeCells( 'F1:G1' );
 			$spreadsheet->getActiveSheet()->mergeCells( 'H1:M1' );
 			$spreadsheet->getActiveSheet()->mergeCells( 'N1:R1' );
-		endif;
-	endforeach;
+		}
+	}
 
 	// Remove the default worksheet that is created
 	$sheetIndex = $spreadsheet->getIndex(
@@ -289,17 +289,16 @@
 	$spreadsheet->removeSheetByIndex($sheetIndex);
 
 	// Auto size columns for each worksheet
-	foreach ( $spreadsheet->getWorksheetIterator() as $worksheet ) :
-
+	foreach ( $spreadsheet->getWorksheetIterator() as $worksheet ) {
 		$spreadsheet->setActiveSheetIndex( $spreadsheet->getIndex( $worksheet ) );
 
 		$sheet = $spreadsheet->getActiveSheet();
 		$cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
 		$cellIterator->setIterateOnlyExistingCells( true );
-		foreach ( $cellIterator as $cell ) :
+		foreach ( $cellIterator as $cell ) {
 			$sheet->getColumnDimension( $cell->getColumn() )->setAutoSize( true );
-		endforeach;
-	endforeach;
+		}
+	}
 
 	// Write XLSX file
 	$writer =  new Xlsx( $spreadsheet );
@@ -313,36 +312,36 @@
 	 * This information will populate the dropdown in the graphing application
 	 */
 	$text = json_decode( file_get_contents( BASE . DS . 'data' . DS . 'reports.json' ) );
-	if ( empty( $text ) ) :
+	if ( empty( $text ) ) {
 		$text = [
 			0 => [
 				'text' => 'Week of '.date( 'F jS, Y', $startu ),
 				'value' => date( 'Y-m-d', $startu )
 			]
 		];
-	else :
+	} else {
 		$new_entry = [
 			'text' => 'Week of '.date( 'F jS, Y', $startu ),
 			'value' => date( 'Y-m-d', $startu )
 		];
 		$add = true;
-		foreach ( $text as $t ) :
-			if ( $t->text === $new_entry['text'] && $t->value === $new_entry['value'] ) :
+		foreach ( $text as $t ) {
+			if ( $t->text === $new_entry['text'] && $t->value === $new_entry['value'] ) {
 				$add = false;
-			endif;
-		endforeach;
-		if ( $add ) :
+			}
+		}
+		if ( $add ) {
 			array_unshift( $text, $new_entry );
-		endif;
-	endif;
-	if ( $rerun == false ) :
+		}
+	}
+	if ( $rerun == false ) {
 		file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
-	endif;
+	}
 
 	// Upload the file to S3, alert everyone via email, clear the Cloudfront cache
-	if ( !empty( $aws_key ) ) :
+	if ( !empty( $aws_key ) ) {
 		require BASE . DS . 'amazon.php';
-	endif;
+	}
 
 	// All done!
 	$process_end = time();

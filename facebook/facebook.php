@@ -49,19 +49,19 @@
 	 * The Graph API only allows you to pull 93 days at a time. This script is dealing with weekly increments,
 	 * 		so the loop isn't completely necessary, but this way it can be used for longer pulls if need be
 	 */
-	for ( $i = $startu; $i <= $endu; ) :
+	for ( $i = $startu; $i <= $endu; ) {
 		$di = $endu - $i;
-		if ( $di > 7776000 ) :
+		if ( $di > 7776000 ) {
 			$endt = $i + 7776000;
-		else :
+		} else {
 			$endt = $endu;
-		endif;
+		}
 
 		/**
 		 * Loop through the $insights array to pull the various metrics we need
 		 */
-		foreach ( $insights as $insight ) :
-			foreach ( $insight as $k => $v ) :
+		foreach ( $insights as $insight ) {
+			foreach ( $insight as $k => $v ) {
 				$period = $k;
 				$metric = $v;
 				$args = [
@@ -88,15 +88,15 @@
 
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
-				foreach ( $json->data as $d ) :
+				foreach ( $json->data as $d ) {
 					$title = $d->title;
 					$name = $d->name;
 
 					// Check if the term's definition is in the glossary, and add it if not
-					if ( !in_array_r( $d->title, $glossary ) ) :
+					if ( !in_array_r( $d->title, $glossary ) ) {
 						$glossary[] = [ $d->title, $d->description ];
-					endif;
-					foreach ( $d->values as $val ) :
+					}
+					foreach ( $d->values as $val ) {
 						$endf = strtotime( $val->end_time );
 						$time = date( 'Y-m-d', $endf - 86400 );
 
@@ -107,80 +107,80 @@
 							$name == 'page_actions_post_reactions_total' ||
 							$name == 'page_negative_feedback_by_type' ||
 							$name == 'page_positive_feedback_by_type'
-						) :
-							foreach ( $val->value as $n => $ra ) :
-								if ( $n == 'like' ) :
-									if ( $name == 'page_actions_post_reactions_total' ) :
+						) {
+							foreach ( $val->value as $n => $ra ) {
+								if ( $n == 'like' ) {
+									if ( $name == 'page_actions_post_reactions_total' ) {
 										$ne = 'Like (Reaction)';
-									elseif ( $name == 'page_positive_feedback_by_type' ) :
+									} elseif ( $name == 'page_positive_feedback_by_type' ) {
 										$ne = 'Like (Feedback)';
-									endif;
-								else :
+									}
+								} else {
 									$ne = ucwords( str_replace( '_', ' ', $n ) );
-								endif;
+								}
 
 								// Insert the data into the intermediate $results array
-								$results[$time][$ne] = ( empty( $ra ) ? 0 : $ra );
+								$results[ $time ][ $ne ] = ( empty( $ra ) ? 0 : $ra );
 
 								// Check if the data title is in the title array, if not, add it
-								if ( !in_array( $ne, $titles ) ) :
+								if ( !in_array( $ne, $titles ) ) {
 									$titles[] = $ne;
-								endif;
-							endforeach;
-						else :
+								}
+							}
+						} else {
 							// Check if the data title is in the title array, if not, add it
-							if ( !in_array( $title, $titles ) ) :
+							if ( !in_array( $title, $titles ) ) {
 								$titles[] = $title;
-							endif;
+							}
 
 							// Insert the data into the intermediate $results array
-							$results[$time][$name] = ( empty( $val->value ) ? 0 : $val->value );
-						endif;
-					endforeach;
-				endforeach;
-			endforeach;
-		endforeach;
+							$results[ $time ][ $name ] = ( empty( $val->value ) ? 0 : $val->value );
+						}
+					}
+				}
+			}
+		}
 		$i += 7776000;
-	endfor;
-	$sheets[$sheet][] = $titles;
+	}
+	$sheets[ $sheet ][] = $titles;
 
 	// Loop through the $results array and map that data into the graphing dataset and spreadsheet
 	$c = 1;
-	foreach ( $results as $day => $re ) :
+	foreach ( $results as $day => $re ) {
 		$g = 1;
-		$sheets[$sheet][$c] = [];
-		$sheets[$sheet][$c][0] = $day;
+		$sheets[ $sheet ][ $c ] = [];
+		$sheets[ $sheet ][ $c ][0] = $day;
 		$graphs['facebook-impressions']['labels'][] = $day;
 		$graphs['facebook-likes']['labels'][] = $day;
 		$graphs['facebook-reactions']['labels'][] = $day;
-		foreach ( $re as $rek => $ree ) :
-			$sheets[$sheet][$c][$g] = $ree;
+		foreach ( $re as $rek => $ree ) {
+			$sheets[ $sheet ][ $c ][ $g ] = $ree;
 			if (
 				$rek == 'page_impressions_paid' ||
 				$rek == 'page_impressions_unique' ||
 				$rek == 'page_impressions_viral' ||
 				$rek == 'page_impressions_organic'
-			 ) :
-				$graphs['facebook-impressions']['datasets'][$fb_label[$rek]]['data'][] = $ree;
-				if ( $rek == 'page_impressions_unique' ) :
+			) {
+				$graphs['facebook-impressions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
+				if ( $rek == 'page_impressions_unique' ) {
 					$graphs['overall-totals']['facebook']['data'] += $ree;
-				endif;
-			elseif ( $rek == 'page_fans' ) :
+				}
+			} elseif ( $rek == 'page_fans' ) {
 				$graphs['facebook-likes']['datasets'][0]['data'][] = $ree;
-			elseif (
+			} elseif (
 				$rek == 'Like (Reaction)' ||
 				$rek == 'Love' ||
 				$rek == 'Wow' ||
 				$rek == 'Haha' ||
 				$rek == 'Sorry' ||
 				$rek == 'Anger'
-			) :
-				$graphs['facebook-reactions']['datasets'][$fb_label[$rek]]['data'][] = $ree;
-			endif;
+			) {
+				$graphs['facebook-reactions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
+			}
 			$g++;
-		endforeach;
+		}
 		$c++;
-	endforeach;
+	}
 
 	/**
 	 * Do a pull of all of our Facebook posts from the time period, and gather metrics about each
@@ -224,25 +224,25 @@
 
 	// Decode the results and loop
 	$json = json_decode( $result );
-	if ( !empty( $json->data ) ) :
-		foreach ( $json->data as $j ) :
+	if ( !empty( $json->data ) ) {
+		foreach ( $json->data as $j ) {
 			$id = $j->id;
 
 			// Save the post information into an intermediate array
-			$posts[$id] = [
+			$posts[ $id ] = [
 				'Publish Date' => date( 'Y-m-d H:i:s', strtotime( $j->created_time ) ),
 				'URL' => $j->permalink_url,
 				'Message' => ( !empty( $j->message ) ? $j->message : '' ),
 				'Shares' => ( !empty( $j->shares ) ? $j->shares->count : 0 )
 			];
-		endforeach;
+		}
 
 		// If another page of results is available, reset the query, go back to A, and run it again
-		if ( !empty( $json->paging->next ) ) :
+		if ( !empty( $json->paging->next ) ) {
 			$url = $json->paging->next;
 			goto a;
-		endif;
-	endif;
+		}
+	}
 
 
 	$args = [
@@ -260,47 +260,47 @@
 	/**
 	 * Pull enhanced stats for all of the posts
 	 */
-	foreach ( $posts as $pid => $pv ) :
+	foreach ( $posts as $pid => $pv ) {
 		$ch = curl_init();
 		curl_setopt( $ch, CURLOPT_URL, "{$fb_base}{$pid}/insights?{$query}" );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		$res = curl_exec( $ch );
 		curl_close( $ch );
 		$js = json_decode( $res );
-		if ( !empty( $js->data ) ) :
-			foreach ( $js->data as $d ) :
+		if ( !empty( $js->data ) ) {
+			foreach ( $js->data as $d ) {
 				$title = $d->title;
 				$name = $d->name;
 
 				// Check if the term's definition is in the glossary, and add it if not
-				if ( !in_array_r( $d->title, $glossary ) ) :
+				if ( !in_array_r( $d->title, $glossary ) ) {
 					$glossary[] = [ $d->title, $d->description ];
-				endif;
+				}
 
 				// Check if the term's definition is in the title array, and add it if not
-				if ( !in_array( $title, $titles ) ) :
+				if ( !in_array( $title, $titles ) ) {
 					$titles[] = $title;
-				endif;
-				foreach ( $d->values as $val ) :
-					$posts[$pid][$name] = $val->value;
-				endforeach;
-			endforeach;
-		endif;
-	endforeach;
+				}
+				foreach ( $d->values as $val ) {
+					$posts[ $pid ][ $name ] = $val->value;
+				}
+			}
+		}
+	}
 
 	// Map that data into the spreadsheet
-	$sheets[$sheet][] = $titles;
+	$sheets[ $sheet ][] = $titles;
 	$c = 1;
-	foreach ( $posts as $p => $pv ) :
+	foreach ( $posts as $p => $pv ) {
 		$g = 1;
-		$sheets[$sheet][$c] = [];
-		$sheets[$sheet][$c][0] = $p;
-		foreach ( $pv as $ppv ) :
-			$sheets[$sheet][$c][$g] = $ppv;
+		$sheets[ $sheet ][ $c ] = [];
+		$sheets[ $sheet ][ $c ][0] = $p;
+		foreach ( $pv as $ppv ) {
+			$sheets[ $sheet ][ $c ][ $g ] = $ppv;
 			$g++;
-		endforeach;
+		}
 		$c++;
-	endforeach;
+	}
 
 	$sheets['Facebook Glossary'] = $glossary;
 ?>
