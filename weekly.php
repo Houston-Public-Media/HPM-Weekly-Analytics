@@ -65,6 +65,7 @@
 	define( 'YT_CLIENT', BASE . DS . env( 'YT_CLIENT' ) );
 	define( 'YT_CHANNEL_ID', env( 'YT_CHANNEL_ID' ) );
 	define( 'GA_COMBO', env( 'GA_COMBO' ) );
+	define( 'GA4_PROPERTY', env( 'GA4_PROPERTY' ) );
 	define( 'WCM_USER', env( 'WCM_USER' ) );
 	define( 'WCM_PASSWORD', env( 'WCM_PASSWORD' ) );
 	define( 'APP_URL', env( 'APP_URL' ) );
@@ -221,7 +222,11 @@
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) {
-		require BASE . DS . 'google' . DS . 'google.php';
+		if ( $endu > mktime( 0, 0, 0, 5, 30, 2023 ) ) {
+			require BASE . DS . 'google' . DS . 'google-ga4.php';
+		} else {
+			require BASE . DS . 'google' . DS . 'google.php';
+		}
 	}
 
 	if ( !empty( $fb_access ) && !empty( $hpm_fb ) ) {
