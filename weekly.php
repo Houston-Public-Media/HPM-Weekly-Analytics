@@ -2,8 +2,8 @@
 	/**
 	 * Defining a couple of terms and some helper functions
 	 */
-	define( 'BASE', __DIR__ );
-	define( 'DS', DIRECTORY_SEPARATOR );
+	const BASE = __DIR__;
+	const DS = DIRECTORY_SEPARATOR;
 	$process_start = time();
 
 	// Setting up find/replace for article headlines since Excel doesn't always play nice with diacriticals
