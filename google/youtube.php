@@ -1,9 +1,12 @@
 <?php
+	global $graphs, $sheets, $start, $end;
 	/**
 	 * Use the Google API PHP Client to create and authenticate a YouTube Analytics Client
 	 * If an access token already exists, it will use that, or it will walk you through obtaining one
+	 * @throws \Google\Exception
+	 * @throws Exception
 	 */
-	function getYTClient() {
+	function getYTClient(): Google_Client {
 		$client = new Google_Client();
 		$client->setApplicationName( 'APIs Explorer PHP Samples' );
 		$client->setScopes([ 'https://www.googleapis.com/auth/youtube.readonly' ]);
@@ -47,16 +50,21 @@
 		return $client;
 	}
 
-	$client = getYTClient();
+	try {
+		$client = getYTClient();
+	} catch ( \Google\Exception|Exception $e ) {
+		echo $e->getMessage() . PHP_EOL;
+		die;
+	}
 
-	// Define service object for making API requests.
+// Define service object for making API requests.
 	$service = new Google_Service_YouTubeAnalytics( $client );
 
 	// Pull top 20 videos by views for time period
 	$params = [
 		'dimensions' => 'video',
 		'endDate' => $end,
-		'ids' => 'channel=='.YT_CHANNEL_ID,
+		'ids' => 'channel==' . YT_CHANNEL_ID,
 		'maxResults' => 20,
 		'metrics' => 'views,likes,dislikes,comments,estimatedMinutesWatched,subscribersGained',
 		'sort' => '-views',
@@ -65,7 +73,7 @@
 
 	$params_over = [
 		'endDate' => $end,
-		'ids' => 'channel=='.YT_CHANNEL_ID,
+		'ids' => 'channel==' . YT_CHANNEL_ID,
 		'metrics' => 'views',
 		'startDate' => $start
 	];
@@ -134,4 +142,3 @@
 		$graphs['youtube-videos-by-engagement']['datasets'][1]['data'][] = ( empty( $videos[ $ytid ]['Subscribers Gained'] ) ? 0 : $videos[ $ytid ]['Subscribers Gained'] );
 		$graphs['youtube-videos-by-engagement']['datasets'][2]['data'][] = ( empty( $yti->statistics->likeCount ) ? 0 : $yti->statistics->likeCount );
 	}
-?>

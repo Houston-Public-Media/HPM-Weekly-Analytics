@@ -1,7 +1,8 @@
 <?php
 	// Start Facebook Insights Pull
+	global $fb_base, $hpm_fb, $graphs, $startu, $endu, $fb_access, $fb_proof, $sheets;
 	$sheet = 'Facebook Insights';
-	$fb_page_url = $fb_base.$hpm_fb.'/';
+	$fb_page_url = $fb_base . $hpm_fb . '/';
 
 	/**
 	 * Since the Facebook Graph API will only allow certain metrics to be pull for a particular period,
@@ -109,6 +110,7 @@
 							$name == 'page_positive_feedback_by_type'
 						) {
 							foreach ( $val->value as $n => $ra ) {
+								$ne = '';
 								if ( $n == 'like' ) {
 									if ( $name == 'page_actions_post_reactions_total' ) {
 										$ne = 'Like (Reaction)';
@@ -303,4 +305,3 @@
 	}
 
 	$sheets['Facebook Glossary'] = $glossary;
-?>

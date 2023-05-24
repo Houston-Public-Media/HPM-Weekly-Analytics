@@ -11,7 +11,7 @@
 	$replace = [ '...', '\'', 'o', 'e', '--', '"', '"', '\'', 'i', 'o', 'u', 'e', 'a', 'i', 'n', 'a', 'a', 'o', 'e', 'e' ];
 
 	// Recursive array search
-	function in_array_r( $needle, $haystack, $strict = false ) {
+	function in_array_r( $needle, $haystack, $strict = false ): bool {
 		foreach ( $haystack as $item ) {
 			if ( ( $strict ? $item === $needle : $item == $needle ) || ( is_array( $item ) && in_array_r( $needle, $item, $strict ) ) ) {
 				return true;
@@ -20,8 +20,8 @@
 		return false;
 	}
 
-	function csv_int_check ( $index, $data, $head ) {
-		if ( strpos( $index, 'Demographics' ) !== false ) {
+	function csv_int_check ( $index, $data, $head ): int|string {
+		if ( str_contains( $index, 'Demographics' ) ) {
 			return ( empty( $data[ $head[ $index ] ] ) ? '0%' : ($data[ $head[ $index ] ] * 100).'%' );
 		} else {
 			return ( empty( intval( $data[ $head[ $index ] ] ) ) ? 0 : intval( $data[ $head[ $index ] ] ) );
@@ -29,7 +29,7 @@
 	}
 
 	// Read keyboard input from terminal during execution
-	function read_stdin() {
+	function read_stdin(): string {
 		$fr = fopen( "php://stdin", "r" );
 		$input = fgets( $fr, 128 );
 		$input = rtrim( $input );
@@ -41,8 +41,8 @@
 	 * Load the composer dependencies and my terminal color helper
 	 */
 	require BASE . DS . 'vendor' . DS . 'autoload.php';
-	require BASE . DS . 'colors.php';
-	require BASE . DS . 'notif.php';
+	include( BASE . DS . 'colors.php' );
+	include( BASE . DS . 'notif.php' );
 
 	/**
 	 * Expose global env() function from oscarotero/env
@@ -85,7 +85,8 @@
 
 	// Initialize PHPSpreadsheet software so we can create XLSX files
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
-	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	$spreadsheet = new Spreadsheet();
 
 	// The raw array element that all of our spreadsheets will populate from
@@ -95,7 +96,7 @@
 	 * The data structure for the JSON file that will underpin the charts in the included application
 	 * The chart names can be changed, but you will need to update the names in the charting application
 	 */
-	require BASE . DS . 'graphs.php';
+	include( BASE . DS . 'graphs.php' );
 
 	/**
 	 * Set up data for our various interactive checks
@@ -104,6 +105,8 @@
 	 */
 
 	$date_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
+	$startu = $endu = 0;
+	$start = $end = '';
 
 	/**
 	 * Set the end date for your report
@@ -116,6 +119,7 @@
 		} else {
 			$date_in = $argv[1];
 		}
+		$run_date = time();
 		if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_in ) ) {
 			$datex = explode( '-', $date_in );
 			if (
@@ -126,13 +130,12 @@
 				$run_date = mktime( 12, 0, 0, intval( $datex[1] ), intval( $datex[2] ), intval( $datex[0] ) );
 				$date_conf = true;
 			} else {
-				echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
+				echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid date input, please try again." . RESET_ALL . PHP_EOL;
 			}
 		} elseif ( empty( $date_in ) ) {
 			$date_conf = true;
-			$run_date = time();
 		} else {
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid date input, please try again." . $RESET_ALL . PHP_EOL;
+			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid date input, please try again." . RESET_ALL . PHP_EOL;
 		}
 		/**
 		 * Setting the start and end dates in both YYYY-MM-DD format and Unixtime
@@ -165,7 +168,7 @@
 		} elseif ( $rerun_in == 'n' ) {
 			$rerun_conf = true;
 		} else {
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
+			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid input, please try again." . RESET_ALL . PHP_EOL;
 		}
 	}
 
@@ -185,7 +188,7 @@
 		} elseif ( $email_in == 'n' ) {
 			$email_conf = true;
 		} else {
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . "Invalid input, please try again." . $RESET_ALL . PHP_EOL;
+			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid input, please try again." . RESET_ALL . PHP_EOL;
 		}
 	}
 
@@ -209,11 +212,11 @@
 		!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
 		!file_exists( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" )
 	) {
-		echo PHP_EOL . $FG_BR_RED . $BG_BLACK . $FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
+		echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
 		die;
 	}
 
-	echo $FG_BR_CYAN . $BG_BLACK . $FS_BOLD ."Hold please..." . $RESET_ALL . PHP_EOL;
+	echo FG_BR_CYAN . BG_BLACK . FS_BOLD ."Hold please..." . RESET_ALL . PHP_EOL;
 
 	$num = 20;
 
@@ -252,62 +255,86 @@
 
 	// Write sheets from array into XLSX file
 	foreach ( $rsheets as $k => $v ) {
-		$myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet( $spreadsheet, $k );
+		$myWorkSheet = new Worksheet( $spreadsheet, $k );
 		// Setting the highlight color for the worksheet tabs in Excel
-		if ( strpos( $k, 'Facebook' ) !== false ) {
+		if ( str_contains( $k, 'Facebook' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('3b5998');
-		} elseif ( strpos( $k, '(Combined)' ) !== false || strpos( $k, 'Top Stories' ) !== false ) {
+		} elseif ( str_contains( $k, '(Combined)' ) || str_contains( $k, 'Top Stories' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('db4437');
-		} elseif ( strpos( $k, 'Tweet' ) !== false || strpos( $k, 'Twitter' ) !== false ) {
+		} elseif ( str_contains( $k, 'Tweet' ) || str_contains( $k, 'Twitter' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('1da1f2');
-		} elseif ( strpos( $k, 'Instagram' ) !== false ) {
+		} elseif ( str_contains( $k, 'Instagram' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('8a3ab9');
-		} elseif ( strpos( $k, 'Triton' ) !== false ) {
+		} elseif ( str_contains( $k, 'Triton' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('056ab2');
-		} elseif ( strpos( $k, 'YouTube' ) !== false ) {
+		} elseif ( str_contains( $k, 'YouTube' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('ff0000');
-		} elseif ( strpos( $k, 'Podcasts' ) !== false ) {
+		} elseif ( str_contains( $k, 'Podcasts' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('808080');
-		} elseif ( strpos( $k, 'Apple' ) !== false ) {
+		} elseif ( str_contains( $k, 'Apple' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('000000');
 		}
-		$spreadsheet->addSheet( $myWorkSheet, 0 );
-		$spreadsheet->setActiveSheetIndexByName( $k );
-		$spreadsheet->getActiveSheet()->fromArray( $v, NULL, 'A1' );
+		try {
+			$spreadsheet->addSheet( $myWorkSheet, 0 );
+			$spreadsheet->setActiveSheetIndexByName( $k );
+		} catch ( \PhpOffice\PhpSpreadsheet\Exception $e ) {
+			echo $e->getMessage() . PHP_EOL;
+		}
+		$spreadsheet->getActiveSheet()->fromArray( $v );
 
 		// Merging some of the header rows for readability
 		if ( $k == 'Triton By Device' ) {
-			$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
+			try {
+				$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
+			} catch ( \PhpOffice\PhpSpreadsheet\Exception $e ) {
+				echo $e->getMessage() . PHP_EOL;
+			}
 		}
-		if ( strpos( $k, 'Top Stories' ) !== false ) {
-			$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
-			$spreadsheet->getActiveSheet()->mergeCells( 'F1:G1' );
-			$spreadsheet->getActiveSheet()->mergeCells( 'H1:M1' );
-			$spreadsheet->getActiveSheet()->mergeCells( 'N1:R1' );
+		if ( str_contains( $k, 'Top Stories' ) ) {
+			try {
+				$spreadsheet->getActiveSheet()->mergeCells( 'A1:E1' );
+				$spreadsheet->getActiveSheet()->mergeCells( 'F1:G1' );
+				$spreadsheet->getActiveSheet()->mergeCells( 'H1:M1' );
+				$spreadsheet->getActiveSheet()->mergeCells( 'N1:R1' );
+			} catch ( \PhpOffice\PhpSpreadsheet\Exception $e ) {
+				echo $e->getMessage() . PHP_EOL;
+			}
 		}
 	}
 
 	// Remove the default worksheet that is created
-	$sheetIndex = $spreadsheet->getIndex(
-		$spreadsheet->getSheetByName('Worksheet')
-	);
-	$spreadsheet->removeSheetByIndex($sheetIndex);
+	try {
+		$sheetIndex = $spreadsheet->getIndex(
+			$spreadsheet->getSheetByName( 'Worksheet' )
+		);
+		$spreadsheet->removeSheetByIndex($sheetIndex);
+	} catch ( \PhpOffice\PhpSpreadsheet\Exception $e ) {
+		echo $e->getMessage() . PHP_EOL;
+	}
+
 
 	// Auto size columns for each worksheet
 	foreach ( $spreadsheet->getWorksheetIterator() as $worksheet ) {
-		$spreadsheet->setActiveSheetIndex( $spreadsheet->getIndex( $worksheet ) );
-
-		$sheet = $spreadsheet->getActiveSheet();
-		$cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
-		$cellIterator->setIterateOnlyExistingCells( true );
-		foreach ( $cellIterator as $cell ) {
-			$sheet->getColumnDimension( $cell->getColumn() )->setAutoSize( true );
+		try {
+			$spreadsheet->setActiveSheetIndex( $spreadsheet->getIndex( $worksheet ) );
+			$sheet = $spreadsheet->getActiveSheet();
+			$cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
+			$cellIterator->setIterateOnlyExistingCells( true );
+			foreach ( $cellIterator as $cell ) {
+				$sheet->getColumnDimension( $cell->getColumn() )->setAutoSize( true );
+			}
+		} catch ( \PhpOffice\PhpSpreadsheet\Exception $e ) {
+			echo $e->getMessage() . PHP_EOL;
 		}
 	}
 
 	// Write XLSX file
 	$writer =  new Xlsx( $spreadsheet );
-	$writer->save( STORAGE_PATH . 'analytics-'.date( 'Y-m-d', $run_date ).'.xlsx' );
+	try {
+		$writer->save( STORAGE_PATH . 'analytics-' . date( 'Y-m-d', $run_date ) . '.xlsx' );
+	} catch ( \PhpOffice\PhpSpreadsheet\Writer\Exception $e ) {
+		echo $e->getMessage() . PHP_EOL;
+	}
 
 	// Save the graphing data locally as a JSON file
 	file_put_contents( BASE . DS . 'data' . DS . date( 'Y-m-d', $startu ) . '.json', json_encode( $graphs ) );
@@ -339,7 +366,7 @@
 			array_unshift( $text, $new_entry );
 		}
 	}
-	if ( $rerun == false ) {
+	if ( ! $rerun ) {
 		file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
 	}
 
@@ -351,6 +378,5 @@
 	// All done!
 	$process_end = time();
 	$process_total = ( $process_end - $process_start );
-	echo $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . 'Report process completed successfully!' . PHP_EOL . 'Total execution time: ' . $process_total . ' seconds' . $RESET_ALL . PHP_EOL;
+	echo FG_BR_GREEN . BG_BLACK . FS_BOLD . 'Report process completed successfully!' . PHP_EOL . 'Total execution time: ' . $process_total . ' seconds' . RESET_ALL . PHP_EOL;
 	notification_toast( 'Total execution time: ' . $process_total, 'Weekly Analytics Report', 'Reporting process completed successfully', 'Crystal' );
-?>

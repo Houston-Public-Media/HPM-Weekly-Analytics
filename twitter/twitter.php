@@ -1,4 +1,5 @@
 <?php
+	global $sheets, $graphs, $end;
 	/**
 	 * Twitter does not have a publicly-accessible analytics API that isn't solely dedicated to advertisers
 	 * 		(API problems with Twitter? Shocked! Shocked I say!)
@@ -18,10 +19,11 @@
 	 */
 	$tweets = $tw_eng = $tw_imp = [];
 	$row = 0;
+	$tw_head = [];
 
 	// Open the CSV file
 	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== FALSE ) {
 			if ( $row == 0 ) {
 				$tw_head = array_flip( $data );
 			} else {
@@ -168,4 +170,3 @@
 		$sheets[ $sheet ][] = array_values( $v );
 		$t++;
 	}
-?>

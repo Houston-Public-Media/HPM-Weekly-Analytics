@@ -1,4 +1,6 @@
 <?php
+	global $emails, $aws_key, $aws_secret, $email_arr, $startu, $s3_bucket, $rerun, $cf_distro;
+
 	use Aws\Ses\SesClient;
 	use Aws\Ses\Exception\SesException;
 	use Aws\S3\S3Client;
@@ -28,24 +30,24 @@
 					'Body' => [
 						'Html' => [
 							'Charset' => 'UTF-8',
-							'Data' => '<h2 style="font-size: 20px; line-height: 24px;">HPM Analytics Report for the Week of '.date( 'F j, Y', $startu ).'</h2><p>The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready <a href="'.STORAGE_SHARE.'">for you to review</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Charts, Graphs, Etc.</h4><p>You can view visualizations of these reports at <a href="'.APP_URL.'">'.APP_URL.'</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Previous Weekly Reports</h4><p>Previous weekly reports can be <a href="'.STORAGE_SHARE.'">found here</a>.</p>'
+							'Data' => '<h2 style="font-size: 20px; line-height: 24px;">HPM Analytics Report for the Week of ' . date( 'F j, Y', $startu ) . '</h2><p>The weekly analytics report for the week of ' . date( 'F j, Y', $startu ) . ' is ready <a href="' . STORAGE_SHARE . '">for you to review</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Charts, Graphs, Etc.</h4><p>You can view visualizations of these reports at <a href="' . APP_URL . '">' . APP_URL . '</a>.</p><h4 style="font-size: 16px; line-height: 20px;">Previous Weekly Reports</h4><p>Previous weekly reports can be <a href="' . STORAGE_SHARE . '">found here</a>.</p>'
 						],
 					'Text' => [
 						'Charset' => 'UTF-8',
-						'Data' => 'The weekly analytics report for the week of '.date( 'F j, Y', $startu ).' is ready for you to review:\n\n'.STORAGE_SHARE.'\n\n**Charts, Graphs, Etc.**\n\nVisualizations of these reports are available at '.APP_URL.' \n\n**Previous Reports**\n\nPrevious weekly reports can be found here:\n\n'.STORAGE_SHARE
+						'Data' => 'The weekly analytics report for the week of ' . date( 'F j, Y', $startu ) . ' is ready for you to review:\n\n' . STORAGE_SHARE . '\n\n**Charts, Graphs, Etc.**\n\nVisualizations of these reports are available at ' . APP_URL . ' \n\n**Previous Reports**\n\nPrevious weekly reports can be found here:\n\n' . STORAGE_SHARE
 					],
 				],
 				'Subject' => [
 					'Charset' => 'UTF-8',
-						'Data' => 'HPM Analytics Report for the Week of '.date( 'F j, Y', $startu )
+						'Data' => 'HPM Analytics Report for the Week of ' . date( 'F j, Y', $startu )
 					],
 				],
 				'Source' => FROM_EMAIL
 			]);
 			$messageId = $result->get( 'MessageId' );
-			echo( $FG_BR_GREEN . $BG_BLACK . $FS_BOLD . "Email sent! Message ID: $messageId" . $RESET_ALL . PHP_EOL );
+			echo( FG_BR_GREEN . BG_BLACK . FS_BOLD . "Email sent! Message ID: $messageId" . RESET_ALL . PHP_EOL );
 		} catch (SesException $error) {
-			echo( $FG_BR_RED . $BG_BLACK . $FS_BOLD . "The email was not sent. Error message: ".$error->getAwsErrorMessage() . PHP_EOL );
+			echo( FG_BR_RED . BG_BLACK . FS_BOLD . "The email was not sent. Error message: " . $error->getAwsErrorMessage() . PHP_EOL );
 		}
 	}
 
@@ -91,7 +93,7 @@
 		die;
 	}
 
-	if ( $rerun == false ) {
+	if ( ! $rerun ) {
 		// Upload the reports file to Amazon S3
 		try {
 			$ss3 = $s3->putObject([
@@ -103,11 +105,11 @@
 			]);
 		} catch (S3Exception $e) {
 			header("HTTP/1.1 500 Server Error");
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getMessage() . $RESET_ALL . PHP_EOL;
+			echo FG_BR_RED . BG_BLACK . FS_BOLD . $e->getMessage() . RESET_ALL . PHP_EOL;
 			die;
 		} catch (AwsException $e) {
 			header("HTTP/1.1 500 Server Error");
-			echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . $RESET_ALL . PHP_EOL;
+			echo FG_BR_RED . BG_BLACK . FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . RESET_ALL . PHP_EOL;
 			die;
 		}
 	}
@@ -126,11 +128,10 @@
 		]);
 	} catch (CloudFrontException $e) {
 		header("HTTP/1.1 500 Server Error");
-		echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getMessage() . $RESET_ALL . PHP_EOL;
+		echo FG_BR_RED . BG_BLACK . FS_BOLD . $e->getMessage() . RESET_ALL . PHP_EOL;
 		die;
 	} catch (AwsException $e) {
 		header("HTTP/1.1 500 Server Error");
-		echo $FG_BR_RED . $BG_BLACK . $FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . $RESET_ALL . PHP_EOL;
+		echo FG_BR_RED . BG_BLACK . FS_BOLD . $e->getAwsRequestId() . PHP_EOL . $e->getAwsErrorType() . PHP_EOL . $e->getAwsErrorCode() . RESET_ALL . PHP_EOL;
 		die;
 	}
-?>

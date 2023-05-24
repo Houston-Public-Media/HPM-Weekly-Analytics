@@ -1,4 +1,5 @@
 <?php
+	global $sheets, $graphs, $startu, $endu;
 	/**
 	 * Triton Webcast Metrics. If you have a username and password for the analytics dashboard, you can use this
 	 *
@@ -94,4 +95,3 @@
 		$graphs['overall-totals']['triton-classical']['data'] += $wcm_data['listeners']['classical'][ $k ]['value'];
 		$graphs['overall-totals']['triton-mixtape']['data'] += $wcm_data['listeners']['mixtape'][ $k ]['value'];
 	}
-?>

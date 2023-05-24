@@ -1,4 +1,5 @@
 <?php
+	global $graphs, $sheets, $start, $end;
 	use Google\Analytics\Data\V1beta\BetaAnalyticsDataClient;
 	use Google\Analytics\Data\V1beta\DateRange;
 	use Google\Analytics\Data\V1beta\Dimension;
@@ -6,8 +7,13 @@
 	use Google\Analytics\Data\V1beta\MetricAggregation;
 	use Google\Analytics\Data\V1beta\FilterExpression;
 	use Google\Analytics\Data\V1beta\Filter;
+use Google\ApiCore\ApiException;
+use Google\ApiCore\ValidationException;
 
-	function googleArticleSources( $row ) {
+/**
+ * @throws ApiException
+ */
+function googleArticleSources( $row ): array {
 		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		$path = $row->getDimensionValues()[0]->getValue();
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $path, $match );
@@ -77,15 +83,15 @@
 			} elseif ( $medium == 'referral' ) {
 				$referral += $metric;
 			}
-			if ( strpos( $stype, 'google' ) !== false ) {
+			if ( str_contains( $stype, 'google' ) ) {
 				$google += $metric;
-			} elseif ( strpos( $stype, 'facebook' ) !== false ) {
+			} elseif ( str_contains( $stype, 'facebook' ) ) {
 				$facebook += $metric;
-			} elseif ( strpos( $stype, 't.co' ) !== false ) {
+			} elseif ( str_contains( $stype, 't.co' ) ) {
 				$twitter += $metric;
-			} elseif ( strpos( $stype, 'rss' ) !== false ) {
+			} elseif ( str_contains( $stype, 'rss' ) ) {
 				$rss += $metric;
-			} elseif ( strpos( $stype, 'newsbreak' ) !== false ) {
+			} elseif ( str_contains( $stype, 'newsbreak' ) ) {
 				$newsbreak += $metric;
 			}
 		}
@@ -128,39 +134,49 @@
 		'mobile' => 'rgba(0,255,0,1)'
 	];
 
-	$analytics = new BetaAnalyticsDataClient([
-		'credentials' => GA_CLIENT
-	]);
+	try {
+		$analytics = new BetaAnalyticsDataClient( [
+			'credentials' => GA_CLIENT
+		] );
+	} catch ( ValidationException $e ) {
+		echo $e->getMessage() . PHP_EOL;
+		die;
+	}
 	foreach ( $gas as $g => $ga ) {
 		$ga_acct_name = 'ga-'.strtolower( $g );
 
 		// Pull article numbers from GA
-		$result = $analytics->runReport([
-			'property' => 'properties/' . $ga,
-			'dateRanges' => [
-				new DateRange([
-					'start_date' => $start,
-					'end_date' => $end,
-				]),
-			],
-			'dimensions' => [
-				new Dimension([ 'name' => 'pagePath' ])
-			],
-			'metrics' => [
-				new Metric([ 'name' => 'screenPageViews' ]),
-				new Metric([ 'name' => 'activeUsers' ])
-			],
-			'dimensionFilter' => new FilterExpression([
-				'filter' => new Filter([
-					'field_name' => 'pagePath',
-					'string_filter' => new Filter\StringFilter([
-						'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
-						'value' => '/articles/'
-					])
-				])
-			]),
-			'limit' => 25
-		]);
+		try {
+			$result = $analytics->runReport( [
+				'property'        => 'properties/' . $ga,
+				'dateRanges'      => [
+					new DateRange( [
+						'start_date' => $start,
+						'end_date'   => $end,
+					] ),
+				],
+				'dimensions'      => [
+					new Dimension( [ 'name' => 'pagePath' ] )
+				],
+				'metrics'         => [
+					new Metric( [ 'name' => 'screenPageViews' ] ),
+					new Metric( [ 'name' => 'activeUsers' ] )
+				],
+				'dimensionFilter' => new FilterExpression( [
+					'filter' => new Filter( [
+						'field_name'    => 'pagePath',
+						'string_filter' => new Filter\StringFilter( [
+							'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
+							'value'      => '/articles/'
+						] )
+					] )
+				] ),
+				'limit' => 25
+			] );
+		} catch ( ApiException $e ) {
+			echo $e->getMessage() . PHP_EOL;
+			die;
+		}
 
 		$sheet = 'Top Stories ('.$g.')';
 		$sheets[ $sheet ] = [];
@@ -176,7 +192,12 @@
 					'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 				];
 			}
-			$gaSources = googleArticleSources( $row );
+			try {
+				$gaSources = googleArticleSources( $row );
+			} catch ( ApiException $e ) {
+				echo $e->getMessage() . PHP_EOL;
+				die;
+			}
 
 			if ( !empty( $gaSources ) ) {
 				// Adding the row to the sheet
@@ -192,30 +213,35 @@
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][3]['data'][] = $gaSources[10];
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][4]['data'][] = $gaSources[11];
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][5]['data'][] = $gaSources[12];
-				$graphs[ $ga_acct_name.'-articles' ]['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][6]['data'][] = ( max( $others, 0 ) );
 			}
 		}
 
 		// User / Session pull from GA
-		$result2 = $analytics->runReport([
-			'property' => 'properties/' . $ga,
-			'dateRanges' => [
-				new DateRange([
-					'start_date' => $start,
-					'end_date' => $end,
-				]),
-			],
-			'dimensions' => [
-				new Dimension([ 'name' => 'dateHour' ])
-			],
-			'metrics' => [
-				new Metric([ 'name' => 'sessions' ]),
-				new Metric([ 'name' => 'activeUsers' ])
-			],
-			'metricAggregations' => [
-				MetricAggregation::TOTAL,
-			]
-		]);
+		try {
+			$result2 = $analytics->runReport( [
+				'property'           => 'properties/' . $ga,
+				'dateRanges'         => [
+					new DateRange( [
+						'start_date' => $start,
+						'end_date'   => $end,
+					] ),
+				],
+				'dimensions'         => [
+					new Dimension( [ 'name' => 'dateHour' ] )
+				],
+				'metrics'            => [
+					new Metric( [ 'name' => 'sessions' ] ),
+					new Metric( [ 'name' => 'activeUsers' ] )
+				],
+				'metricAggregations' => [
+					MetricAggregation::TOTAL,
+				]
+			] );
+		} catch ( ApiException $e ) {
+			echo $e->getMessage() . PHP_EOL;
+			die;
+		}
 
 		$graphs['overall-totals'][ $ga_acct_name ]['data'] += $result2->getTotals()[0]->getMetricValues()[1]->getValue();
 
@@ -248,22 +274,27 @@
 		];
 
 		// Pulling device category stats from GA
-		$result3 = $analytics->runReport([
-			'property' => 'properties/' . $ga,
-			'dateRanges' => [
-				new DateRange([
-					'start_date' => $start,
-					'end_date' => $end,
-				]),
-			],
-			'dimensions' => [
-				new Dimension([ 'name' => 'deviceCategory' ])
-			],
-			'metrics' => [
-				new Metric([ 'name' => 'sessions' ]),
-				new Metric([ 'name' => 'activeUsers' ])
-			]
-		]);
+		try {
+			$result3 = $analytics->runReport( [
+				'property'   => 'properties/' . $ga,
+				'dateRanges' => [
+					new DateRange( [
+						'start_date' => $start,
+						'end_date'   => $end,
+					] ),
+				],
+				'dimensions' => [
+					new Dimension( [ 'name' => 'deviceCategory' ] )
+				],
+				'metrics'    => [
+					new Metric( [ 'name' => 'sessions' ] ),
+					new Metric( [ 'name' => 'activeUsers' ] )
+				]
+			] );
+		} catch ( ApiException $e ) {
+			echo $e->getMessage() . PHP_EOL;
+			die;
+		}
 
 		// Parsing
 		foreach ( $result3->getRows() as $k => $row ) {
@@ -310,32 +341,37 @@
 		];
 		foreach ( $shows as $show ) {
 			$show_graph = 'ga-'.$show['slug'].'-articles';
-			$result = $analytics->runReport([
-				'property' => 'properties/' . $ga,
-				'dateRanges' => [
-					new DateRange([
-						'start_date' => $start,
-						'end_date' => $end,
-					]),
-				],
-				'dimensions' => [
-					new Dimension([ 'name' => 'pagePath' ])
-				],
-				'metrics' => [
-					new Metric([ 'name' => 'screenPageViews' ]),
-					new Metric([ 'name' => 'activeUsers' ])
-				],
-				'dimensionFilter' => new FilterExpression([
-					'filter' => new Filter([
-						'field_name' => 'pagePath',
-						'string_filter' => new Filter\StringFilter([
-							'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
-							'value' => '/articles/shows/' . $show['slug']
-						])
-					])
-				]),
-				'limit' => 25
-			]);
+			try {
+				$result = $analytics->runReport( [
+					'property'        => 'properties/' . $ga,
+					'dateRanges'      => [
+						new DateRange( [
+							'start_date' => $start,
+							'end_date'   => $end,
+						] ),
+					],
+					'dimensions'      => [
+						new Dimension( [ 'name' => 'pagePath' ] )
+					],
+					'metrics'         => [
+						new Metric( [ 'name' => 'screenPageViews' ] ),
+						new Metric( [ 'name' => 'activeUsers' ] )
+					],
+					'dimensionFilter' => new FilterExpression( [
+						'filter' => new Filter( [
+							'field_name'    => 'pagePath',
+							'string_filter' => new Filter\StringFilter( [
+								'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
+								'value'      => '/articles/shows/' . $show['slug']
+							] )
+						] )
+					] ),
+					'limit'           => 25
+				] );
+			} catch ( ApiException $e ) {
+				echo $e->getMessage() . PHP_EOL;
+				die;
+			}
 
 			$sheet = 'Top Stories ('.$show['title'].')';
 			$sheets[ $sheet ] = [];
@@ -351,7 +387,12 @@
 						'Title', 'URL', 'Author', 'Date', 'Categories and Tags', 'Total', 'Unique', 'Direct', 'Google', 'Facebook', 'Twitter', 'RSS Feeds', 'Newsbreak App', 'Direct/No Referrer', 'Organic', 'Email', 'Referral', 'Social'
 					];
 				}
-				$gaSources = googleArticleSources( $row );
+				try {
+					$gaSources = googleArticleSources( $row );
+				} catch ( ApiException $e ) {
+					echo $e->getMessage() . PHP_EOL;
+					die;
+				}
 
 				if ( !empty( $gaSources ) ) {
 					// Adding the row to the sheet
@@ -370,6 +411,3 @@
 			}
 		}
 	}
-	print_r( $graphs );
-	print_r( $sheets );
-?>

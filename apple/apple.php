@@ -1,4 +1,5 @@
 <?php
+	global $end, $graphs, $sheets;
 	$apple_ages = [
 		'18-24' => [],
 		'25-34' => [],
@@ -10,6 +11,7 @@
 
 	$sheet = 'Apple News';
 	$row = 0;
+	$apple_head = [];
 	/**
 	 * Open the CSV report downloaded from Apple News. They have a way to set up weekly reports that they email you
 	 * 		which makes downloading the report a lot easier. The report referenced below is the "Channel Summary" report.
@@ -17,7 +19,7 @@
 	 *
 	 */
 	if ( ( $handle = fopen( BASE . DS . "apple" . DS . "channel-" . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== FALSE ) {
 			if ( $row === 0 ) {
 				$apple_head = array_flip( $data );
 
@@ -97,4 +99,3 @@
 		$avg = round( array_sum( $v ) / count( $v ), 1 );
 		$graphs['apple-age']['datasets'][0]['data'][] = $avg;
 	}
-?>

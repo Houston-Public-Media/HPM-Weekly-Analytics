@@ -1,4 +1,5 @@
 <?php
+	global $sheets, $graphs, $end;
 	$sheet = 'Podcasts';
 	$row = 0;
 	/**
@@ -9,7 +10,7 @@
 	 */
 
 	if ( ( $handle = fopen( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== FALSE ) {
 			if ( $row === 0 ) {
 				$sheets[ $sheet ][] = [
 					'Name','Downloads','Downloaders'

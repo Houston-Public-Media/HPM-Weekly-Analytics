@@ -1,7 +1,8 @@
 <?php
+	global $fb_base, $hpm_insta, $fb_access, $fb_proof, $graphs, $sheets;
 	// Start Instagram Insights Pull
 	$sheet = 'Instagram Insights';
-	$fb_page_url = $fb_base.$hpm_insta.'/';
+	$fb_page_url = $fb_base . $hpm_insta.'/';
 
 	/**
 	 * Since the Facebook Graph API will only allow certain metrics to be pull for a particular period,
@@ -242,4 +243,3 @@
 	}
 
 	$sheets['Instagram Glossary'] = $glossary;
-?>

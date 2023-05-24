@@ -1,15 +1,18 @@
 <?php
+	global $graphs, $sheets, $start, $end, $num;
 	// Create connection to Google Analytics
-	function initializeAnalytics() {
+	/**
+	 * @throws \Google\Exception
+	 */
+	function initializeAnalytics(): Google_Service_Analytics {
 		$client = new Google_Client();
 		$client->setApplicationName( "Hello Analytics Reporting" );
 		$client->setAuthConfig( GA_CLIENT );
 		$client->setScopes(['https://www.googleapis.com/auth/analytics.readonly']);
-		$analytics = new Google_Service_Analytics( $client );
-		return $analytics;
+		return new Google_Service_Analytics( $client );
 	}
 
-	function googleArticleSources( $row ) {
+	function googleArticleSources( $row ): array {
 		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $row[0], $match );
 		if ( empty( $match ) ) {
@@ -66,15 +69,15 @@
 			} elseif ( $medium == 'referral' ) {
 				$referral += $source[1];
 			}
-			if ( strpos( $stype, 'google' ) !== false ) {
+			if ( str_contains( $stype, 'google' ) ) {
 				$google += $source[1];
-			} elseif ( strpos( $stype, 'facebook' ) !== false ) {
+			} elseif ( str_contains( $stype, 'facebook' ) ) {
 				$facebook += $source[1];
-			} elseif ( strpos( $stype, 't.co' ) !== false ) {
+			} elseif ( str_contains( $stype, 't.co' ) ) {
 				$twitter += $source[1];
-			} elseif ( strpos( $stype, 'rss' ) !== false ) {
+			} elseif ( str_contains( $stype, 'rss' ) ) {
 				$rss += $source[1];
-			} elseif ( strpos( $stype, 'newsbreak' ) !== false ) {
+			} elseif ( str_contains( $stype, 'newsbreak' ) ) {
 				$newsbreak += $source[1];
 			}
 		}
@@ -82,7 +85,7 @@
 		// Adding the row to the sheet
 		return [
 			$title,
-			'https://www.houstonpublicmedia.org'.$row[0],
+			'https://www.houstonpublicmedia.org' . $row[0],
 			implode( ' / ', $authors ),
 			$date_format,
 			implode( ', ', $tags ),
@@ -117,7 +120,12 @@
 		'mobile' => 'rgba(0,255,0,1)'
 	];
 
-	$analytics = initializeAnalytics();
+	try {
+		$analytics = initializeAnalytics();
+	} catch ( \Google\Exception $e ) {
+		echo $e->getMessage() . PHP_EOL;
+		die;
+	}
 	foreach ( $gas as $g => $ga ) {
 		$ga_acct_name = 'ga-'.strtolower( $g );
 
@@ -168,7 +176,7 @@
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][3]['data'][] = $gaSources[10];
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][4]['data'][] = $gaSources[11];
 				$graphs[ $ga_acct_name.'-articles' ]['datasets'][5]['data'][] = $gaSources[12];
-				$graphs[ $ga_acct_name.'-articles' ]['datasets'][6]['data'][] = ( $others <= 0 ? 0 : $others );
+				$graphs[ $ga_acct_name.'-articles' ]['datasets'][6]['data'][] = ( max( $others, 0 ) );
 			}
 		}
 
@@ -199,7 +207,7 @@
 			]
 		);
 
-		$graphs['overall-totals'][ $ga_acct_name ]['data'] += $result4->totalsForAllResults['ga:users'];
+		$graphs['overall-totals'][ $ga_acct_name ]['data'] += (int)$result4->totalsForAllResults['ga:users'];
 
 		// New sheet
 		$sheet = 'Hourly Stats ('.$g.')';
