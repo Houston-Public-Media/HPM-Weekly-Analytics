@@ -1,25 +1,25 @@
-const dlUrl = 'https://cdn.hpm.io/assets/analytics/';
+const dlUrl = 'https://cdn.houstonpublicmedia.org/assets/analytics/';
 //const dlUrl = 'https://local.hpm.io/assets/analytics/';
 const tabs = document.querySelectorAll('.tabs ul li');
 const services = document.querySelectorAll('.services');
 const googleTabs = document.querySelectorAll('.tabs ul li.google');
-var currentReport, graphs = {};
-var currentData = [];
-var activeTab = 'overall';
+let currentReport, graphs = {};
+let currentData = [];
+let activeTab = 'overall';
 Chart.defaults.elements.bar.borderWidth = 2;
 Chart.defaults.interaction.mode = 'index';
 Chart.defaults.interaction.axis = 'y';
 Chart.defaults.plugins.title.display = true;
 Chart.defaults.plugins.title.font.size = 16;
 Chart.defaults.plugins.legend.position = 'bottom';
-var axisLabelFix = (value) => {
-	for (var i=0; i < value.ticks.length; i++) {
+let axisLabelFix = (value) => {
+	for (let i= 0; i < value.ticks.length; i++) {
 		if ( value.ticks[i].label.length >= 40 ) {
 			value.ticks[i].label = value.ticks[i].label.substring(0,40) + '...';
 		}
 	}
 }
-var config = {
+let config = {
 	'ga-main-articles': {
 		options: {
 			indexAxis: 'y',
@@ -345,11 +345,11 @@ var config = {
 				tooltips: {
 					callbacks: {
 						title: (tooltipItem, data) => {
-							var label = data.labels[tooltipItem[0].index];
+							let label = data.labels[tooltipItem[0].index];
 							if ( label.length < 120 ) {
 								return label;
 							} else {
-								var trimmed = label.substring(0,120);
+								let trimmed = label.substring(0,120);
 								return trimmed+'...';
 							}
 						}
@@ -382,11 +382,11 @@ var config = {
 				tooltips: {
 					callbacks: {
 						title: (tooltipItem, data) => {
-							var label = data.labels[tooltipItem[0].index];
+							let label = data.labels[tooltipItem[0].index];
 							if ( label.length < 120 ) {
 								return label;
 							} else {
-								var trimmed = label.substring(0,120);
+								let trimmed = label.substring(0,120);
 								return trimmed+'...';
 							}
 						}
@@ -520,11 +520,11 @@ var config = {
 				tooltips: {
 					callbacks: {
 						title: (tooltipItem, data) => {
-							var label = data.labels[tooltipItem[0].index];
+							let label = data.labels[tooltipItem[0].index];
 							if ( label.length < 120 ) {
 								return label;
 							} else {
-								var trimmed = label.substring(0,120);
+								let trimmed = label.substring(0,120);
 								return trimmed+'...';
 							}
 						}
@@ -552,11 +552,11 @@ var config = {
 				tooltips: {
 					callbacks: {
 						title: (tooltipItem, data) => {
-							var label = data.labels[tooltipItem[0].index];
+							let label = data.labels[tooltipItem[0].index];
 							if ( label.length < 120 ) {
 								return label;
 							} else {
-								var trimmed = label.substring(0,120);
+								let trimmed = label.substring(0,120);
 								return trimmed+'...';
 							}
 						}
@@ -627,30 +627,15 @@ var config = {
 		type: 'bar'
 	}
 };
-window.getJSON = (url, callback) => {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', url, true);
-	xhr.responseType = 'json';
-	xhr.onload = () => {
-		var status = xhr.status;
-		if (status === 200) {
-			callback(null, xhr.response);
-		} else {
-			callback(status, xhr.response);
-		}
-	};
-	xhr.send();
-};
-var graphUpdate = (report) => {
-	getJSON( dlUrl + report + ".json", (err,data) => {
-		if (err !== null) {
-			console.log(err);
-		} else {
+let graphUpdate = (report) => {
+	fetch(dlUrl + report + ".json")
+		.then((response) => response.json())
+		.then((data) => {
 			currentData = data;
 			Array.from(googleTabs).forEach((gtab) => {
 				gtab.classList.add('disabled');
 			});
-			for ( var d in currentData ) {
+			for ( let d in currentData ) {
 				if ( d.includes('ga-main') ) {
 					document.getElementById('google-main').classList.remove('disabled');
 				} else if ( d.includes('ga-amp') ) {
@@ -668,10 +653,10 @@ var graphUpdate = (report) => {
 						graphs[d+'-graph'].data = config[d]['data'];
 						graphs[d+'-graph'].update();
 					} else {
-						var container = document.getElementById(d);
-						var canvas = document.createElement('canvas');
+						let container = document.getElementById(d);
+						let canvas = document.createElement('canvas');
 						container.appendChild(canvas).setAttribute('id',d+'-graph');
-						var ctx = document.getElementById(d+'-graph').getContext('2d');
+						let ctx = document.getElementById(d+'-graph').getContext('2d');
 						graphs[d+'-graph'] = new Chart(ctx, {
 							type: config[d]['type'],
 							data: config[d]['data'],
@@ -692,10 +677,13 @@ var graphUpdate = (report) => {
 				document.getElementById(activeTab+'-service').classList.add('service-active');
 			}
 		}
-	});
+	);
 }
-var overallGen = (data) => {
-	var output = "<table class=\"table is-bordered is-striped is-hoverable is-fullwidth\">" +
+let numberFormat = ( number ) => {
+	return new Intl.NumberFormat().format(number);
+};
+let overallGen = (data) => {
+	let output = "<table class=\"table is-bordered is-striped is-hoverable is-fullwidth\">" +
 		"<thead>" +
 		"<tr>" +
 			"<th scope=\"col\">Service</th>" +
@@ -710,21 +698,21 @@ var overallGen = (data) => {
 	if ( typeof data['ga-main'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-main']['name'] + "</td>" +
-			"<td>" + data['ga-main']['data'] + "</td>" +
+			"<td>" + numberFormat(data['ga-main']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>";
 	}
 	if ( typeof data['ga-amp'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-amp']['name'] + "</td>" +
-			"<td>" + data['ga-amp']['data'] + "</td>" +
+			"<td>" + numberFormat(data['ga-amp']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>";
 	}
 	if ( typeof data['ga-combined'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-combined']['name'] + "</td>" +
-			"<td>" + data['ga-combined']['data'] + "</td>" +
+			"<td>" + numberFormat(data['ga-combined']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>";
 	}
@@ -734,27 +722,27 @@ var overallGen = (data) => {
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['facebook']['name'] + "</td>" +
-			"<td>" + data['facebook']['data'] + "</td>" +
+			"<td>" + numberFormat(data['facebook']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['instagram']['name'] + "</td>" +
-			"<td>" + data['instagram']['data'] + "</td>" +
+			"<td>" + numberFormat(data['instagram']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['twitter']['name'] + "</td>" +
-			"<td>" + data['twitter']['data'] + "</td>" +
+			"<td>" + numberFormat(data['twitter']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['youtube']['name'] + "</td>" +
-			"<td>" + data['youtube']['data'] + "</td>" +
+			"<td>" + numberFormat(data['youtube']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['apple-news']['name'] + "</td>" +
-			"<td>" + data['apple-news']['data'] + "</td>" +
+			"<td>" + numberFormat(data['apple-news']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr class=\"overall-section\">" +
@@ -763,17 +751,17 @@ var overallGen = (data) => {
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-news']['name'] + "</td>" +
-			"<td>" + data['triton-news']['data'] + "</td>" +
+			"<td>" + numberFormat(data['triton-news']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-classical']['name'] + "</td>" +
-			"<td>" + data['triton-classical']['data'] + "</td>" +
+			"<td>" + numberFormat(data['triton-classical']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-mixtape']['name'] + "</td>" +
-			"<td>" + data['triton-mixtape']['data'] + "</td>" +
+			"<td>" + numberFormat(data['triton-mixtape']['data']) + "</td>" +
 			"<td></td>" +
 		"</tr>" +
 		"<tr class=\"overall-section\">" +
@@ -781,13 +769,13 @@ var overallGen = (data) => {
 			"<td>Downloads</td>" +
 			"<td>Downloaders</td>" +
 		"</tr>";
-	var pod = data['podcasts'];
-	for (var p in pod) {
-		var name = pod[p]['name'].replace( 'Hpm', "HPM" );
+	let pod = data['podcasts'];
+	for (let p in pod) {
+		let name = pod[p]['name'].replace( 'Hpm', "HPM" );
 		output += "<tr>" +
 			"<td>" + name + "</td>" +
-			"<td>" + pod[p]['data']['downloads'] + "</td>" +
-			"<td>" + pod[p]['data']['downloaders'] + "</td>" +
+			"<td>" + numberFormat(pod[p]['data']['downloads']) + "</td>" +
+			"<td>" + numberFormat(pod[p]['data']['downloaders']) + "</td>" +
 		"</tr>";
 	}
 	output += "</tbody></table>";
@@ -804,9 +792,9 @@ var overallGen = (data) => {
 				});
 				event.currentTarget.classList.add('is-active');
 				activeTab = event.currentTarget.getAttribute('id');
-				var services = document.querySelectorAll('.services');
+				let services = document.querySelectorAll('.services');
 				Array.from(services).forEach((serve) => {
-					var sId = serve.getAttribute('id');
+					let sId = serve.getAttribute('id');
 					if ( activeTab+'-service' === sId ) {
 						serve.classList.add('service-active');
 					} else {
@@ -816,37 +804,35 @@ var overallGen = (data) => {
 			}
 		});
 	});
-	var notifs = document.querySelectorAll('.notification .delete');
+	let notifs = document.querySelectorAll('.notification .delete');
 	Array.from(notifs).forEach((del) => {
-		var notification = del.parentNode;
+		let notification = del.parentNode;
 		del.addEventListener('click', () => {
 			notification.parentNode.removeChild(notification);
 		});
 	});
-	getJSON( dlUrl + "reports.json", (err,data) => {
-		if (err !== null) {
-			console.log(err);
-		} else {
+	fetch(dlUrl + "reports.json")
+		.then((response) => response.json())
+		.then((data) => {
 			currentReport = data[0];
-			var selector = document.querySelector( '#weekSelect' );
-			for (var i = 0; i < data.length; i++ ) {
-				var option = document.createElement('option');
+			let selector = document.querySelector( '#weekSelect' );
+			for (let i = 0; i < data.length; i++ ) {
+				let option = document.createElement('option');
 				option.text = data[i].text;
 				option.value = data[i].value;
-				if (i == 0 ) {
-					option.selected = 'selected';
+				if (i === 0 ) {
+					option.selected = true;
 				}
 				selector.add(option);
 			}
 			selector.addEventListener("change",() => {
 				graphUpdate(selector.value);
 			});
-			getJSON( dlUrl + currentReport.value + ".json", (err,data) => {
-				if (err !== null) {
-					console.log(err);
-				} else {
+			fetch(dlUrl + currentReport.value + ".json")
+				.then((response) => response.json())
+				.then((data) => {
 					currentData = data;
-					for ( var d in currentData ) {
+					for ( let d in currentData ) {
 						if ( d.includes('ga-main') ) {
 							document.getElementById('google-main').classList.remove('disabled');
 						} else if ( d.includes('ga-amp') ) {
@@ -859,10 +845,10 @@ var overallGen = (data) => {
 						if ( d === 'overall-totals') {
 							overallGen(currentData[d]);
 						} else {
-							var container = document.getElementById(d);
-							var canvas = document.createElement('canvas');
+							let container = document.getElementById(d);
+							let canvas = document.createElement('canvas');
 							container.appendChild(canvas).setAttribute('id',d+'-graph');
-							var ctx = document.getElementById(d+'-graph').getContext('2d');
+							let ctx = document.getElementById(d+'-graph').getContext('2d');
 							config[d]['data'] = currentData[d];
 							graphs[d+'-graph'] = new Chart(ctx, {
 								type: config[d]['type'],
@@ -872,7 +858,7 @@ var overallGen = (data) => {
 						}
 					}
 				}
-			});
+			);
 		}
-	});
+	);
 }());

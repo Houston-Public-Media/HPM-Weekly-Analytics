@@ -96,6 +96,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	 * The data structure for the JSON file that will underpin the charts in the included application
 	 * The chart names can be changed, but you will need to update the names in the charting application
 	 */
+	$graphs = [];
 	include( BASE . DS . 'graphs.php' );
 
 	/**
@@ -105,7 +106,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	 */
 
 	$date_conf = $emails = $email_conf = $rerun = $rerun_conf = false;
-	$startu = $endu = 0;
+	$startu = $endu = $run_date = 0;
 	$start = $end = '';
 
 	/**
@@ -221,7 +222,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	$num = 20;
 
 	// Facebook Graph API base
-	$fb_base = 'https://graph.facebook.com/v12.0/';
+	$fb_base = 'https://graph.facebook.com/v17.0/';
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) {

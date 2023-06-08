@@ -10,7 +10,7 @@
 	 */
 	$insights = [
 		0 => [
-			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_organic,page_impressions_viral'
+			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_organic_v2,page_impressions_viral'
 		],
 		1 => [
 			'day' => 'page_engaged_users,page_consumptions',
@@ -29,7 +29,7 @@
 	$fb_label = [
 		'page_impressions_paid' => 1,
 		'page_impressions_unique' => 0,
-		'page_impressions_organic' => 2,
+		'page_impressions_organic_v2' => 2,
 		'page_impressions_viral' => 3,
 		'Like (Reaction)' => 0,
 		'Love' => 1,
@@ -86,7 +86,7 @@
 				curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 				$result = curl_exec( $ch );
 				curl_close( $ch );
-
+				//print_r( $result ); die;
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
 				foreach ( $json->data as $d ) {
@@ -161,7 +161,7 @@
 				$rek == 'page_impressions_paid' ||
 				$rek == 'page_impressions_unique' ||
 				$rek == 'page_impressions_viral' ||
-				$rek == 'page_impressions_organic'
+				$rek == 'page_impressions_organic_v2'
 			) {
 				$graphs['facebook-impressions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
 				if ( $rek == 'page_impressions_unique' ) {

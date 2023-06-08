@@ -7,13 +7,13 @@
 	use Google\Analytics\Data\V1beta\MetricAggregation;
 	use Google\Analytics\Data\V1beta\FilterExpression;
 	use Google\Analytics\Data\V1beta\Filter;
-use Google\ApiCore\ApiException;
-use Google\ApiCore\ValidationException;
+	use Google\ApiCore\ApiException;
+	use Google\ApiCore\ValidationException;
 
-/**
- * @throws ApiException
- */
-function googleArticleSources( $row ): array {
+	/**
+	 * @throws ApiException
+	 */
+	function googleArticleSources( $row ): array {
 		global $analytics, $start, $end, $ga, $find, $replace, $startu, $endu;
 		$path = $row->getDimensionValues()[0]->getValue();
 		preg_match( '/\/articles\/[a-z0-9\-\/]+\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/([0-9]+)\/.+/', $path, $match );
@@ -124,7 +124,7 @@ function googleArticleSources( $row ): array {
 	 * If you only have one you want to check, or more than two, modify this array
 	 */
 	$gas = [
-		'GA4' => GA4_PROPERTY
+		'Combined' => GA4_PROPERTY
 	];
 
 	// Setting up device colors for the graphing application
