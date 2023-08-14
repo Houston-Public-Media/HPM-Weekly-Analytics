@@ -34,7 +34,7 @@
 					'Date' => $data[ $tw_head['time'] ],
 					'Impressions' => csv_int_check( 'impressions', $data, $tw_head ),
 					'Engagements' => csv_int_check( 'engagements', $data, $tw_head ),
-					'Engagement Rate' => round( $data[ $tw_head[ 'engagement rate' ] ] * 100, 1 )."%",
+					'Engagement Rate' => round( (float)$data[ $tw_head[ 'engagement rate' ] ] * 100, 1 )."%",
 					'Retweets' => csv_int_check( 'retweets', $data, $tw_head ),
 					'Replies' => csv_int_check( 'replies', $data, $tw_head ),
 					'Likes' => csv_int_check( 'likes', $data, $tw_head ),
