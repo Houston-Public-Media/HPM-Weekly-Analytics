@@ -3,6 +3,7 @@
 	use Google\Analytics\Data\V1beta\BetaAnalyticsDataClient;
 	use Google\Analytics\Data\V1beta\DateRange;
 	use Google\Analytics\Data\V1beta\Dimension;
+	use Google\Analytics\Data\V1beta\OrderBy;
 	use Google\Analytics\Data\V1beta\Metric;
 	use Google\Analytics\Data\V1beta\MetricAggregation;
 	use Google\Analytics\Data\V1beta\FilterExpression;
@@ -131,7 +132,8 @@
 	$ga_device_colors = [
 		'desktop' => 'rgba(255,0,0,1)',
 		'tablet' => 'rgba(0,0,255,1)',
-		'mobile' => 'rgba(0,255,0,1)'
+		'mobile' => 'rgba(0,255,0,1)',
+		'smart tv' => 'rgba(255,0,255,1)'
 	];
 
 	try {
@@ -236,6 +238,15 @@
 				],
 				'metricAggregations' => [
 					MetricAggregation::TOTAL,
+				],
+				'orderBys' => [
+					new OrderBy([
+						'dimension' => new OrderBy\DimensionOrderBy([
+							'dimension_name' => 'dateHour', // your dimension here
+							'order_type' => OrderBy\DimensionOrderBy\OrderType::ALPHANUMERIC
+						]),
+						'desc' => false,
+					]),
 				]
 			] );
 		} catch ( ApiException $e ) {
