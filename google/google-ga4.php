@@ -408,6 +408,7 @@
 				if ( !empty( $gaSources ) ) {
 					// Adding the row to the sheet
 					$sheets[ $sheet ][] = $gaSources;
+					$gaOther = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
 
 					//Mapping the data into the graphing data
 					$graphs[ $show_graph ]['labels'][] = $gaSources[0];
@@ -417,7 +418,7 @@
 					$graphs[ $show_graph ]['datasets'][3]['data'][] = $gaSources[10];
 					$graphs[ $show_graph ]['datasets'][4]['data'][] = $gaSources[11];
 					$graphs[ $show_graph ]['datasets'][5]['data'][] = $gaSources[12];
-					$graphs[ $show_graph ]['datasets'][6]['data'][] = $gaSources[5] - ( $gaSources[7] + $gaSources[8] + $gaSources[9] + $gaSources[10] + $gaSources[11] + $gaSources[12] );
+					$graphs[ $show_graph ]['datasets'][6]['data'][] = ( max( $gaOther, 0 ) );
 				}
 			}
 		}
