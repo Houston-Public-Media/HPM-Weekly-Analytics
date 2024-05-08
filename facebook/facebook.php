@@ -13,13 +13,13 @@
 			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_organic_v2,page_impressions_viral'
 		],
 		1 => [
-			'day' => 'page_engaged_users,page_consumptions',
+			'day' => 'page_post_engagements,page_consumptions_unique',
 		],
 		2 => [
 			'day' => 'page_fan_adds,page_fans'
 		],
 		3 => [
-			'day' => 'page_positive_feedback_by_type,page_negative_feedback_by_type,page_actions_post_reactions_total'
+			'day' => 'page_negative_feedback_by_type,page_actions_post_reactions_total'
 		]
 	];
 
