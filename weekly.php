@@ -137,6 +137,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			$date_conf = true;
 		} else {
 			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid date input, please try again." . RESET_ALL . PHP_EOL;
+			if ( count( $argv ) === 1 ) {
+				die;
+			}
 		}
 		/**
 		 * Setting the start and end dates in both YYYY-MM-DD format and Unixtime
@@ -170,6 +173,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			$rerun_conf = true;
 		} else {
 			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid input, please try again." . RESET_ALL . PHP_EOL;
+			if ( count( $argv ) === 1 ) {
+				die;
+			}
 		}
 	}
 
@@ -190,6 +196,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			$email_conf = true;
 		} else {
 			echo FG_BR_RED . BG_BLACK . FS_BOLD . "Invalid input, please try again." . RESET_ALL . PHP_EOL;
+			if ( count( $argv ) === 1 ) {
+				die;
+			}
 		}
 	}
 
