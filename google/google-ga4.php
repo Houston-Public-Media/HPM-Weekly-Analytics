@@ -342,12 +342,6 @@
 			[
 				'slug' => 'houston-matters',
 				'title' => 'Houston Matters'
-			], [
-				'slug' => 'town-square',
-				'title' => 'Town Square'
-			], [
-				'slug' => 'i-see-u',
-				'title' => 'I SEE U'
 			]
 		];
 		foreach ( $shows as $show ) {

@@ -14,7 +14,8 @@
 .tabs li.instagram {
 	background-color: rgba(138,58,185,0.2);
 }
-.tabs li.twitter {
+.tabs li.twitter,
+.tabs li.x {
 	background-color: rgba(29,161,242,0.2);
 }
 .tabs li.triton {
@@ -42,7 +43,8 @@
 .tabs li.is-active.instagram {
 	background-color: rgba(138,58,185,0.75);
 }
-.tabs li.is-active.twitter {
+.tabs li.is-active.twitter,
+.tabs li.is-active.x {
 	background-color: rgba(29,161,242,0.75);
 }
 .tabs li.is-active.triton {

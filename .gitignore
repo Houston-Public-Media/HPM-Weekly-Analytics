@@ -10,6 +10,7 @@ apple/*.csv
 podcasts/*.csv
 twitter/graphs
 twitter/tweets
+twitter/x-stats
 triton/*.json
 *-test.php
 hpm-analytics/package-lock.json

@@ -216,14 +216,25 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
 	 * 		for the 5th time or so, I abandoned it
 	 */
-	if (
-		!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
-		!file_exists( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv" ) ||
-		!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
-		!file_exists( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" )
-	) {
-		echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
-		die;
+	if ( $run_date < mktime( 0, 0, 0, 6, 16, 2024 ) ) {
+		if (
+			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "twitter" . DS . "tweets" . DS . "tweets-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "twitter" . DS . "graphs" . DS . "graphs-" . $end . ".json" )
+		) {
+			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
+			die;
+		}
+	} else {
+		if (
+			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "twitter" . DS . "x-stats" . DS . $end . ".json" )
+		) {
+			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the X, Apple, and Podcasts folders." . PHP_EOL;
+			die;
+		}
 	}
 
 	echo FG_BR_CYAN . BG_BLACK . FS_BOLD ."Hold please..." . RESET_ALL . PHP_EOL;
@@ -250,7 +261,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 		require BASE . DS . 'facebook' . DS . 'instagram.php';
 	}
 
-	require BASE . DS . 'twitter' . DS . 'twitter.php';
+	if ( $run_date < mktime( 0, 0, 0, 6, 16, 2024 ) ) {
+		require BASE . DS . 'twitter' . DS . 'twitter.php';
+	} else {
+		require BASE . DS . 'twitter' . DS . 'x.php';
+	}
 
 	if ( !empty( WCM_USER ) ) {
 		require BASE . DS . 'triton' . DS . 'triton.php';
@@ -271,7 +286,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			$myWorkSheet->getTabColor()->setRGB('3b5998');
 		} elseif ( str_contains( $k, '(Combined)' ) || str_contains( $k, 'Top Stories' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('db4437');
-		} elseif ( str_contains( $k, 'Tweet' ) || str_contains( $k, 'Twitter' ) ) {
+		} elseif ( str_contains( $k, 'Tweet' ) || str_contains( $k, 'Twitter' ) || str_contains( $k, 'X' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('1da1f2');
 		} elseif ( str_contains( $k, 'Instagram' ) ) {
 			$myWorkSheet->getTabColor()->setRGB('8a3ab9');

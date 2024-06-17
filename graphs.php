@@ -17,6 +17,10 @@
 				'name' => 'Twitter Impressions',
 				'data' => 0
 			],
+			'X' => [
+				'name' => 'X Impressions',
+				'data' => 0
+			],
 			'triton-news' => [
 				'name' => 'News Streaming Listeners',
 				'data' => 0
@@ -108,100 +112,6 @@
 			]
 		],
 		'ga-houston-matters-articles' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'Direct',
-					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
-					'borderColor' => 'rgba( 0, 255, 0, 1 )',
-					'data' => []
-				],
-				1 => [
-					'label' => 'Google',
-					'backgroundColor' => 'rgba(219,68,55,0.2 )',
-					'borderColor' => 'rgba(219,68,55,1 )',
-					'data' => []
-				],
-				2 => [
-					'label' => 'Facebook',
-					'backgroundColor' => 'rgba(59,89,152,0.2 )',
-					'borderColor' => 'rgba(59,89,152,1 )',
-					'data' => []
-				],
-				3 => [
-					'label' => 'Twitter',
-					'backgroundColor' => 'rgba(29,161,242,0.2 )',
-					'borderColor' => 'rgba(29,161,242,1 )',
-					'data' => []
-				],
-				4 => [
-					'label' => 'RSS',
-					'backgroundColor' => 'rgba(255,187,0,0.2 )',
-					'borderColor' => 'rgba(255,187,0,1 )',
-					'data' => []
-				],
-				5 => [
-					'label' => 'Newsbreak',
-					'backgroundColor' => 'rgba(65,0,147,0.2 )',
-					'borderColor' => 'rgba(65,0,147,1 )',
-					'data' => []
-				],
-				6 => [
-					'label' => 'Other',
-					'backgroundColor' => 'rgba(0,0,0,0.2 )',
-					'borderColor' => 'rgba(0,0,0,1 )',
-					'data' => []
-				]
-			]
-		],
-		'ga-town-square-articles' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'Direct',
-					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
-					'borderColor' => 'rgba( 0, 255, 0, 1 )',
-					'data' => []
-				],
-				1 => [
-					'label' => 'Google',
-					'backgroundColor' => 'rgba(219,68,55,0.2 )',
-					'borderColor' => 'rgba(219,68,55,1 )',
-					'data' => []
-				],
-				2 => [
-					'label' => 'Facebook',
-					'backgroundColor' => 'rgba(59,89,152,0.2 )',
-					'borderColor' => 'rgba(59,89,152,1 )',
-					'data' => []
-				],
-				3 => [
-					'label' => 'Twitter',
-					'backgroundColor' => 'rgba(29,161,242,0.2 )',
-					'borderColor' => 'rgba(29,161,242,1 )',
-					'data' => []
-				],
-				4 => [
-					'label' => 'RSS',
-					'backgroundColor' => 'rgba(255,187,0,0.2 )',
-					'borderColor' => 'rgba(255,187,0,1 )',
-					'data' => []
-				],
-				5 => [
-					'label' => 'Newsbreak',
-					'backgroundColor' => 'rgba(65,0,147,0.2 )',
-					'borderColor' => 'rgba(65,0,147,1 )',
-					'data' => []
-				],
-				6 => [
-					'label' => 'Other',
-					'backgroundColor' => 'rgba(0,0,0,0.2 )',
-					'borderColor' => 'rgba(0,0,0,1 )',
-					'data' => []
-				]
-			]
-		],
-		'ga-i-see-u-articles' => [
 			'labels' => [],
 			'datasets' => [
 				0 => [
@@ -645,6 +555,46 @@
 					'label' => 'Saved Articles',
 					'backgroundColor' => 'rgba( 255, 0, 255, 0.2 )',
 					'borderColor' => 'rgba( 255, 0, 255, 1 )',
+					'data' => []
+				]
+			]
+		],
+		'x-impressions' => [
+			'labels' => [],
+			'datasets' => [
+				0 => [
+					'label' => 'Impressions',
+					'backgroundColor' => 'rgba( 29,161,242, 0.2 )',
+					'borderColor' => 'rgba( 29,161,242, 1 )',
+					'data' => []
+				]
+			]
+		],
+		'x-engagements' => [
+			'labels' => [],
+			'datasets' => [
+				0 => [
+					'label' => 'URL Clicks',
+					'backgroundColor' => 'rgba(255,0,255,0.2 )',
+					'borderColor' => 'rgba(255,0,255,1 )',
+					'data' => []
+				],
+				1 => [
+					'label' => 'Retweets',
+					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
+					'borderColor' => 'rgba( 0, 255, 0, 1 )',
+					'data' => []
+				],
+				2 => [
+					'label' => 'Replies',
+					'backgroundColor' => 'rgba(0,0,255, 0.2 )',
+					'borderColor' => 'rgba(0,0,255, 1 )',
+					'data' => []
+				],
+				3 => [
+					'label' => 'Likes',
+					'backgroundColor' => 'rgba(255,0,0,0.2 )',
+					'borderColor' => 'rgba(255,0,0,1 )',
 					'data' => []
 				]
 			]

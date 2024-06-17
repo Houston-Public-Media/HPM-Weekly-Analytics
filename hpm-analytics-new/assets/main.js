@@ -1,8 +1,8 @@
 const dlUrl = 'https://cdn.houstonpublicmedia.org/assets/analytics/';
-//const dlUrl = 'https://local.hpm.io/assets/analytics/';
+// const dlUrl = 'https://local.hpm.io/assets/analytics/';
 const tabs = document.querySelectorAll('.tabs ul li');
 const services = document.querySelectorAll('.services');
-const googleTabs = document.querySelectorAll('.tabs ul li.google');
+const googleTabs = document.querySelectorAll('.tabs ul li.google, .tabs ul li.twitter, .tabs ul li.x');
 let currentReport, graphs = {};
 let currentData = [];
 let activeTab = 'overall';
@@ -625,7 +625,45 @@ let config = {
 		},
 		data: [],
 		type: 'bar'
-	}
+	},
+	'x-impressions': {
+		options: {
+			plugins: {
+				title: {
+					text: 'Overall Tweet Impressions by Type'
+				}
+			},
+			scales: {
+				x: {
+					stacked: true,
+				},
+				y: {
+					stacked: true,
+				}
+			}
+		},
+		data: [],
+		type: 'bar'
+	},
+	'x-engagements': {
+		options: {
+			plugins: {
+				title: {
+					text: 'Overall Tweet Engagements by Type'
+				}
+			},
+			scales: {
+				x: {
+					stacked: true,
+				},
+				y: {
+					stacked: true,
+				}
+			}
+		},
+		data: [],
+		type: 'bar'
+	},
 };
 let graphUpdate = (report) => {
 	fetch(dlUrl + report + ".json")
@@ -635,6 +673,11 @@ let graphUpdate = (report) => {
 			Array.from(googleTabs).forEach((gtab) => {
 				gtab.classList.add('disabled');
 			});
+			if (currentData['twitter-tweets-by-impression'].labels.length === 0 && currentData['x-impressions'].labels.length > 0 ) {
+				document.getElementById('x').classList.remove('disabled');
+			} else {
+				document.getElementById('twitter').classList.remove('disabled');
+			}
 			for ( let d in currentData ) {
 				if ( d.includes('ga-main') ) {
 					document.getElementById('google-main').classList.remove('disabled');
@@ -683,7 +726,7 @@ let numberFormat = ( number ) => {
 	return new Intl.NumberFormat().format(number);
 };
 let overallGen = (data) => {
-	let output = "<table class=\"table is-bordered is-striped is-hoverable is-fullwidth\">" +
+	let output = "<table class=\"table is-bordered is-striped is-hoverable is-fullwidth has-text-centered\">" +
 		"<thead>" +
 		"<tr>" +
 			"<th scope=\"col\">Service</th>" +
@@ -698,22 +741,19 @@ let overallGen = (data) => {
 	if ( typeof data['ga-main'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-main']['name'] + "</td>" +
-			"<td>" + numberFormat(data['ga-main']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['ga-main']['data']) + "</td>" +
 		"</tr>";
 	}
 	if ( typeof data['ga-amp'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-amp']['name'] + "</td>" +
-			"<td>" + numberFormat(data['ga-amp']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['ga-amp']['data']) + "</td>" +
 		"</tr>";
 	}
 	if ( typeof data['ga-combined'] === 'object' ) {
 		output += "<tr>" +
 			"<td>" + data['ga-combined']['name'] + "</td>" +
-			"<td>" + numberFormat(data['ga-combined']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['ga-combined']['data']) + "</td>" +
 		"</tr>";
 	}
 	output += "<tr class=\"overall-section\">" +
@@ -722,28 +762,30 @@ let overallGen = (data) => {
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['facebook']['name'] + "</td>" +
-			"<td>" + numberFormat(data['facebook']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['facebook']['data']) + "</td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['instagram']['name'] + "</td>" +
-			"<td>" + numberFormat(data['instagram']['data']) + "</td>" +
-			"<td></td>" +
-		"</tr>" +
-		"<tr>" +
-			"<td>" + data['twitter']['name'] + "</td>" +
-			"<td>" + numberFormat(data['twitter']['data']) + "</td>" +
-			"<td></td>" +
-		"</tr>" +
-		"<tr>" +
+			"<td colspan=\"2\">" + numberFormat(data['instagram']['data']) + "</td>" +
+		"</tr>";
+	if ( data['twitter']['data'] > 0 ) {
+		output += "<tr>" +
+				"<td>" + data['twitter']['name'] + "</td>" +
+				"<td colspan=\"2\">" + numberFormat(data['twitter']['data']) + "</td>" +
+			"</tr>";
+	} else {
+		output += "<tr>" +
+				"<td>" + data['X']['name'] + "</td>" +
+				"<td colspan=\"2\">" + numberFormat(data['X']['data']) + "</td>" +
+			"</tr>";
+	}
+	output += "<tr>" +
 			"<td>" + data['youtube']['name'] + "</td>" +
-			"<td>" + numberFormat(data['youtube']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['youtube']['data']) + "</td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['apple-news']['name'] + "</td>" +
-			"<td>" + numberFormat(data['apple-news']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['apple-news']['data']) + "</td>" +
 		"</tr>" +
 		"<tr class=\"overall-section\">" +
 			"<td>Streaming</td>" +
@@ -751,18 +793,15 @@ let overallGen = (data) => {
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-news']['name'] + "</td>" +
-			"<td>" + numberFormat(data['triton-news']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['triton-news']['data']) + "</td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-classical']['name'] + "</td>" +
-			"<td>" + numberFormat(data['triton-classical']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['triton-classical']['data']) + "</td>" +
 		"</tr>" +
 		"<tr>" +
 			"<td>" + data['triton-mixtape']['name'] + "</td>" +
-			"<td>" + numberFormat(data['triton-mixtape']['data']) + "</td>" +
-			"<td></td>" +
+			"<td colspan=\"2\">" + numberFormat(data['triton-mixtape']['data']) + "</td>" +
 		"</tr>" +
 		"<tr class=\"overall-section\">" +
 			"<td>Podcasts</td>" +
@@ -832,6 +871,11 @@ let overallGen = (data) => {
 				.then((response) => response.json())
 				.then((data) => {
 					currentData = data;
+					if (currentData['twitter-tweets-by-impression'].labels.length === 0 && currentData['x-impressions'].labels.length > 0 ) {
+						document.getElementById('x').classList.remove('disabled');
+					} else {
+						document.getElementById('twitter').classList.remove('disabled');
+					}
 					for ( let d in currentData ) {
 						if ( d.includes('ga-main') ) {
 							document.getElementById('google-main').classList.remove('disabled');
