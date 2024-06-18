@@ -708,6 +708,16 @@ let graphUpdate = (report) => {
 					}
 				}
 			}
+			if ( typeof currentData['ga-town-square-articles'] === 'object' ) {
+				document.getElementById('ga-town-square-articles').classList.remove('disabled');
+			} else {
+				document.getElementById('ga-town-square-articles').classList.add('disabled');
+			}
+			if ( typeof currentData['ga-i-see-u-articles'] === 'object' ) {
+				document.getElementById('ga-i-see-u-articles').classList.remove('disabled');
+			} else {
+				document.getElementById('ga-i-see-u-articles').classList.add('disabled');
+			}
 			if (document.getElementById(activeTab).classList.contains('disabled')) {
 				activeTab = 'overall';
 				Array.from(tabs).forEach((ta) => {
