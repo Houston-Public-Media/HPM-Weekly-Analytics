@@ -22,12 +22,6 @@
 	$sheet = 'X Graphs';
 	$json = json_decode( file_get_contents( BASE . DS . "twitter" . DS . "x-stats" . DS . $end . ".json" ) );
 	$total_impressions = 0;
-	foreach ( $json->data->user->result->current_organic_metrics as $metric ) {
-		if ( $metric->metric_type === 'Impressions' ) {
-			$total_impressions = $metric->metric_value;
-		}
-	}
-	$graphs['overall-totals']['X']['data'] = $total_impressions;
 
 	// Figure out the time interval between each data point
 	$interval = 86400;
@@ -51,6 +45,9 @@
 		foreach ( $v->metric_values as $vv ) {
 			if ( !empty( $vv->metric_value ) ) {
 				$tw[ $vv->metric_type ] = $vv->metric_value;
+				if ( $vv->metric_type == 'Impressions' ) {
+					$total_impressions += $vv->metric_value;
+				}
 			}
 		}
 		$graph[] = $tw;
@@ -64,6 +61,8 @@
 		$graphs['x-engagements']['datasets'][2]['data'][] = $tw['Replies'];
 		$graphs['x-engagements']['datasets'][3]['data'][] = $tw['Likes'];
 	}
+
+	$graphs['overall-totals']['X']['data'] = $total_impressions;
 
 	// Insert the spreadsheet data
 	$t = 0;
