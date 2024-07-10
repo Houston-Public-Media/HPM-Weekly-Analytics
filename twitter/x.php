@@ -27,7 +27,12 @@
 	$interval = 86400;
 	$graph = [];
 	// Loop through the data points and save them into an intermediate array for the spreadsheet
-	foreach ( $json->data->user->result->organic_metrics_time_series as $i => $v ) {
+	if ( !empty( $json->data->user ) ) {
+		$json_result = $json->data->user;
+	} else {
+		$json_result = $json->data->result;
+	}
+	foreach ( $json_result->result->organic_metrics_time_series as $i => $v ) {
 		$twstart = $startu + ( $interval * $i );
 		$tw = [
 			'Date/Time' => date( 'Y-m-d', $twstart ),
