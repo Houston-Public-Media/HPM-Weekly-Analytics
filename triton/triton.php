@@ -63,7 +63,13 @@
 			]
 		]);
 		for ( $i = $startu; $i < $endu; ) {
-			$data = json_decode( file_get_contents( $wcm_base.'realtime/station/'.$s.'/timebreakdown/'.date( 'Y-m-d', $i ).'?timezoneId=US%2FCentral', FALSE, $get_context ), true );
+			$devices_out = false;
+			$attempts = 0;
+			while ( $devices_out === FALSE && $attempts < 3 ) {
+				$devices_out = file_get_contents( $wcm_base.'realtime/station/'.$s.'/timebreakdown/'.date( 'Y-m-d', $i ).'?timezoneId=US%2FCentral', FALSE, $get_context );
+				$attempts++;
+			}
+			$data = json_decode( $devices_out, true );
 			$wcm_data['listeners'][ $k ] = array_merge( $wcm_data['listeners'][ $k ], $data['listenersByHour'] );
 			$i += 86400;
 		}
