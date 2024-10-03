@@ -10,16 +10,16 @@
 	 */
 	$insights = [
 		0 => [
-			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_organic_v2,page_impressions_viral'
+			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_nonviral,page_impressions_viral'
 		],
 		1 => [
-			'day' => 'page_post_engagements,page_consumptions_unique',
+			'day' => 'page_post_engagements',
 		],
 		2 => [
 			'day' => 'page_fan_adds,page_fans'
 		],
 		3 => [
-			'day' => 'page_negative_feedback_by_type,page_actions_post_reactions_total'
+			'day' => 'page_actions_post_reactions_total'
 		]
 	];
 
@@ -29,7 +29,7 @@
 	$fb_label = [
 		'page_impressions_paid' => 1,
 		'page_impressions_unique' => 0,
-		'page_impressions_organic_v2' => 2,
+		'page_impressions_nonviral' => 2,
 		'page_impressions_viral' => 3,
 		'Like (Reaction)' => 0,
 		'Love' => 1,
@@ -161,7 +161,7 @@
 				$rek == 'page_impressions_paid' ||
 				$rek == 'page_impressions_unique' ||
 				$rek == 'page_impressions_viral' ||
-				$rek == 'page_impressions_organic_v2'
+				$rek == 'page_impressions_nonviral'
 			) {
 				$graphs['facebook-impressions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
 				if ( $rek == 'page_impressions_unique' ) {
