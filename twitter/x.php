@@ -29,8 +29,10 @@
 	// Loop through the data points and save them into an intermediate array for the spreadsheet
 	if ( !empty( $json->data->user ) ) {
 		$json_result = $json->data->user;
-	} else {
+	} elseif ( !empty( $json->data->result ) ) {
 		$json_result = $json->data->result;
+	} elseif ( !empty( $json->data->viewer_v2->user_results ) ) {
+		$json_result = $json->data->viewer_v2->user_results;
 	}
 	foreach ( $json_result->result->organic_metrics_time_series as $i => $v ) {
 		$twstart = $startu + ( $interval * $i );
