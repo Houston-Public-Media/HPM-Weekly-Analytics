@@ -10,7 +10,7 @@
 	 */
 	$insights = [
 		0 => [
-			'day' => 'reach,profile_views,impressions'
+			'day' => 'impressions,reach'
 		]
 	];
 
@@ -18,9 +18,9 @@
 	 * Mapping information for the graphing data
 	 */
 	$insta_labels = [
-		'reach' => 0,
-		'profile_views' => 1,
-		'impressions' => 2
+		'impressions' => 0,
+		'reach' => 1,
+		'likes' => 2
 	];
 
 	/**
@@ -52,6 +52,7 @@
 				$args = [
 					'pretty' => 0,
 					'metric' => $metric,
+					//'metric_type' => 'total_value',
 					'period' => $period,
 					'since' => $i,
 					'until' => $endt,

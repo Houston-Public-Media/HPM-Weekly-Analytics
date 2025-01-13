@@ -242,26 +242,14 @@
 		'instagram-stats' => [
 			'labels' => [],
 			'datasets' => [
-				0 => [
-					'label' => 'New Followers',
-					'backgroundColor' => 'rgba( 0, 0, 255, 0.2 )',
-					'borderColor' => 'rgba( 0, 0, 255, 1 )',
-					'data' => []
-				],
-				1 => [
-					'label' => 'Reach',
+				0  => [
+					'label' => 'Impressions',
 					'backgroundColor' => 'rgba( 255, 0, 0, 0.2 )',
 					'borderColor' => 'rgba( 255, 0, 0, 1 )',
 					'data' => []
 				],
-				2 => [
-					'label' => 'Profile Views',
-					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
-					'borderColor' => 'rgba( 0, 255, 0, 1 )',
-					'data' => []
-				],
-				3 => [
-					'label' => 'Impressions',
+				1 => [
+					'label' => 'Reach',
 					'backgroundColor' => 'rgba( 255, 0, 255, 0.2 )',
 					'borderColor' => 'rgba( 255, 0, 255, 1 )',
 					'data' => []
