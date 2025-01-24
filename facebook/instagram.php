@@ -10,7 +10,7 @@
 	 */
 	$insights = [
 		0 => [
-			'day' => 'impressions,reach'
+			'day' => 'views,reach'
 		]
 	];
 
@@ -18,7 +18,7 @@
 	 * Mapping information for the graphing data
 	 */
 	$insta_labels = [
-		'impressions' => 0,
+		'views' => 0,
 		'reach' => 1,
 		'likes' => 2
 	];
@@ -35,12 +35,7 @@
 	 * 		so the loop isn't completely necessary, but this way it can be used for longer pulls if need be
 	 */
 	for ( $i = $startu; $i <= $endu; ) {
-		$di = $endu - $i;
-		if ( $di > 7776000 ) {
-			$endt = $i + 7776000;
-		} else {
-			$endt = $endu;
-		}
+		$endt = $i + 86400;
 
 		/**
 		 * Loop through the $insights array to pull the various metrics we need
@@ -52,7 +47,7 @@
 				$args = [
 					'pretty' => 0,
 					'metric' => $metric,
-					//'metric_type' => 'total_value',
+					'metric_type' => 'total_value',
 					'period' => $period,
 					'since' => $i,
 					'until' => $endt,
@@ -82,22 +77,19 @@
 					if ( !in_array_r( $d->title, $glossary ) ) {
 						$glossary[] = [ $d->title, $d->description ];
 					}
-					foreach ( $d->values as $val ) {
-						$endi = strtotime( $val->end_time );
-						$time = date( 'Y-m-d', $endi - 86400 );
+					$time = date( 'Y-m-d', $i );
 
 						// Check if the data title is in the title array, if not, add it
-						if ( !in_array( $title, $titles ) ) {
-							$titles[] = $title;
-						}
+					if ( !in_array( $title, $titles ) ) {
+						$titles[] = $title;
+					}
 
 						// Insert the data into the intermediate $results array
-						$results[ $time ][ $name ] = $val->value;
-					}
+					$results[ $time ][ $name ] = $d->total_value->value;
 				}
 			}
 		}
-		$i += 7776000;
+		$i += 86400;
 	}
 	$sheets[ $sheet ][] = $titles;
 	$c = 1;

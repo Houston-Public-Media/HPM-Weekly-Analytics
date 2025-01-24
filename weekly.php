@@ -242,7 +242,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	$num = 20;
 
 	// Facebook Graph API base
-	$fb_base = 'https://graph.facebook.com/v17.0/';
+	$fb_base = 'https://graph.facebook.com/v22.0/';
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) {

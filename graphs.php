@@ -243,7 +243,7 @@
 			'labels' => [],
 			'datasets' => [
 				0  => [
-					'label' => 'Impressions',
+					'label' => 'Views',
 					'backgroundColor' => 'rgba( 255, 0, 0, 0.2 )',
 					'borderColor' => 'rgba( 255, 0, 0, 1 )',
 					'data' => []
