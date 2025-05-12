@@ -43,45 +43,32 @@
 	require BASE . DS . 'vendor' . DS . 'autoload.php';
 	include( BASE . DS . 'colors.php' );
 	include( BASE . DS . 'notif.php' );
-
-	/**
-	 * Expose global env() function from oscarotero/env
-	 */
-	Env::init();
-
-	/**
-	 * Use Dotenv to set required environment variables and load .env file in root
-	 */
-	$dotenv = new Dotenv\Dotenv( BASE );
-	if ( file_exists( BASE . DS . '.env' ) ) {
-		$dotenv->load();
-		$dotenv->required([ 'GA_CLIENT', 'YT_ACCESS', 'YT_CLIENT', 'YT_CHANNEL_ID', 'CLIENT_EMAILS', 'CF_DISTRO', 'TIMEZONE', 'FB_PAGE_ID', 'FB_PAGE_ACCESS', 'FB_PAGE_SECRET', 'AWS_KEY', 'AWS_SECRET', 'INSTAGRAM_ID', 'WCM_USER', 'WCM_PASSWORD', 'FROM_EMAIL', 'APP_URL', 'S3_BUCKET', 'STORAGE_PATH', 'STORAGE_SHARE' ]);
-	}
+	$env = parse_ini_file(BASE . '/.env');
 
 	// Map all of the variables from .env to constants and variables
-	date_default_timezone_set( env('TIMEZONE') );
-	define( 'GA_CLIENT', BASE . DS . env( 'GA_CLIENT' ) );
-	define( 'YT_ACCESS', BASE . DS . env( 'YT_ACCESS' ) );
-	define( 'YT_CLIENT', BASE . DS . env( 'YT_CLIENT' ) );
-	define( 'YT_CHANNEL_ID', env( 'YT_CHANNEL_ID' ) );
-	define( 'GA_COMBO', env( 'GA_COMBO' ) );
-	define( 'GA4_PROPERTY', env( 'GA4_PROPERTY' ) );
-	define( 'WCM_USER', env( 'WCM_USER' ) );
-	define( 'WCM_PASSWORD', env( 'WCM_PASSWORD' ) );
-	define( 'APP_URL', env( 'APP_URL' ) );
-	define( 'FROM_EMAIL', env( 'FROM_EMAIL' ) );
-	define( 'STORAGE_PATH', env( 'STORAGE_PATH' ) );
-	define( 'STORAGE_SHARE', env( 'STORAGE_SHARE' ) );
-	$s3_bucket = env( 'S3_BUCKET' );
-	$cf_distro = env( 'CF_DISTRO' );
-	$email_arr = explode( ',', env( 'CLIENT_EMAILS' ) );
-	$hpm_fb = env( 'FB_PAGE_ID' );
-	$fb_access = env( 'FB_PAGE_ACCESS' );
-	$fb_secret = env( 'FB_PAGE_SECRET' );
+	date_default_timezone_set( $env['TIMEZONE'] );
+	define( 'GA_CLIENT', BASE . DS . $env['GA_CLIENT'] );
+	define( 'YT_ACCESS', BASE . DS . $env['YT_ACCESS'] );
+	define( 'YT_CLIENT', BASE . DS . $env['YT_CLIENT'] );
+	define( 'YT_CHANNEL_ID', $env['YT_CHANNEL_ID'] );
+	define( 'GA_COMBO', $env['GA_COMBO'] );
+	define( 'GA4_PROPERTY', $env['GA4_PROPERTY'] );
+	define( 'WCM_USER', $env['WCM_USER'] );
+	define( 'WCM_PASSWORD', $env['WCM_PASSWORD'] );
+	define( 'APP_URL', $env['APP_URL'] );
+	define( 'FROM_EMAIL', $env['FROM_EMAIL'] );
+	define( 'STORAGE_PATH', $env['STORAGE_PATH'] );
+	define( 'STORAGE_SHARE', $env['STORAGE_SHARE'] );
+	$s3_bucket = $env['S3_BUCKET'];
+	$cf_distro = $env['CF_DISTRO'];
+	$email_arr = explode( ',', $env['CLIENT_EMAILS'] );
+	$hpm_fb = $env['FB_PAGE_ID'];
+	$fb_access = $env['FB_PAGE_ACCESS'];
+	$fb_secret = $env['FB_PAGE_SECRET'];
 	$fb_proof = hash_hmac( 'sha256', $fb_access, $fb_secret );
-	$hpm_insta = env( 'INSTAGRAM_ID' );
-	$aws_key = env( 'AWS_KEY' );
-	$aws_secret = env( 'AWS_SECRET' );
+	$hpm_insta = $env['INSTAGRAM_ID'];
+	$aws_key = $env['AWS_KEY'];
+	$aws_secret = $env['AWS_SECRET'];
 
 	// Initialize PHPSpreadsheet software so we can create XLSX files
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
