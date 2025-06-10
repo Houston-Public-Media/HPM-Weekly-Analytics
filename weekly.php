@@ -213,11 +213,20 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the Twitter, Apple, and Podcasts folders." . PHP_EOL;
 			die;
 		}
-	} else {
+	} elseif ( $run_date > mktime( 0, 0, 0, 6, 16, 2024 ) && $run_date < mktime( 0, 0, 0, 6, 1, 2025 ) ) {
 		if (
 			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
 			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
 			!file_exists( BASE . DS . "twitter" . DS . "x-stats" . DS . $end . ".json" )
+		) {
+			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the X, Apple, and Podcasts folders." . PHP_EOL;
+			die;
+		}
+	} else {
+		if (
+			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "twitter" . DS . "x-stats" . DS . "csv" . DS . $end . ".csv" )
 		) {
 			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the X, Apple, and Podcasts folders." . PHP_EOL;
 			die;
@@ -250,8 +259,39 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 	if ( $run_date < mktime( 0, 0, 0, 6, 16, 2024 ) ) {
 		require BASE . DS . 'twitter' . DS . 'twitter.php';
-	} else {
+	} elseif ( $run_date > mktime( 0, 0, 0, 6, 16, 2024 ) && $run_date < mktime( 0, 0, 0, 6, 1, 2025 ) ) {
 		require BASE . DS . 'twitter' . DS . 'x.php';
+	} else {
+		$graphs['x-engagements'] = [
+			'labels' => [],
+			'datasets' => [
+				0 => [
+					'label' => 'Retweets',
+					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
+					'borderColor' => 'rgba( 0, 255, 0, 1 )',
+					'data' => []
+				],
+				1 => [
+					'label' => 'Replies',
+					'backgroundColor' => 'rgba(0,0,255, 0.2 )',
+					'borderColor' => 'rgba(0,0,255, 1 )',
+					'data' => []
+				],
+				2 => [
+					'label' => 'Likes',
+					'backgroundColor' => 'rgba(255,0,0,0.2 )',
+					'borderColor' => 'rgba(255,0,0,1 )',
+					'data' => []
+				],
+				3 => [
+					'label' => 'Other Engagements',
+					'backgroundColor' => 'rgba(255,0,255,0.2 )',
+					'borderColor' => 'rgba(255,0,255,1 )',
+					'data' => []
+				]
+			]
+		];
+		require BASE . DS . 'twitter' . DS . 'x-csv.php';
 	}
 
 	if ( !empty( WCM_USER ) ) {

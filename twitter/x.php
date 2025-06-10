@@ -39,7 +39,7 @@
 		$tw = [
 			'Date/Time' => date( 'Y-m-d', $twstart ),
 			'Impressions' => 0,
-			'LinkClicks' => 0,
+			'UrlClicks' => 0,
 			'Retweets' => 0,
 			'Likes' => 0,
 			'Replies' => 0,
