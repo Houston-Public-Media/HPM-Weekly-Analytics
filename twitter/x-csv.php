@@ -26,7 +26,8 @@
 		}
 	}
 	$temp_data[] = $temp_head;
-	$sheets[ $sheet ] = array_reverse( $temp_data );
+	$temp_data = array_reverse( $temp_data );
+	$sheets[ $sheet ] = $temp_data;
 	foreach ( $temp_data as $xdata ) {
 		if ( !is_numeric( $xdata[1] ) ) {
 			continue;
