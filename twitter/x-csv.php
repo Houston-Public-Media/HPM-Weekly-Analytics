@@ -39,10 +39,7 @@
 		$url_clicks = $xdata[ $x_head[ 'Engagements' ] ] -
 			$xdata[ $x_head[ 'Likes' ] ] -
 			$xdata[ $x_head[ 'Replies' ] ] -
-			$xdata[ $x_head[ 'Bookmarks' ] ] -
-			$xdata[ $x_head[ 'Shares' ] ] -
-			$xdata[ $x_head[ 'Reposts' ] ] -
-			$xdata[ $x_head[ 'Profile visits' ] ];
+			$xdata[ $x_head[ 'Reposts' ] ];
 		$graphs['x-engagements']['labels'][] = $xdata[ $x_head[ 'Date' ] ];
 		$graphs['x-engagements']['datasets'][0]['data'][] = $xdata[ $x_head[ 'Reposts' ] ];
 		$graphs['x-engagements']['datasets'][1]['data'][] = $xdata[ $x_head[ 'Replies' ] ];
