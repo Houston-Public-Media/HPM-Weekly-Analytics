@@ -468,48 +468,6 @@ let config = {
 		data: [],
 		type: 'line'
 	},
-	'triton-news-devices': {
-		options: {
-			plugins: {
-				legend: {
-					position: 'right',
-				},
-				title: {
-					text: 'News: CUME by Device Type'
-				}
-			}
-		},
-		data: [],
-		type: 'pie'
-	},
-	'triton-classical-devices': {
-		options: {
-			plugins: {
-				legend: {
-					position: 'right',
-				},
-				title: {
-					text: 'Classical: CUME by Device Type'
-				}
-			}
-		},
-		data: [],
-		type: 'pie'
-	},
-	'triton-mixtape-devices': {
-		options: {
-			plugins: {
-				legend: {
-					position: 'right',
-				},
-				title: {
-					text: 'Mixtape: CUME by Device Type'
-				}
-			}
-		},
-		data: [],
-		type: 'pie'
-	},
 	'youtube-videos-by-views': {
 		options: {
 			indexAxis: 'y',
@@ -900,15 +858,17 @@ let overallGen = (data) => {
 							overallGen(currentData[d]);
 						} else {
 							let container = document.getElementById(d);
-							let canvas = document.createElement('canvas');
-							container.appendChild(canvas).setAttribute('id',d+'-graph');
-							let ctx = document.getElementById(d+'-graph').getContext('2d');
-							config[d]['data'] = currentData[d];
-							graphs[d+'-graph'] = new Chart(ctx, {
-								type: config[d]['type'],
-								data: config[d]['data'],
-								options: config[d]['options']
-							});
+							if (container !== null) {
+								let canvas = document.createElement('canvas');
+								container.appendChild(canvas).setAttribute('id', d + '-graph');
+								let ctx = document.getElementById(d + '-graph').getContext('2d');
+								config[d]['data'] = currentData[d];
+								graphs[d + '-graph'] = new Chart(ctx, {
+									type: config[d]['type'],
+									data: config[d]['data'],
+									options: config[d]['options']
+								});
+							}
 						}
 					}
 				}

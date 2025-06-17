@@ -3,7 +3,7 @@
 	/**
 	 * Triton Webcast Metrics. If you have a username and password for the analytics dashboard, you can use this
 	 *
-	 * A note: I could never get Triton to give me any documentation for the API, so I bascially spent some time
+	 * A note: I could never get Triton to give me any documentation for the API, so I basically spent some time
 	 * 		watching the Network panel of Chrome Developer Tools and worked backwards. All of the requests that went
 	 *		to wcm2api.tritondigital.com gave it away
 	 */

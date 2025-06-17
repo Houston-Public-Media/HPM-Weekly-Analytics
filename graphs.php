@@ -387,42 +387,9 @@
 					'data' => []
 				],
 				2 => [
-					'label' => 'Mixtape',
+					'label' => 'The Vibe',
 					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
 					'borderColor' => 'rgba( 0, 255, 0, 1 )',
-					'data' => []
-				]
-			]
-		],
-		'triton-news-devices' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'CUME by Device Type',
-					'backgroundColor' => [],
-					'borderWidth' => 1,
-					'data' => []
-				]
-			]
-		],
-		'triton-classical-devices' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'CUME by Device Type',
-					'backgroundColor' => [],
-					'borderWidth' => 1,
-					'data' => []
-				]
-			]
-		],
-		'triton-mixtape-devices' => [
-			'labels' => [],
-			'datasets' => [
-				0 => [
-					'label' => 'CUME by Device Type',
-					'backgroundColor' => [],
-					'borderWidth' => 1,
 					'data' => []
 				]
 			]

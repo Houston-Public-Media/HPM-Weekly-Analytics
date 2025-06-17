@@ -63,7 +63,7 @@
 		$graphs['x-impressions']['datasets'][0]['data'][] = $tw['Impressions'];
 
 		$graphs['x-engagements']['labels'][] = $tw['Date/Time'];
-		$graphs['x-engagements']['datasets'][0]['data'][] = $tw['LinkClicks'];
+		$graphs['x-engagements']['datasets'][0]['data'][] = $tw['UrlClicks'];
 		$graphs['x-engagements']['datasets'][1]['data'][] = $tw['Retweets'];
 		$graphs['x-engagements']['datasets'][2]['data'][] = $tw['Replies'];
 		$graphs['x-engagements']['datasets'][3]['data'][] = $tw['Likes'];

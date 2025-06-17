@@ -418,6 +418,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 			array_unshift( $text, $new_entry );
 		}
 	}
+	if ( count( $text ) > 125 ) {
+		$text = array_slice( $text, 0, 125 );
+	}
+
 	if ( ! $rerun ) {
 		file_put_contents( BASE . DS . 'data' . DS . 'reports.json', json_encode( $text ) );
 	}
