@@ -96,6 +96,10 @@
 	 */
 	foreach ( $apple_ages as $k => $v ) {
 		$graphs['apple-age']['labels'][] = $k;
-		$avg = round( array_sum( $v ) / count( $v ), 1 );
+		$temp = [];
+		foreach ( $v as $vv ) {
+			$temp[] = (float)str_replace( '%', '', $vv );
+		}
+		$avg = round( array_sum( $temp ) / count( $temp ), 1 );
 		$graphs['apple-age']['datasets'][0]['data'][] = $avg;
 	}

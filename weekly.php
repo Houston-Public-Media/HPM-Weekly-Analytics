@@ -22,7 +22,7 @@
 
 	function csv_int_check ( $index, $data, $head ): int|string {
 		if ( str_contains( $index, 'Demographics' ) ) {
-			return ( empty( $data[ $head[ $index ] ] ) ? '0%' : ($data[ $head[ $index ] ] * 100).'%' );
+			return ( empty( $data[ $head[ $index ] ] ) ? '0%' : ( $data[ $head[ $index ] ] * 100 ).'%' );
 		} else {
 			return ( empty( intval( $data[ $head[ $index ] ] ) ) ? 0 : intval( $data[ $head[ $index ] ] ) );
 		}
