@@ -24,7 +24,7 @@
 		if ( str_contains( $index, 'Demographics' ) ) {
 			return ( empty( $data[ $head[ $index ] ] ) ? '0%' : ( $data[ $head[ $index ] ] * 100 ).'%' );
 		} else {
-			return ( empty( intval( $data[ $head[ $index ] ] ) ) ? 0 : intval( $data[ $head[ $index ] ] ) );
+			return ( empty( intval( str_replace( ',', '', $data[ $head[ $index ] ] ) ) ) ? 0 : intval( str_replace( ',', '', $data[ $head[ $index ] ] ) ) );
 		}
 	}
 
