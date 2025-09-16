@@ -42,7 +42,8 @@
 						'Data' => 'HPM Analytics Report for the Week of ' . date( 'F j, Y', $startu )
 					],
 				],
-				'Source' => FROM_EMAIL
+				'Source' => FROM_EMAIL,
+				'ReplyToAddresses' => [ REPLY_TO_EMAIL ],
 			]);
 			$messageId = $result->get( 'MessageId' );
 			echo( FG_BR_GREEN . BG_BLACK . FS_BOLD . "Email sent! Message ID: $messageId" . RESET_ALL . PHP_EOL );

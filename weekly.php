@@ -57,6 +57,7 @@
 	define( 'WCM_PASSWORD', $env['WCM_PASSWORD'] );
 	define( 'APP_URL', $env['APP_URL'] );
 	define( 'FROM_EMAIL', $env['FROM_EMAIL'] );
+	define( 'REPLY_TO_EMAIL', $env['REPLY_TO_EMAIL'] );
 	define( 'STORAGE_PATH', $env['STORAGE_PATH'] );
 	define( 'STORAGE_SHARE', $env['STORAGE_SHARE'] );
 	$s3_bucket = $env['S3_BUCKET'];
@@ -72,8 +73,8 @@
 
 	// Initialize PHPSpreadsheet software so we can create XLSX files
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	$spreadsheet = new Spreadsheet();
 
 	// The raw array element that all of our spreadsheets will populate from
