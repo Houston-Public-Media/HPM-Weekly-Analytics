@@ -9,16 +9,16 @@
 	 * 		I broke them up into several sets. That way, I can manage the order they show up in the spreadsheet
 	 */
 	$insights = [
-		0 => [
-			'day' => 'page_impressions,page_impressions_unique,page_impressions_paid,page_impressions_nonviral,page_impressions_viral'
+		[
+			'day' => 'page_media_view||is_from_ads'
 		],
-		1 => [
-			'day' => 'page_post_engagements',
+		[
+			'day' => 'page_media_view||is_from_followers'
 		],
-		2 => [
-			'day' => 'page_fan_adds,page_fans'
+		[
+			'day' => 'page_impressions_unique,page_post_engagements,page_follows'
 		],
-		3 => [
+		[
 			'day' => 'page_actions_post_reactions_total'
 		]
 	];
@@ -27,10 +27,10 @@
 	 * Mapping information for the graphing data
 	 */
 	$fb_label = [
-		'page_impressions_paid' => 1,
-		'page_impressions_unique' => 0,
-		'page_impressions_nonviral' => 2,
-		'page_impressions_viral' => 3,
+		'page_impressions_unique' => 1,
+		'page_media_view' => 0,
+		'page_media_view_from_ads' => 2,
+		'page_media_view_from_followers' => 3,
 		'Like (Reaction)' => 0,
 		'Love' => 1,
 		'Wow' => 2,
@@ -65,6 +65,12 @@
 			foreach ( $insight as $k => $v ) {
 				$period = $k;
 				$metric = $v;
+				$breakdown = '';
+				if ( str_contains( $metric, '||' ) ) {
+					$met_xp = explode( '||', $metric );
+					$metric = $met_xp[0];
+					$breakdown = $met_xp[1];
+				}
 				$args = [
 					'pretty' => 0,
 					'metric' => $metric,
@@ -74,6 +80,9 @@
 					'access_token' => $fb_access,
 					'appsecret_proof' => $fb_proof
 				];
+				if ( !empty( $breakdown ) ) {
+					$args['breakdown'] = $breakdown;
+				}
 
 				// Build and clean the query and generate the URL
 				$query = http_build_query( $args, '', '&' );
@@ -90,7 +99,7 @@
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
 				foreach ( $json->data as $d ) {
-					$title = $d->title;
+					$title = ucwords( str_replace( '_', ' ', $d->title ) );
 					$name = $d->name;
 
 					// Check if the term's definition is in the glossary, and add it if not
@@ -131,12 +140,22 @@
 							}
 						} else {
 							// Check if the data title is in the title array, if not, add it
-							if ( !in_array( $title, $titles ) ) {
-								$titles[] = $title;
+							$ne = $name;
+							$te = $title;
+							if ( $name == 'page_media_view' ) {
+								if ( !empty( $val->is_from_ads ) ) {
+									$ne .= "_from_ads";
+									$te .= ' From Ads';
+								} elseif ( !empty( $val->is_from_followers ) ) {
+									$ne .= "_from_followers";
+									$te .= ' From Followers';
+								}
 							}
-
+							if ( !in_array( $te, $titles ) ) {
+								$titles[] = $te;
+							}
 							// Insert the data into the intermediate $results array
-							$results[ $time ][ $name ] = ( empty( $val->value ) ? 0 : $val->value );
+							$results[ $time ][ $ne ] = ( empty( $val->value ) ? 0 : $val->value );
 						}
 					}
 				}
@@ -158,16 +177,16 @@
 		foreach ( $re as $rek => $ree ) {
 			$sheets[ $sheet ][ $c ][ $g ] = $ree;
 			if (
-				$rek == 'page_impressions_paid' ||
+				$rek == 'page_media_view' ||
 				$rek == 'page_impressions_unique' ||
-				$rek == 'page_impressions_viral' ||
-				$rek == 'page_impressions_nonviral'
+				$rek == 'page_media_view_from_ads' ||
+				$rek == 'page_media_view_from_followers'
 			) {
 				$graphs['facebook-impressions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
 				if ( $rek == 'page_impressions_unique' ) {
 					$graphs['overall-totals']['facebook']['data'] += $ree;
 				}
-			} elseif ( $rek == 'page_fans' ) {
+			} elseif ( $rek == 'page_follows' ) {
 				$graphs['facebook-likes']['datasets'][0]['data'][] = $ree;
 			} elseif (
 				$rek == 'Like (Reaction)' ||
@@ -245,46 +264,73 @@
 			goto a;
 		}
 	}
-
-
-	$args = [
-		'pretty' => 0,
-		'metric' => 'post_impressions,post_impressions_unique,post_impressions_paid,post_impressions_fan,post_impressions_fan_paid,post_impressions_organic,post_impressions_viral,post_engaged_users,post_engaged_fan',
-		'period' => 'lifetime',
-		'access_token' => $fb_access,
-		'appsecret_proof' => $fb_proof
+	$post_metrics = [
+		'post_media_view||is_from_ads',
+		'post_media_view||is_from_followers',
+		'post_impressions_unique'
 	];
+	foreach ( $post_metrics as $pmet ) {
+		$pbreakdown = '';
+		$pmetric = $pmet;
+		if ( str_contains( $pmet, '||' ) ) {
+			$pmet_xp = explode( '||', $pmet );
+			$pmetric = $pmet_xp[0];
+			$pbreakdown = $pmet_xp[1];
+		}
+		$args = [
+			'pretty' => 0,
+			'metric' => $pmetric,
+			'period' => 'lifetime',
+			'access_token' => $fb_access,
+			'appsecret_proof' => $fb_proof
+		];
+		if ( !empty( $pbreakdown ) ) {
+			$args['breakdown'] = $pbreakdown;
+		}
 
-	// Build and clean the query for each individual post
-	$query = http_build_query( $args, '', '&' );
-	$query = str_replace( '%2C', ',', $query );
+		// Build and clean the query for each individual post
+		$query = http_build_query( $args, '', '&' );
+		$query = str_replace( '%2C', ',', $query );
 
-	/**
-	 * Pull enhanced stats for all of the posts
-	 */
-	foreach ( $posts as $pid => $pv ) {
-		$ch = curl_init();
-		curl_setopt( $ch, CURLOPT_URL, "{$fb_base}{$pid}/insights?{$query}" );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		$res = curl_exec( $ch );
-		curl_close( $ch );
-		$js = json_decode( $res );
-		if ( !empty( $js->data ) ) {
-			foreach ( $js->data as $d ) {
-				$title = $d->title;
-				$name = $d->name;
+		/**
+		 * Pull enhanced stats for all of the posts
+		 */
+		foreach ( $posts as $pid => $pv ) {
+			$ch = curl_init();
+			curl_setopt( $ch, CURLOPT_URL, "{$fb_base}{$pid}/insights?{$query}" );
+			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+			$res = curl_exec( $ch );
+			curl_close( $ch );
+			$js = json_decode( $res );
+			if ( !empty( $js->data ) ) {
+				foreach ( $js->data as $d ) {
+					$title = ucwords( str_replace( '_', ' ', $d->title ) );
+					$name = $d->name;
 
-				// Check if the term's definition is in the glossary, and add it if not
-				if ( !in_array_r( $d->title, $glossary ) ) {
-					$glossary[] = [ $d->title, $d->description ];
-				}
+					// Check if the term's definition is in the glossary, and add it if not
+					if ( !in_array_r( $d->title, $glossary ) ) {
+						$glossary[] = [ $d->title, $d->description ];
+					}
 
-				// Check if the term's definition is in the title array, and add it if not
-				if ( !in_array( $title, $titles ) ) {
-					$titles[] = $title;
-				}
-				foreach ( $d->values as $val ) {
-					$posts[ $pid ][ $name ] = $val->value;
+					// Check if the term's definition is in the title array, and add it if not
+
+					foreach ( $d->values as $val ) {
+						$ne = $name;
+						$te = $title;
+						if ( $name == 'post_media_view' ) {
+							if ( !empty( $val->is_from_ads ) ) {
+								$ne .= "_from_ads";
+								$te .= ' From Ads';
+							} elseif ( !empty( $val->is_from_followers ) ) {
+								$ne .= "_from_followers";
+								$te .= ' From Followers';
+							}
+						}
+						if ( !in_array( $te, $titles ) ) {
+							$titles[] = $te;
+						}
+						$posts[ $pid ][ $ne ] = $val->value;
+					}
 				}
 			}
 		}

@@ -197,12 +197,9 @@
 	 * Example: if you entered '2018-08-27' as the end date for your report, then Apple News data should
 	 * 		be in 'channel-2018-08-27.csv'
 	 *
-	 * One more note: if you look in the Twitter parser, there is reference to a 'graphs-YYYY-MM-DD.json' file
-	 * 		That can be found by using the web inspector in the Twitter Analytics console, looking for the
-	 * 		'account_stats.json' request in the Network panel (it will be made when you set the date range), and
-	 * 		copy/pasting it into a file. I had a chunk of code that would use cURL requests to mimic a login
-	 * 		to Twitter Analytics and download the relevant files, but after locking the station Twitter account
-	 * 		for the 5th time or so, I abandoned it
+	 * Nowadays, the stats from X can be downloaded as a CSV file from the analytics page. The older methods
+	 * are still technically feasible but not worth the time or effort.
+	 *
 	 */
 	if ( $run_date < mktime( 0, 0, 0, 6, 16, 2024 ) ) {
 		if (
@@ -239,7 +236,7 @@
 	$num = 20;
 
 	// Facebook Graph API base
-	$fb_base = 'https://graph.facebook.com/v22.0/';
+	$fb_base = 'https://graph.facebook.com/v24.0/';
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) {
@@ -251,6 +248,13 @@
 	}
 
 	if ( !empty( $fb_access ) && !empty( $hpm_fb ) ) {
+		if ( $run_date > mktime( 0, 0, 0, 11, 20, 2025 ) ) {
+			$graphs['facebook-impressions']['datasets'][0]['label'] = 'Totals Views';
+			$graphs['facebook-impressions']['datasets'][1]['label'] = 'Unique Views';
+			$graphs['facebook-impressions']['datasets'][2]['label'] = 'Views from Ads';
+			$graphs['facebook-impressions']['datasets'][3]['label'] = 'Views from Followers';
+			$graphs['facebook-likes']['datasets'][0]['label'] = 'Page Follows';
+		}
 		require BASE . DS . 'facebook' . DS . 'facebook.php';
 	}
 
