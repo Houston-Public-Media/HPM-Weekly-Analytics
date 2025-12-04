@@ -313,7 +313,6 @@
 					}
 
 					// Check if the term's definition is in the title array, and add it if not
-
 					foreach ( $d->values as $val ) {
 						$ne = $name;
 						$te = $title;
