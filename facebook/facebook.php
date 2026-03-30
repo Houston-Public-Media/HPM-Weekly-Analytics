@@ -94,7 +94,6 @@
 				curl_setopt( $ch, CURLOPT_URL, $url );
 				curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 				$result = curl_exec( $ch );
-				curl_close( $ch );
 				//print_r( $result ); die;
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
@@ -241,7 +240,6 @@
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	$result = curl_exec( $ch );
-	curl_close( $ch );
 
 	// Decode the results and loop
 	$json = json_decode( $result );
@@ -300,7 +298,6 @@
 			curl_setopt( $ch, CURLOPT_URL, "{$fb_base}{$pid}/insights?{$query}" );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			$res = curl_exec( $ch );
-			curl_close( $ch );
 			$js = json_decode( $res );
 			if ( !empty( $js->data ) ) {
 				foreach ( $js->data as $d ) {

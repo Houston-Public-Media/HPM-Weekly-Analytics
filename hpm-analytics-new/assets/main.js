@@ -631,10 +631,15 @@ let graphUpdate = (report) => {
 			Array.from(googleTabs).forEach((gtab) => {
 				gtab.classList.add('disabled');
 			});
-			if (currentData['twitter-tweets-by-impression'].labels.length === 0 && currentData['x-impressions'].labels.length > 0 ) {
+			if ( typeof currentData['twitter-tweets-by-impression'] === 'object' && currentData['twitter-tweets-by-impression'].labels.length > 0 ) {
+				document.getElementById('twitter').classList.remove('disabled');
+			} else {
+				document.getElementById('twitter').classList.add('disabled');
+			}
+			if ( typeof currentData['x-impressions'] === 'object' && currentData['x-impressions'].labels.length > 0 ) {
 				document.getElementById('x').classList.remove('disabled');
 			} else {
-				document.getElementById('twitter').classList.remove('disabled');
+				document.getElementById('x').classList.add('disabled');
 			}
 			for ( let d in currentData ) {
 				if ( d.includes('ga-main') ) {
@@ -741,7 +746,7 @@ let overallGen = (data) => {
 				"<td>" + data['twitter']['name'] + "</td>" +
 				"<td colspan=\"2\">" + numberFormat(data['twitter']['data']) + "</td>" +
 			"</tr>";
-	} else {
+	} else if ( data['X']['data'] > 0 ) {
 		output += "<tr>" +
 				"<td>" + data['X']['name'] + "</td>" +
 				"<td colspan=\"2\">" + numberFormat(data['X']['data']) + "</td>" +
@@ -839,10 +844,15 @@ let overallGen = (data) => {
 				.then((response) => response.json())
 				.then((data) => {
 					currentData = data;
-					if (currentData['twitter-tweets-by-impression'].labels.length === 0 && currentData['x-impressions'].labels.length > 0 ) {
+					if ( typeof currentData['twitter-tweets-by-impression'] === 'object' && currentData['twitter-tweets-by-impression'].labels.length > 0 ) {
+						document.getElementById('twitter').classList.remove('disabled');
+					} else {
+						document.getElementById('twitter').classList.add('disabled');
+					}
+					if ( typeof currentData['x-impressions'] === 'object' && currentData['x-impressions'].labels.length > 0 ) {
 						document.getElementById('x').classList.remove('disabled');
 					} else {
-						document.getElementById('twitter').classList.remove('disabled');
+						document.getElementById('x').classList.add('disabled');
 					}
 					for ( let d in currentData ) {
 						if ( d.includes('ga-main') ) {

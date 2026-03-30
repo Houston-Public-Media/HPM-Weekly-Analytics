@@ -8,7 +8,10 @@
 	 * 		I then save it in the 'podcasts' folder with a filename 'podcasts-YYYY-MM-DD.csv' (same as the report end date)
 	 *
 	 */
-	$podcast_label = "﻿Podcast/Path";
+	$skips = [
+		'/hpm', '/monitoring/compatibility','/hpm-newscast'
+	];
+	$podcast_label = "Podcast/Path";
 	$downloaders_label = "Uniques";
 	$downloads_label = "Downloads";
 	if ( $endu < mktime( 0, 0, 0, 9, 15, 2025 ) ) {
@@ -17,13 +20,20 @@
 	}
 
 	if ( ( $handle = fopen( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000, ',', '"', '\\' ) ) !== FALSE ) {
 			if ( $row === 0 ) {
 				$sheets[ $sheet ][] = [
 					'Name','Downloads','Downloaders'
 				];
-				$pod_head = array_flip( $data );
+				foreach ( $data as $k => $v ) {
+					$label = str_replace( [ '"', "﻿" ], [ '', '' ], $v );
+					$pod_head[ $label ] = $k;
+				}
 			} else {
+				if ( in_array( $data[ $pod_head[ $podcast_label ] ], $skips ) ) {
+					continue;
+				}
+				$label = $pod_head[ $podcast_label ];
 				$slug = str_replace( '/', '', $data[ $pod_head[ $podcast_label ] ] );
 				if ( $slug === 'recast' ) {
 					$slug = 'HPM Newscast New';

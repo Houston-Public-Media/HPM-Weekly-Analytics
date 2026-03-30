@@ -1,6 +1,6 @@
 <?php
 	global $graphs, $sheets, $start, $end;
-	use Google\Analytics\Data\V1beta\BetaAnalyticsDataClient;
+	use Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient;
 	use Google\Analytics\Data\V1beta\DateRange;
 	use Google\Analytics\Data\V1beta\Dimension;
 	use Google\Analytics\Data\V1beta\OrderBy;
@@ -8,6 +8,7 @@
 	use Google\Analytics\Data\V1beta\MetricAggregation;
 	use Google\Analytics\Data\V1beta\FilterExpression;
 	use Google\Analytics\Data\V1beta\Filter;
+	use Google\Analytics\Data\V1beta\RunReportRequest;
 	use Google\ApiCore\ApiException;
 	use Google\ApiCore\ValidationException;
 
@@ -41,30 +42,28 @@
 		$date_format = date( 'Y-m-d g:i A', $date );
 
 		// Secondary GA pull to gather source / medium information for each article
-		$sources = $analytics->runReport([
-			'property' => 'properties/' . $ga,
-			'dateRanges' => [
+		$request = new RunReportRequest()
+			->setProperty( 'properties/' . $ga )
+			->setDateRanges([
 				new DateRange([
 					'start_date' => $start,
-					'end_date' => $end,
+					'end_date'   => $end,
 				]),
-			],
-			'dimensions' => [
-				new Dimension([ 'name' => 'sessionSourceMedium' ])
-			],
-			'metrics' => [
-				new Metric([ 'name' => 'sessions' ])
-			],
-			'dimensionFilter' => new FilterExpression([
-				'filter' => new Filter([
-					'field_name' => 'pagePath',
-					'string_filter' => new Filter\StringFilter([
-						'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
-						'value' => $path
-					])
-				])
 			])
-		]);
+			->setDimensions( [ new Dimension( [ 'name' => 'sessionSourceMedium' ] ) ] )
+			->setMetrics([
+				new Metric( [ 'name' => 'sessions' ] )
+			])
+			->setDimensionFilter( new FilterExpression( [
+				'filter' => new Filter( [
+					'field_name'    => 'pagePath',
+					'string_filter' => new Filter\StringFilter( [
+						'match_type' => Filter\StringFilter\MatchType::BEGINS_WITH,
+						'value'      => $path
+					] )
+				] )
+			]));
+		$sources = $analytics->runReport( $request );
 		$google = $facebook = $twitter = $rss = $newsbreak = $direct = $organic = $email = $referral = $social = '0';
 
 		// Parsing the source / medium pull from GA
@@ -149,22 +148,20 @@
 
 		// Pull article numbers from GA
 		try {
-			$result = $analytics->runReport( [
-				'property'        => 'properties/' . $ga,
-				'dateRanges'      => [
-					new DateRange( [
+			$request = new RunReportRequest()
+				->setProperty( 'properties/' . $ga )
+				->setDateRanges([
+					new DateRange([
 						'start_date' => $start,
 						'end_date'   => $end,
-					] ),
-				],
-				'dimensions'      => [
-					new Dimension( [ 'name' => 'pagePath' ] )
-				],
-				'metrics'         => [
+					]),
+				])
+				->setDimensions( [ new Dimension( [ 'name' => 'pagePath' ] ) ] )
+				->setMetrics([
 					new Metric( [ 'name' => 'screenPageViews' ] ),
 					new Metric( [ 'name' => 'activeUsers' ] )
-				],
-				'dimensionFilter' => new FilterExpression( [
+				])
+				->setDimensionFilter( new FilterExpression( [
 					'filter' => new Filter( [
 						'field_name'    => 'pagePath',
 						'string_filter' => new Filter\StringFilter( [
@@ -172,9 +169,9 @@
 							'value'      => '/articles/'
 						] )
 					] )
-				] ),
-				'limit' => 25
-			] );
+				]))
+				->setLimit( 25 );
+			$result = $analytics->runReport( $request );
 		} catch ( ApiException $e ) {
 			echo $e->getMessage() . PHP_EOL;
 			die;
@@ -221,34 +218,30 @@
 
 		// User / Session pull from GA
 		try {
-			$result2 = $analytics->runReport( [
-				'property'           => 'properties/' . $ga,
-				'dateRanges'         => [
-					new DateRange( [
+			$request2 = new RunReportRequest()
+				->setProperty( 'properties/' . $ga )
+				->setDateRanges([
+					new DateRange([
 						'start_date' => $start,
 						'end_date'   => $end,
-					] ),
-				],
-				'dimensions'         => [
-					new Dimension( [ 'name' => 'dateHour' ] )
-				],
-				'metrics'            => [
+					]),
+				])
+				->setDimensions( [ new Dimension( [ 'name' => 'dateHour' ] ) ] )
+				->setMetrics([
 					new Metric( [ 'name' => 'sessions' ] ),
 					new Metric( [ 'name' => 'activeUsers' ] )
-				],
-				'metricAggregations' => [
-					MetricAggregation::TOTAL,
-				],
-				'orderBys' => [
+				])
+				->setMetricAggregations( [ MetricAggregation::TOTAL ] )
+				->setOrderBys([
 					new OrderBy([
 						'dimension' => new OrderBy\DimensionOrderBy([
-							'dimension_name' => 'dateHour', // your dimension here
+							'dimension_name' => 'dateHour',
 							'order_type' => OrderBy\DimensionOrderBy\OrderType::ALPHANUMERIC
 						]),
 						'desc' => false,
 					]),
-				]
-			] );
+				]);
+			$result2 = $analytics->runReport( $request2 );
 		} catch ( ApiException $e ) {
 			echo $e->getMessage() . PHP_EOL;
 			die;
@@ -286,22 +279,20 @@
 
 		// Pulling device category stats from GA
 		try {
-			$result3 = $analytics->runReport( [
-				'property'   => 'properties/' . $ga,
-				'dateRanges' => [
-					new DateRange( [
+			$request3 = new RunReportRequest()
+				->setProperty( 'properties/' . $ga )
+				->setDateRanges([
+					new DateRange([
 						'start_date' => $start,
 						'end_date'   => $end,
-					] ),
-				],
-				'dimensions' => [
-					new Dimension( [ 'name' => 'deviceCategory' ] )
-				],
-				'metrics'    => [
+					]),
+				])
+				->setDimensions( [ new Dimension( [ 'name' => 'deviceCategory' ] ) ] )
+				->setMetrics([
 					new Metric( [ 'name' => 'sessions' ] ),
 					new Metric( [ 'name' => 'activeUsers' ] )
-				]
-			] );
+				]);
+			$result3 = $analytics->runReport( $request3 );
 		} catch ( ApiException $e ) {
 			echo $e->getMessage() . PHP_EOL;
 			die;
@@ -347,22 +338,20 @@
 		foreach ( $shows as $show ) {
 			$show_graph = 'ga-'.$show['slug'].'-articles';
 			try {
-				$result = $analytics->runReport( [
-					'property'        => 'properties/' . $ga,
-					'dateRanges'      => [
-						new DateRange( [
+				$request = new RunReportRequest()
+					->setProperty( 'properties/' . $ga )
+					->setDateRanges([
+						new DateRange([
 							'start_date' => $start,
 							'end_date'   => $end,
-						] ),
-					],
-					'dimensions'      => [
-						new Dimension( [ 'name' => 'pagePath' ] )
-					],
-					'metrics'         => [
+						]),
+					])
+					->setDimensions( [ new Dimension( [ 'name' => 'pagePath' ] ) ] )
+					->setMetrics([
 						new Metric( [ 'name' => 'screenPageViews' ] ),
 						new Metric( [ 'name' => 'activeUsers' ] )
-					],
-					'dimensionFilter' => new FilterExpression( [
+					])
+					->setDimensionFilter( new FilterExpression( [
 						'filter' => new Filter( [
 							'field_name'    => 'pagePath',
 							'string_filter' => new Filter\StringFilter( [
@@ -370,9 +359,9 @@
 								'value'      => '/articles/shows/' . $show['slug']
 							] )
 						] )
-					] ),
-					'limit'           => 25
-				] );
+					]))
+					->setLimit( 25 );
+				$result = $analytics->runReport( $request );
 			} catch ( ApiException $e ) {
 				echo $e->getMessage() . PHP_EOL;
 				die;

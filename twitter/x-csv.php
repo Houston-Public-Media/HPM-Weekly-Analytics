@@ -13,7 +13,7 @@
 	$temp_data = [];
 	$temp_head = [];
 	if ( ( $handle = fopen( BASE . DS . "twitter" . DS . "x-stats" . DS . "csv" . DS . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== false ) {
+		while ( ( $data = fgetcsv( $handle, 1000, ',', '"', '\\' ) ) !== false ) {
 			if ( $row === 0 ) {
 				$x_head = array_flip( $data );
 				$temp_head = $data;

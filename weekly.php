@@ -220,13 +220,21 @@
 			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the X, Apple, and Podcasts folders." . PHP_EOL;
 			die;
 		}
-	} else {
+	} elseif ( $run_date > mktime( 0, 0, 0, 6, 1, 2025 ) && $run_date < mktime( 0, 0, 0, 3, 24, 2026 ) ) {
 		if (
 			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
 			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" ) ||
 			!file_exists( BASE . DS . "twitter" . DS . "x-stats" . DS . "csv" . DS . $end . ".csv" )
 		) {
 			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the X, Apple, and Podcasts folders." . PHP_EOL;
+			die;
+		}
+	} else {
+		if (
+			!file_exists( BASE . DS . "podcasts" . DS . "podcasts-" . $end . ".csv" ) ||
+			!file_exists( BASE . DS . "apple" . DS . "channel-" . $end . ".csv" )
+		) {
+			echo PHP_EOL . FG_BR_RED . BG_BLACK . FS_BOLD . "You are missing one of your manual reports. Please check the Apple and Podcasts folders." . PHP_EOL;
 			die;
 		}
 	}
@@ -265,8 +273,18 @@
 	if ( $run_date < mktime( 0, 0, 0, 6, 16, 2024 ) ) {
 		require BASE . DS . 'twitter' . DS . 'twitter.php';
 	} elseif ( $run_date > mktime( 0, 0, 0, 6, 16, 2024 ) && $run_date < mktime( 0, 0, 0, 6, 1, 2025 ) ) {
+		unset( $graphs['twitter-tweets-by-impression'] );
+		unset( $graphs['twitter-tweets-by-engagement'] );
+		unset( $graphs['twitter-account-tweets'] );
+		unset( $graphs['twitter-account-impressions'] );
+		unset( $graphs['twitter-account-engagements'] );
 		require BASE . DS . 'twitter' . DS . 'x.php';
-	} else {
+	} elseif ( $run_date > mktime( 0, 0, 0, 6, 1, 2025 ) && $run_date < mktime( 0, 0, 0, 3, 24, 2026 ) ) {
+		unset( $graphs['twitter-tweets-by-impression'] );
+		unset( $graphs['twitter-tweets-by-engagement'] );
+		unset( $graphs['twitter-account-tweets'] );
+		unset( $graphs['twitter-account-impressions'] );
+		unset( $graphs['twitter-account-engagements'] );
 		$graphs['x-engagements'] = [
 			'labels' => [],
 			'datasets' => [
@@ -297,6 +315,14 @@
 			]
 		];
 		require BASE . DS . 'twitter' . DS . 'x-csv.php';
+	} else {
+		unset( $graphs['twitter-tweets-by-impression'] );
+		unset( $graphs['twitter-tweets-by-engagement'] );
+		unset( $graphs['twitter-account-tweets'] );
+		unset( $graphs['twitter-account-impressions'] );
+		unset( $graphs['twitter-account-engagements'] );
+		unset( $graphs['x-impressions'] );
+		unset( $graphs['x-engagements'] );
 	}
 
 	if ( !empty( WCM_USER ) ) {

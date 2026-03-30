@@ -19,7 +19,7 @@
 	 *
 	 */
 	if ( ( $handle = fopen( BASE . DS . "apple" . DS . "channel-" . $end . ".csv", "r" ) ) !== FALSE ) {
-		while ( ( $data = fgetcsv( $handle, 1000 ) ) !== FALSE ) {
+		while ( ( $data = fgetcsv( $handle, 1000, ',', '"', '\\' ) ) !== FALSE ) {
 			if ( $row === 0 ) {
 				$apple_head = array_flip( $data );
 
