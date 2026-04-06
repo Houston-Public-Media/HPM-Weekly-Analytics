@@ -9,7 +9,7 @@
 	 *
 	 */
 	$skips = [
-		'/hpm', '/monitoring/compatibility','/hpm-newscast'
+		'/hpm', '/monitoring/compatibility','/hpm-newscast', '/streamguys'
 	];
 	$podcast_label = "Podcast/Path";
 	$downloaders_label = "Uniques";
