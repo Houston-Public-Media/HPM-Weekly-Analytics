@@ -16,7 +16,7 @@
 			'day' => 'page_media_view||is_from_followers'
 		],
 		[
-			'day' => 'page_impressions_unique,page_post_engagements,page_follows'
+			'day' => 'page_total_media_view_unique,page_post_engagements,page_follows'
 		],
 		[
 			'day' => 'page_actions_post_reactions_total'
@@ -27,7 +27,7 @@
 	 * Mapping information for the graphing data
 	 */
 	$fb_label = [
-		'page_impressions_unique' => 1,
+		'page_total_media_view_unique' => 1,
 		'page_media_view' => 0,
 		'page_media_view_from_ads' => 2,
 		'page_media_view_from_followers' => 3,

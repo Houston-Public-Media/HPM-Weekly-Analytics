@@ -244,7 +244,7 @@
 	$num = 20;
 
 	// Facebook Graph API base
-	$fb_base = 'https://graph.facebook.com/v24.0/';
+	$fb_base = 'https://graph.facebook.com/v25.0/';
 
 	// Where the magic happens
 	if ( file_exists( GA_CLIENT ) ) {
