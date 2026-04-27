@@ -98,6 +98,9 @@
 				// Decode the response from the Graph API and loop through
 				$json = json_decode( $result );
 				foreach ( $json->data as $d ) {
+					if ( $d->title === null ) {
+						continue;
+					}
 					$title = ucwords( str_replace( '_', ' ', $d->title ) );
 					$name = $d->name;
 
