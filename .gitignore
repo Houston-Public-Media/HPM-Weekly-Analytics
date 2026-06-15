@@ -16,3 +16,4 @@ triton/*.json
 hpm-analytics/package-lock.json
 .vscode
 .idea
+/package.xml

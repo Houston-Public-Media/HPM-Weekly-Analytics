@@ -99,7 +99,7 @@
 				$json = json_decode( $result );
 				foreach ( $json->data as $d ) {
 					if ( $d->title === null ) {
-						continue;
+						$d->title = $d->name;
 					}
 					$title = ucwords( str_replace( '_', ' ', $d->title ) );
 					$name = $d->name;
@@ -180,12 +180,12 @@
 			$sheets[ $sheet ][ $c ][ $g ] = $ree;
 			if (
 				$rek == 'page_media_view' ||
-				$rek == 'page_impressions_unique' ||
+				$rek == 'page_total_media_view_unique' ||
 				$rek == 'page_media_view_from_ads' ||
 				$rek == 'page_media_view_from_followers'
 			) {
 				$graphs['facebook-impressions']['datasets'][ $fb_label[ $rek ] ]['data'][] = $ree;
-				if ( $rek == 'page_impressions_unique' ) {
+				if ( $rek == 'page_total_media_view_unique' ) {
 					$graphs['overall-totals']['facebook']['data'] += $ree;
 				}
 			} elseif ( $rek == 'page_follows' ) {

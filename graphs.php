@@ -30,7 +30,7 @@
 				'data' => 0
 			],
 			'triton-mixtape' => [
-				'name' => 'Mixtape Streaming Listeners',
+				'name' => 'The Vibe Streaming Listeners',
 				'data' => 0
 			],
 			'youtube' => [

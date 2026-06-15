@@ -78,7 +78,7 @@
 	// Parsing the listener numbers
 	$sheet = 'Triton Listeners';
 	$sheets[ $sheet ][] = [
-		'Time','News','Classical','Mixtape'
+		'Time','News','Classical','The Vibe'
 	];
 
 	/**
