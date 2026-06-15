@@ -213,6 +213,36 @@ let config = {
 		data: [],
 		type: 'bar'
 	},
+	'ga-hello-houston-articles': {
+		options: {
+			indexAxis: 'y',
+			plugins: {
+				tooltips: {
+					callbacks: {
+						title: function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index];
+						}
+					}
+				},
+				title: {
+					text: 'Top 20 Hello Houston Articles - Pageviews by Source'
+				}
+			},
+			scales: {
+				x: {
+					stacked: true,
+				},
+				y: {
+					stacked: true,
+					afterTickToLabelConversion: (value) => {
+						axisLabelFix(value);
+					}
+				}
+			}
+		},
+		data: [],
+		type: 'bar'
+	},
 	'ga-town-square-articles': {
 		options: {
 			indexAxis: 'y',
@@ -648,7 +678,7 @@ let graphUpdate = (report) => {
 					document.getElementById('google-amp').classList.remove('disabled');
 				} else if ( d.includes('ga-combined') ) {
 					document.getElementById('google-combined').classList.remove('disabled');
-				} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') ) {
+				} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') || d.includes('ga-hello-houston') ) {
 					document.getElementById('google-talkshows').classList.remove('disabled');
 				}
 				if ( d === 'overall-totals') {
@@ -670,6 +700,11 @@ let graphUpdate = (report) => {
 						});
 					}
 				}
+			}
+			if ( typeof currentData['ga-hello-houston-articles'] === 'object' ) {
+				document.getElementById('ga-hello-houston-articles').classList.remove('disabled');
+			} else {
+				document.getElementById('ga-hello-houston-articles').classList.add('disabled');
 			}
 			if ( typeof currentData['ga-town-square-articles'] === 'object' ) {
 				document.getElementById('ga-town-square-articles').classList.remove('disabled');
@@ -861,7 +896,7 @@ let overallGen = (data) => {
 							document.getElementById('google-amp').classList.remove('disabled');
 						} else if ( d.includes('ga-combined') ) {
 							document.getElementById('google-combined').classList.remove('disabled');
-						} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') ) {
+						} else if ( d.includes('ga-houston-matters') || d.includes('ga-town-square') || d.includes('i-see-u') || d.includes('ga-hello-houston') ) {
 							document.getElementById('google-talkshows').classList.remove('disabled');
 						}
 						if ( d === 'overall-totals') {

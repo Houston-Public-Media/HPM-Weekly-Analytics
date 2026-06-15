@@ -158,6 +158,53 @@
 				]
 			]
 		],
+		'ga-hello-houston-articles' => [
+			'labels' => [],
+			'datasets' => [
+				0 => [
+					'label' => 'Direct',
+					'backgroundColor' => 'rgba( 0, 255, 0, 0.2 )',
+					'borderColor' => 'rgba( 0, 255, 0, 1 )',
+					'data' => []
+				],
+				1 => [
+					'label' => 'Google',
+					'backgroundColor' => 'rgba(219,68,55,0.2 )',
+					'borderColor' => 'rgba(219,68,55,1 )',
+					'data' => []
+				],
+				2 => [
+					'label' => 'Facebook',
+					'backgroundColor' => 'rgba(59,89,152,0.2 )',
+					'borderColor' => 'rgba(59,89,152,1 )',
+					'data' => []
+				],
+				3 => [
+					'label' => 'Twitter',
+					'backgroundColor' => 'rgba(29,161,242,0.2 )',
+					'borderColor' => 'rgba(29,161,242,1 )',
+					'data' => []
+				],
+				4 => [
+					'label' => 'RSS',
+					'backgroundColor' => 'rgba(255,187,0,0.2 )',
+					'borderColor' => 'rgba(255,187,0,1 )',
+					'data' => []
+				],
+				5 => [
+					'label' => 'Newsbreak',
+					'backgroundColor' => 'rgba(65,0,147,0.2 )',
+					'borderColor' => 'rgba(65,0,147,1 )',
+					'data' => []
+				],
+				6 => [
+					'label' => 'Other',
+					'backgroundColor' => 'rgba(0,0,0,0.2 )',
+					'borderColor' => 'rgba(0,0,0,1 )',
+					'data' => []
+				]
+			]
+		],
 		'facebook-impressions' => [
 			'labels' => [],
 			'datasets' => [
