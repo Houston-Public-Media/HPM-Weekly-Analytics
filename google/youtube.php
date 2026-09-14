@@ -66,8 +66,8 @@
 		'endDate' => $end,
 		'ids' => 'channel==' . YT_CHANNEL_ID,
 		'maxResults' => 20,
-		'metrics' => 'views,likes,dislikes,comments,estimatedMinutesWatched,subscribersGained',
-		'sort' => '-views',
+		'metrics' => 'engagedViews,likes,dislikes,comments,estimatedMinutesWatched,subscribersGained',
+		'sort' => '-engagedViews',
 		'startDate' => $start
 	];
 
