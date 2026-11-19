@@ -53,8 +53,7 @@
 	define( 'YT_CHANNEL_ID', $env['YT_CHANNEL_ID'] );
 	define( 'GA_COMBO', $env['GA_COMBO'] );
 	define( 'GA4_PROPERTY', $env['GA4_PROPERTY'] );
-	define( 'WCM_USER', $env['WCM_USER'] );
-	define( 'WCM_PASSWORD', $env['WCM_PASSWORD'] );
+	define( 'WCM_BEARER', $env['WCM_BEARER'] );
 	define( 'APP_URL', $env['APP_URL'] );
 	define( 'FROM_EMAIL', $env['FROM_EMAIL'] );
 	define( 'REPLY_TO_EMAIL', $env['REPLY_TO_EMAIL'] );
@@ -325,7 +324,7 @@
 		unset( $graphs['x-engagements'] );
 	}
 
-	if ( !empty( WCM_USER ) ) {
+	if ( !empty( WCM_BEARER ) ) {
 		require BASE . DS . 'triton' . DS . 'triton.php';
 	}
 
